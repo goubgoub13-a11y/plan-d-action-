@@ -704,6 +704,8 @@ a.kpi-t.alert{border-color:rgba(208,59,59,.35)}
 #tooltip div{color:var(--tip-2)}
 #toasts{position:fixed;right:18px;bottom:18px;z-index:250;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;transition:bottom .2s}
 #toasts>*{pointer-events:auto}
+body:has(.modal-bd.is-drawer) #toasts{right:auto;left:18px;align-items:flex-start}
+#view:focus{outline:none}
 body:has(.bulkbar) #toasts{bottom:92px}
 body:has(.bulkbar) #view{padding-bottom:96px}
 .toast{display:flex;align-items:center;gap:12px;background:#121316;color:#fff;border-radius:12px;padding:11px 14px;box-shadow:var(--shadow-lg);font-weight:500;animation:pop .2s ease;max-width:440px;border-left:4px solid var(--y)}
@@ -907,6 +909,64 @@ body:has(.bulkbar) #view{padding-bottom:96px}
 @media (max-width:900px){.bulkbar{left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px)}.hero-head .hero-side{align-items:center}}
 @media (max-width:640px){.toolbar .tsearch{flex:1 1 100%}.toolbar>.select{flex:1 1 calc(50% - 5px);min-width:0;max-width:none!important}.toolbar>.spacer{display:none}.hero-head{flex-direction:column-reverse;gap:12px}.hero-head .hero-side{width:100%;justify-content:space-between}.hero-logos .nt{height:30px}.hs .sit{font-size:12.5px;padding:6px 10px;height:auto;min-height:30px;white-space:normal;line-height:1.2;border-radius:12px}.hs .sit small{display:none}.onb-grid{grid-template-columns:minmax(0,1fr)}.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.hs .big{font-size:28px}.hero-head .hero-logos .tile{display:none}.hero.mini .hm-n{display:none}.rp-row{grid-template-columns:auto minmax(0,1fr)}.rp-d{grid-column:2}}
 @media print{.bulkbar,.onb,.hbtn,.fchips{display:none!important}}
+
+/* ---------- Ton projet (sélecteur) ---------- */
+.ppick{display:flex;align-items:center;gap:12px;margin-bottom:12px;min-width:0}
+.pp-l{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pp-list{display:flex;gap:8px;overflow-x:auto;padding:2px;min-width:0;scrollbar-width:thin}
+.pp{display:inline-flex;align-items:center;gap:8px;flex:none;height:40px;max-width:360px;padding:0 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;font-size:13px;white-space:nowrap;cursor:pointer;box-shadow:var(--shadow-sm)}
+.pp:hover{border-color:var(--border-strong);color:var(--text)}
+.pp .pp-n{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pp b{font-size:12px;letter-spacing:.02em}
+.pp .cnt{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--surface-3);color:var(--text-2)}
+.pp.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.pp.on b{color:var(--y)}
+.pp.on .cnt{background:rgba(255,255,255,.16);color:#fff}
+:root[data-theme="dark"] .pp.on{background:var(--y);border-color:var(--y);color:var(--on-y)}
+:root[data-theme="dark"] .pp.on b,:root[data-theme="dark"] .pp.on .cnt{color:var(--on-y)}
+@media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])) .pp.on{background:var(--y);border-color:var(--y);color:var(--on-y)}:root:where(:not([data-theme="light"])) .pp.on b,:root:where(:not([data-theme="light"])) .pp.on .cnt{color:var(--on-y)}}
+.pp-sum{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px 12px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--c);box-shadow:var(--shadow-sm)}
+.pp-sum-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 240px}
+.pp-sum-t b{font-family:var(--font-d);font-size:15px}
+.pp-sum-t span{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+.pp-sum-p{display:flex;align-items:center;gap:10px}
+.pp-sum-p .pbar{width:160px}
+
+/* ---------- Fiche action : récap + suivi daté ---------- */
+.arecap{border-radius:14px;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-top:4px solid var(--c);display:grid;gap:12px}
+.ar-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}
+.ar-p{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:var(--text)}
+.ar-p:hover{text-decoration:underline}
+.ar-g{display:grid;grid-template-columns:auto minmax(150px,1fr) auto auto;gap:10px 22px;align-items:start}
+.ar-i{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:13px}
+.ar-i>.k{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ar-i .pbar{flex:1;min-width:80px}
+.ar-next{display:flex;gap:6px;align-items:flex-start;font-size:13px;color:var(--text-2);padding-top:10px;border-top:1px dashed var(--border)}
+.ar-next .ic{color:var(--y-600);flex:none;margin-top:2px}
+.aj{border-color:var(--y);box-shadow:0 0 0 3px var(--y-soft)}
+.aj>h4 .n .ic{width:12px;height:12px}
+.aj-cnt{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--muted)}
+.aj-new{display:grid;gap:8px}
+.aj-r1,.aj-r2{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.aj-r1 .input{width:auto}
+.aj-r2 .lbl{font-size:12.5px;font-weight:600;color:var(--text-2)}
+.aj-r2 input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--y-600)}
+.aj-r2 b{min-width:42px}
+.aj-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.aj-e{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:start;padding:10px 10px 10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border)}
+.aj-dt{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:var(--y-soft);color:var(--y-text);line-height:1}
+.aj-dt b{font-family:var(--font-d);font-size:17px}
+.aj-dt small{font-size:10px;font-weight:700;text-transform:uppercase;margin-top:2px}
+.aj-txt{white-space:pre-wrap;font-size:13.5px;line-height:1.5}
+.aj-m{font-size:11.5px;color:var(--muted);margin-top:3px}
+.aj-e .btn{opacity:.55}
+.aj-e:hover .btn{opacity:1}
+.aj-empty{font-size:12.5px;color:var(--muted);padding:4px 2px;line-height:1.5}
+.je-suivi{cursor:pointer}
+.je-suivi:hover{border-color:var(--border-strong)}
+.je-suivi .je-t{font-size:13.5px}
+.keytag.kt-suivi{background:var(--y);color:var(--on-y)}
+@media (max-width:640px){body:has(.modal-bd.is-drawer) #toasts{left:12px;right:12px;bottom:84px}.pp-list{flex-wrap:wrap;overflow:visible}.pp{max-width:100%;min-width:0}.ppick{flex-direction:column;align-items:stretch;gap:8px}.pp-sum-p .pbar{width:110px}.ar-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 
 /* =====================================================================
    Adaptatif
@@ -1206,6 +1266,7 @@ function fmtS(s, forceYear) {
 }
 const fmtL = s => { const d = parse(s); return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; };
 const fmtMY = s => { const d = parse(s); return cap(`${MONTHS[d.getMonth()]} ${d.getFullYear()}`); };
+const fmtMonS = s => MONTHS_S[parse(s).getMonth()];
 const fmtDM = s => { const d = parse(s); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`; };
 const fmtFR = s => s ? `${fmtDM(s)}/${parse(s).getFullYear()}` : '';
 function relDue(s) {
@@ -1279,6 +1340,7 @@ function migrate(d) {
     if (!Array.isArray(a.checklist)) a.checklist = [];
     if (!Array.isArray(a.dependsOn)) a.dependsOn = [];
     if (!Array.isArray(a.skills)) a.skills = [];
+    if (!Array.isArray(a.log)) a.log = [];
     if (!STATUS[a.status]) a.status = 'todo';
     if (!PRIORITY[a.priority]) a.priority = 'normal';
     if (!RECUR[a.recur]) a.recur = '';
@@ -1600,11 +1662,13 @@ async function exportXLSX() {
   const projRows = [PROJ_HEAD, ...sortedProjects().map(p => { const as = actionsOf(p.id), nx = milestonesOf(p.id).find(m => !m.done); return [p.ref, p.name, p.domain, p.manager, p.sponsor, p.description, PRIORITY[p.priority].label, PSTATUS[p.status].label, p.start, p.end, projectProgress(p), as.length, as.filter(a => a.status === 'done').length, as.filter(isOverdue).length, RISK[p.risk].label, nx ? (nx.ref ? nx.ref + ' : ' : '') + nx.title : '', nx?.date, p.comment]; })];
   const msRows = [MS_HEAD, ...S.milestones.slice().sort(byDate).map(m => { const p = proj(m.projectId); return [p?.ref, p?.name, m.ref, m.title, MSTYPE[m.type], m.date, 'S' + isoWeek(m.date), msLabel(msStatus(m)), m.key ? 'Oui' : 'Non', m.description]; })];
   const jRows = [['Date', 'Type', 'Projet', 'Contenu'], ...S.journal.slice().sort((a, b) => a.date.localeCompare(b.date)).map(j => [j.date, j.type === 'review' ? 'Revue hebdo' : 'Note', proj(j.projectId)?.name || 'Général', j.type === 'review' ? `Avancé : ${j.done || '—'}\nDifficultés : ${j.blockers || '—'}\nPriorités : ${j.next || '—'}` : j.text])];
+  const sRows = [['ID action', 'Action', 'Projet', 'Date', 'Avancement %', 'Ce que j\'ai fait'], ...S.actions.flatMap(a => (a.log || []).map(l => [a.ref, a.title, proj(a.projectId)?.name || '', l.date, l.progress ?? '', l.text])).sort((x, y) => x[3].localeCompare(y[3]) || String(x[0]).localeCompare(String(y[0])))];
   const wb = X.utils.book_new();
   X.utils.book_append_sheet(wb, sheet(projRows, [10, 40, 24, 18, 18, 50, 10, 12, 12, 12, 10, 9, 10, 10, 12, 28, 11, 50]), 'Projets');
   X.utils.book_append_sheet(wb, sheet(actionRows(), [10, 30, 16, 30, 13, 55, 45, 22, 10, 11, 11, 11, 11, 9, 14, 45, 12, 35, 35, 40]), "Plan d'action");
   X.utils.book_append_sheet(wb, sheet(msRows, [10, 30, 7, 40, 12, 11, 8, 11, 9, 40]), 'Jalons');
   X.utils.book_append_sheet(wb, sheet(jRows, [11, 12, 30, 80]), 'Journal');
+  X.utils.book_append_sheet(wb, sheet(sRows, [13, 50, 30, 11, 12, 80]), 'Suivi des actions');
   const out = X.write(wb, { bookType: 'xlsx', type: 'array', compression: true });
   download(`plan-action-${today()}.xlsx`, new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
   markExport(); toast('Classeur Excel exporté.', 'success');
@@ -1702,7 +1766,7 @@ async function importXLSXFile(file) {
         const { pref, pname, ...data } = ia;
         let a = s.actions.find(x => x.projectId === p.id && ((data.ref && x.ref === data.ref) || H(x.title) === H(data.title)));
         if (a) { fill(a, data); if (data.status === 'done' && !a.doneAt) a.doneAt = data.due || today(); stats.au++; }
-        else { s.actions.push(Object.assign({ id: uid('a'), projectId: p.id, effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], link: '', recur: '', createdAt: new Date().toISOString(), doneAt: data.status === 'done' ? (data.due || today()) : null }, data)); stats.ac++; }
+        else { s.actions.push(Object.assign({ id: uid('a'), projectId: p.id, effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], log: [], link: '', recur: '', createdAt: new Date().toISOString(), doneAt: data.status === 'done' ? (data.due || today()) : null }, data)); stats.ac++; }
       }
       for (const im of found.milestones) {
         const p = (im.pref || im.pname) ? (findP(im.pref, im.pname) || single) : single; if (!p) continue;
@@ -1772,6 +1836,9 @@ function actionSpan(a) {
   return s <= e ? [s, e] : [e, s];
 }
 const isOverdue = a => !isClosed(a.status) && !!a.due && a.due < today();
+/* Suivi daté d'une action : ce que j'ai fait, à quelle date, avec l'avancement atteint */
+const logsOf = a => (a.log || []).slice().sort((x, y) => y.date.localeCompare(x.date) || (y.at || '').localeCompare(x.at || ''));
+const lastLog = a => logsOf(a)[0] || null;
 function alertOf(a) {
   if (isClosed(a.status)) return 'closed';
   if (!a.due) return 'none';
@@ -1890,7 +1957,7 @@ const addMonthsSameDay = (s, n) => { const d = parse(s), day = d.getDate(); cons
 const recurStep = (a, d) => !d ? null : a.recur === 'weekly' ? addDays(d, 7) : a.recur === 'biweekly' ? addDays(d, 14) : addMonthsSameDay(d, 1);
 function spawnNext(a) {
   const n = JSON.parse(JSON.stringify(a));
-  Object.assign(n, { id: uid('a'), ref: nextRef(a.projectId), status: 'todo', progress: 0, doneAt: null, prevStatus: null, prevProgress: null, recurNext: null, lastFollowUp: null, nextDate: null, createdAt: new Date().toISOString(), start: recurStep(a, a.start), due: recurStep(a, a.due) });
+  Object.assign(n, { id: uid('a'), ref: nextRef(a.projectId), status: 'todo', progress: 0, doneAt: null, prevStatus: null, prevProgress: null, recurNext: null, lastFollowUp: null, nextDate: null, log: [], createdAt: new Date().toISOString(), start: recurStep(a, a.start), due: recurStep(a, a.due) });
   n.checklist = n.checklist.map(c => Object.assign(c, { id: uid('c'), done: false }));
   S.actions.push(n); a.recurNext = n.id;
   setTimeout(() => toast(`Action récurrente : prochaine occurrence le ${fmtS(n.due)}.`, 'success'), 50);
@@ -2024,7 +2091,7 @@ function seedState() {
   });
   const P = { Basse: 'low', Normale: 'normal', Haute: 'high', Critique: 'critical' };
   const ST = { 'À lancer': 'todo', 'En cours': 'doing', 'En attente': 'waiting', 'Bloqué': 'blocked', 'Terminé': 'done', 'Annulé': 'cancelled' };
-  SEED_ACTIONS.forEach(r => s.actions.push({ id: uid('a'), projectId: pid, ref: r[0], phase: r[1], title: r[2], result: r[3] || '', owner: r[4] || '', priority: P[r[5]] || 'normal', status: ST[r[6]] || 'todo', progress: +r[7] || 0, start: r[8], due: r[9], next: r[10] || '', nextDate: r[11] || null, risk: r[12] || '', decision: r[13] || '', description: r[14] || '', effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], link: '', recur: '', createdAt: now, doneAt: null }));
+  SEED_ACTIONS.forEach(r => s.actions.push({ id: uid('a'), projectId: pid, ref: r[0], phase: r[1], title: r[2], result: r[3] || '', owner: r[4] || '', priority: P[r[5]] || 'normal', status: ST[r[6]] || 'todo', progress: +r[7] || 0, start: r[8], due: r[9], next: r[10] || '', nextDate: r[11] || null, risk: r[12] || '', decision: r[13] || '', description: r[14] || '', effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], log: [], link: '', recur: '', createdAt: now, doneAt: null }));
   SEED_MS.forEach(([ref, title, date, description, type, key]) => s.milestones.push({ id: uid('m'), projectId: pid, ref, title, date, description, type, key: !!key, done: false }));
   s.journal.push({ id: uid('j'), type: 'note', date: '2026-09-28', projectId: pid, text: "Plan d'action repris du classeur Excel (v7) : 40 actions réparties en 10 phases, planning macro S40 → S52 avec 10 jalons (J1 à J10).", createdAt: now });
   s.progressLog[pid] = { '2026-09-28': 0 };
@@ -2417,7 +2484,7 @@ function synthTable(list) {
   if (!list.length) return '<p class="muted small">Aucun projet.</p>';
   return `<div class="tbl-wrap" style="box-shadow:none"><table class="tbl synth" style="min-width:860px"><thead><tr><th style="width:34%;min-width:280px">Projet</th><th>Statut</th><th>Échéance</th><th style="width:190px">Avancement / prévu</th><th>Actions</th><th>En retard</th><th>Risque</th><th>Santé</th></tr></thead><tbody>${list.map(p => {
     const as = actionsOf(p.id), pr = projectProgress(p), ex = isClosed(p.status) ? null : expectedProgress(p), od = as.filter(isOverdue).length, ck = planChecks(p.id).length;
-    return `<tr class="clk" data-act="open-project" data-id="${p.id}"><td><div class="row" style="flex-wrap:nowrap;gap:10px;align-items:flex-start"><span class="dot" style="--c:${colorOf(p)};margin-top:6px"></span><span style="min-width:0"><b style="line-height:1.3;display:block">${esc(p.name)}</b><span class="muted small">${p.ref ? `<span class="mono">${esc(p.ref)}</span> · ` : ''}${ic('user', 12)} ${esc(p.manager || '—')}${ck ? ` · <span style="color:var(--warning-text)">${plural(ck, 'point')} à vérifier</span>` : ''}</span></span></div></td><td>${pstChip(p.status)}</td><td class="c-date">${p.end ? fmtS(p.end, true) : '—'}</td><td><div class="row" style="flex-wrap:nowrap">${pbar(pr, colorOf(p), ex, 'sm')}<b class="tnum nowrap" style="text-align:right">${pr} %${ex != null ? `<span class="muted" style="font-weight:500"> / ${ex}</span>` : ''}</b></div></td><td class="tnum">${as.filter(a => a.status === 'done').length}/${as.length}</td><td>${od ? `<span class="chip t-crit">${od}</span>` : '<span class="muted">0</span>'}</td><td>${riskChip(p.risk)}</td><td>${healthChip(projectHealth(p))}</td></tr>`;
+    return `<tr class="clk" data-act="open-project" data-id="${p.id}"><td><div class="row" style="flex-wrap:nowrap;gap:10px;align-items:flex-start"><span class="dot" style="--c:${colorOf(p)};margin-top:6px"></span><span style="min-width:0"><b style="line-height:1.3;display:block">${esc(p.name)}</b><span class="muted small" style="display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap">${p.ref ? `<span class="mono" style="font-size:11.5px">${esc(p.ref)}</span> · ` : ''}${ic('user', 12)} ${esc(p.manager || '—')}${ck ? ` · <span style="color:var(--warning-text)">${plural(ck, 'point')} à vérifier</span>` : ''}</span></span></div></td><td>${pstChip(p.status)}</td><td class="c-date">${p.end ? fmtS(p.end, true) : '—'}</td><td><div class="row" style="flex-wrap:nowrap">${pbar(pr, colorOf(p), ex, 'sm')}<b class="tnum nowrap" style="text-align:right">${pr} %${ex != null ? `<span class="muted" style="font-weight:500"> / ${ex}</span>` : ''}</b></div></td><td class="tnum">${as.filter(a => a.status === 'done').length}/${as.length}</td><td>${od ? `<span class="chip t-crit">${od}</span>` : '<span class="muted">0</span>'}</td><td>${riskChip(p.risk)}</td><td>${healthChip(projectHealth(p))}</td></tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function relanceItem(a) {
@@ -2679,24 +2746,43 @@ function filterChips(projectId) {
   if (f.status !== 'open') c.push(['status', 'Statut : ' + STATUS_FILTERS[f.status].replace(/^[^A-Za-zÀ-ÿ]+/, '')]);
   if (f.owner !== 'all') c.push(['owner', 'Responsable : ' + (OWNER_FILTERS[f.owner] ? OWNER_FILTERS[f.owner].split(' — ')[0] : f.owner)]);
   if (f.prio !== 'all') c.push(['prio', 'Priorité : ' + PRIORITY[f.prio].label]);
-  if (!projectId && f.project !== 'all') c.push(['project', 'Projet : ' + (proj(f.project)?.ref || proj(f.project)?.name || '?')]);
   if (f.q) c.push(['q', `Recherche : « ${f.q} »`]);
   if (!c.length) return '';
   return `<div class="fchips"><span class="muted small">${ic('search', 14)} Filtres actifs</span>${c.map(([k, l]) => `<button type="button" class="fchip-on" data-act="af-clear" data-k="${k}" title="Retirer ce filtre">${esc(l)} ${ic('x', 13, 2.4)}</button>`).join('')}<button type="button" class="btn btn-sm btn-ghost" data-act="af-reset">Tout effacer</button></div>`;
 }
+/* « Ton projet » : choisir le projet dont on veut voir les actions */
+function projectPicker() {
+  const f = UI.afG, cur = f.project !== 'all' ? proj(f.project) : null;
+  const ps = sortedProjects().filter(p => !isClosed(p.status) || p === cur);
+  const n = pid => S.actions.filter(a => !isClosed(a.status) && (!pid || a.projectId === pid)).length;
+  let sum = '';
+  if (cur) {
+    const as = actionsOf(cur.id), pr = projectProgress(cur), ex = isClosed(cur.status) ? null : expectedProgress(cur), late = as.filter(isOverdue).length, dn = as.filter(a => a.status === 'done').length;
+    sum = `<div class="pp-sum" style="--c:${colorOf(cur)}">
+      <div class="pp-sum-t"><b>${esc(cur.name)}</b><span class="muted small">${ic('user', 12)} ${esc(cur.manager || '—')}${cur.end ? ` · échéance ${fmtS(cur.end, true)}` : ''}</span></div>
+      <div class="pp-sum-p">${pbar(pr, colorOf(cur), ex)}<b class="tnum">${pr} %</b>${ex != null ? `<span class="muted small nowrap">prévu ${ex} %</span>` : ''}</div>
+      <span class="muted small nowrap">${dn}/${as.length} terminées${late ? ` · <b style="color:var(--critical-text)">${late} en retard</b>` : ''}</span>
+      <a class="btn btn-sm btn-ghost" href="#/projet/${cur.id}">Page projet ${ic('chevR', 14)}</a>
+    </div>`;
+  }
+  return `<div class="ppick"><span class="pp-l">${ic('folder', 15)} Ton projet</span><div class="pp-list" role="tablist" aria-label="Ton projet">
+    <button type="button" role="tab" class="pp ${cur ? '' : 'on'}" aria-selected="${!cur}" data-act="af-proj" data-v="all">Tous les projets <span class="cnt">${n()}</span></button>
+    ${ps.map(p => `<button type="button" role="tab" class="pp ${cur === p ? 'on' : ''}" aria-selected="${cur === p}" data-act="af-proj" data-v="${p.id}" title="${esc(p.name)}"><span class="dot" style="--c:${colorOf(p)}"></span>${p.ref ? `<b>${esc(p.ref)}</b>` : ''}<span class="pp-n">${esc(p.name)}</span><span class="cnt">${n(p.id)}</span></button>`).join('')}
+  </div></div>${sum}`;
+}
 function actionsBlock(projectId) {
   const f = AF(), view = UI.av === 'kanban' ? 'kanban' : 'list';
-  const ows = owners();
-  const lateMine = S.actions.filter(a => isOverdue(a) && isMine(a) && (!projectId || a.projectId === projectId)).length;
-  return `<div class="toolbar">
+  if (!projectId && f.project !== 'all' && !proj(f.project)) f.project = 'all';
+  const ows = owners(), scopeP = projectId || (f.project !== 'all' ? f.project : null);
+  const lateMine = S.actions.filter(a => isOverdue(a) && isMine(a) && (!scopeP || a.projectId === scopeP)).length;
+  return `${projectId ? '' : projectPicker()}<div class="toolbar">
     <div class="seg" role="tablist"><button type="button" class="${view === 'list' ? 'on' : ''}" data-act="av" data-v="list">${ic('rows', 15)} Liste</button><button type="button" class="${view === 'kanban' ? 'on' : ''}" data-act="av" data-v="kanban">${ic('kanban', 15)} Kanban</button></div>
     <div class="tsearch">${ic('search', 15)}<input class="input sm" type="search" placeholder="Filtrer (mot, ID, responsable…)" value="${esc(f.q)}" data-input="af-q" aria-label="Filtrer les actions"></div>
     <select class="select sm ${f.status !== 'open' ? 'on' : ''}" data-change="af-status" aria-label="Statut">${Object.entries(STATUS_FILTERS).map(([k, l]) => `<option value="${k}" ${k === f.status ? 'selected' : ''}>${l}</option>`).join('')}</select>
     <select class="select sm ${f.owner !== 'all' ? 'on' : ''}" data-change="af-owner" aria-label="Responsable" style="max-width:230px">${Object.entries(OWNER_FILTERS).map(([k, l]) => `<option value="${k}" ${k === f.owner ? 'selected' : ''}>${l}</option>`).join('')}<optgroup label="Par personne">${ows.map(o => `<option value="${esc(o)}" ${o === f.owner ? 'selected' : ''}>${esc(o)}</option>`).join('')}</optgroup></select>
     <select class="select sm ${f.prio !== 'all' ? 'on' : ''}" data-change="af-prio" aria-label="Priorité"><option value="all">Toutes priorités</option>${opts(PRIORITY, f.prio)}</select>
-    ${projectId ? '' : `<select class="select sm ${f.project !== 'all' ? 'on' : ''}" data-change="af-project" aria-label="Projet" style="max-width:240px">${projOpts(f.project, 'Tous les projets')}</select>`}
     <span class="spacer"></span>
-    ${lateMine ? `<button type="button" class="btn btn-sm btn-crit-soft" data-act="replan" data-project="${projectId || ''}">${ic('refresh', 15)} Replanifier ${lateMine} retard${lateMine > 1 ? 's' : ''}</button>` : ''}
+    ${lateMine ? `<button type="button" class="btn btn-sm btn-crit-soft" data-act="replan" data-project="${scopeP || ''}">${ic('refresh', 15)} Replanifier ${lateMine} retard${lateMine > 1 ? 's' : ''}</button>` : ''}
     ${view === 'list' ? `<button type="button" class="btn btn-sm ${selMode ? 'btn-dark' : ''}" data-act="sel-mode" aria-pressed="${selMode}">${ic('select', 15)} ${selMode ? 'Terminer la sélection' : 'Sélectionner'}</button>` : ''}
     <button type="button" class="btn btn-sm" data-act="export-xlsx" title="Exporter le plan d'action vers Excel">${ic('sheet', 15)} Excel</button>
     <button type="button" class="btn btn-primary" data-act="new-action" data-project="${projectId || ''}">${ic('plus', 16)} Nouvelle action</button>
@@ -2735,6 +2821,8 @@ function actionRow(a, showProject) {
   if (a.risk) tags.push(`<span style="color:var(--serious-text)">⚠ risque</span>`);
   if (a.decision) tags.push(`<span style="color:var(--info-text)">⚖ décision</span>`);
   if (a.lastFollowUp && !mine && !closed) tags.push(`<span style="color:var(--good-text)">${ic('bell', 12)} relancé ${ago(a.lastFollowUp)}</span>`);
+  const ll = lastLog(a);
+  if (ll) tags.push(`<span style="color:var(--text-2);white-space:nowrap" title="${esc(fmtS(ll.date) + ' : ' + ll.text)}">${ic('edit', 12)} suivi ${fmtS(ll.date)}${a.log.length > 1 ? ` · ${a.log.length} entrées` : ''}</span>`);
   if (a.next && !closed) tags.push(`→ ${esc(a.next)}${a.nextDate ? ' · ' + fmtS(a.nextDate) : ''}`);
   const sel = SEL.has(a.id);
   return `<tr class="clk ${a.status === 'done' ? 'is-done' : ''} ${a.status === 'cancelled' ? 'is-cancelled' : ''} ${sel ? 'is-sel' : ''}" data-act="${selMode ? 'sel-row' : 'edit-action'}" data-id="${a.id}">
@@ -2800,8 +2888,9 @@ VIEWS.actions = () => {
     else if (STATUS_FILTERS[R.id]) Object.assign(f, AF_DEFAULT(), { status: R.id, group: f.group });
     UI.av = 'list'; saveUI(); history.replaceState(null, '', '#/actions'); R.id = null;
   }
-  const open = S.actions.filter(a => !isClosed(a.status)).length;
-  return { title: "Plan d'action", sub: `${plural(S.actions.length, 'action')} · ${open} ouverte${open > 1 ? 's' : ''} · ${S.actions.filter(isOverdue).length} en retard`, html: actionsBlock(null) };
+  const cur = UI.afG.project !== 'all' ? proj(UI.afG.project) : null, all = cur ? actionsOf(cur.id) : S.actions;
+  const open = all.filter(a => !isClosed(a.status)).length;
+  return { title: "Plan d'action", sub: `${cur ? esc(cur.ref || cur.name) + ' · ' : ''}${plural(all.length, 'action')} · ${open} ouverte${open > 1 ? 's' : ''} · ${all.filter(isOverdue).length} en retard`, html: actionsBlock(null) };
 };
 
 /* ---------- Replanifier les retards (assistant) ---------- */
@@ -3222,18 +3311,26 @@ function journalEntry(j) {
     : `<div class="txt ${j.type === 'point' ? 'mono' : ''}">${esc(j.text)}</div>`;
   return `<article class="jentry">${head}${body}</article>`;
 }
+function suiviEntry(j) {
+  const a = j.action, p = proj(a.projectId);
+  return `<article class="jentry je-suivi" data-act="edit-action" data-id="${a.id}"><div class="jentry-h"><span class="d">${cap(fmtL(j.date))}</span><span class="keytag kt-suivi">SUIVI</span>${a.ref ? `<span class="ref">${esc(a.ref)}</span>` : ''}<b class="je-t">${esc(a.title)}</b>${j.log.progress != null ? `<span class="chip st-${a.status === 'done' ? 'done' : 'doing'}" style="height:21px">${j.log.progress} %</span>` : ''}<span class="spacer"></span>${p && !j.inProject ? `<span class="muted small nowrap"><span class="dot" style="--c:${colorOf(p)};width:8px;height:8px;display:inline-block"></span> ${esc(p.ref || p.name)}</span>` : ''}</div><div class="txt">${esc(j.log.text)}</div></article>`;
+}
 function journalBlock(projectId) {
   let list = S.journal.slice();
-  if (projectId) list = list.filter(j => j.projectId === projectId);
+  let logs = S.actions.flatMap(a => (a.log || []).map(l => ({ kind: 'suivi', action: a, log: l, date: l.date, createdAt: l.at || '', projectId: a.projectId, inProject: !!projectId })));
+  if (projectId) { list = list.filter(j => j.projectId === projectId); logs = logs.filter(j => j.projectId === projectId); }
   else {
     if (UI.jf === 'review') list = list.filter(j => j.type === 'review');
     else if (UI.jf === 'note') list = list.filter(j => j.type !== 'review');
-    if (UI.jp && UI.jp !== 'all') list = list.filter(j => j.projectId === UI.jp);
+    else if (UI.jf === 'suivi') list = [];
+    if (UI.jf === 'review' || UI.jf === 'note') logs = [];
+    if (UI.jp && UI.jp !== 'all') { list = list.filter(j => j.projectId === UI.jp); logs = logs.filter(j => j.projectId === UI.jp); }
   }
+  list = list.concat(logs);
   list.sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || '').localeCompare(a.createdAt || ''));
   let html = '', last = '';
-  for (const j of list) { const mo = j.date.slice(0, 7); if (mo !== last) { html += `<div class="list-sep" style="padding-left:2px">${fmtMY(j.date)}</div>`; last = mo; } html += journalEntry(j); }
-  return `${projectId ? '' : `<div class="toolbar"><div class="seg">${[['all', 'Tout'], ['review', 'Revues hebdo'], ['note', 'Notes']].map(([k, l]) => `<button type="button" class="${UI.jf === k ? 'on' : ''}" data-act="jf" data-v="${k}">${l}</button>`).join('')}</div><select class="select sm" style="max-width:240px" data-change="jp" aria-label="Projet">${projOpts(UI.jp || 'all', 'Tous les projets')}</select><span class="spacer"></span><button class="btn" data-act="point-hebdo">${ic('send', 16)} Point hebdo</button><button class="btn btn-dark" data-act="weekly-review">${ic('sparkle', 16)} Revue hebdo</button></div>`}
+  for (const j of list) { const mo = j.date.slice(0, 7); if (mo !== last) { html += `<div class="list-sep" style="padding-left:2px">${fmtMY(j.date)}</div>`; last = mo; } html += j.kind === 'suivi' ? suiviEntry(j) : journalEntry(j); }
+  return `${projectId ? '' : `<div class="toolbar"><div class="seg">${[['all', 'Tout'], ['suivi', 'Suivi des actions'], ['review', 'Revues hebdo'], ['note', 'Notes']].map(([k, l]) => `<button type="button" class="${(UI.jf || 'all') === k ? 'on' : ''}" data-act="jf" data-v="${k}">${l}</button>`).join('')}</div><select class="select sm" style="max-width:240px" data-change="jp" aria-label="Projet">${projOpts(UI.jp || 'all', 'Tous les projets')}</select><span class="spacer"></span><button class="btn" data-act="point-hebdo">${ic('send', 16)} Point hebdo</button><button class="btn btn-dark" data-act="weekly-review">${ic('sparkle', 16)} Revue hebdo</button></div>`}
     <form class="card" data-submit="add-note" data-project="${projectId || ''}" style="margin-bottom:16px">
       <div class="fgrid"><textarea class="textarea" name="text" rows="3" placeholder="Note du jour : décision, retour du manager ou du tuteur, idée, difficulté…" aria-label="Nouvelle note" required></textarea>
       <div class="row"><input class="input sm" type="date" name="date" value="${today()}" aria-label="Date">${projectId ? '' : `<select class="select sm" name="projectId" style="max-width:260px" aria-label="Projet"><option value="">Général</option>${projOpts('')}</select>`}<span class="spacer"></span><button class="btn btn-primary btn-sm" type="submit">${ic('plus', 15)} Ajouter la note</button></div></div>
@@ -3427,6 +3524,8 @@ function pointHebdoText() {
   const out = [`Point hebdo — semaine ${isoWeek(t)} (${fmtS(startOfWeek(t))} → ${fmtS(addDays(startOfWeek(t), 4), true)})${P.name ? ' — ' + P.name : ''}`, ''];
   S.projects.filter(p => p.status === 'active').forEach(p => out.push(`${p.ref ? p.ref + ' · ' : ''}${p.name} : ${projectProgress(p)} % (prévu ${expectedProgress(p) ?? '—'} %)`));
   out.push('', `✅ Terminé cette semaine (${done.length})`, ...(done.length ? done.map(line) : ['• —']));
+  const logs = S.actions.flatMap(a => (a.log || []).filter(l => l.date >= w0 && l.date <= t).map(l => ({ a, l }))).sort((x, y) => x.l.date.localeCompare(y.l.date));
+  if (logs.length) out.push('', `📝 Ce que j'ai fait (${logs.length})`, ...logs.map(({ a, l }) => `• ${fmtDM(l.date)} — ${a.ref ? a.ref + ' — ' : ''}${l.text.replace(/\s*\n\s*/g, ' ')}${l.progress != null ? ` (${l.progress} %)` : ''}`));
   out.push('', `▶ En cours (${doing.length})`, ...(doing.length ? doing.map(a => `${line(a)} — ${actionProgress(a)} %`) : ['• —']));
   out.push('', `⚠ Points d'attention (${stuck.length})`, ...(stuck.length ? stuck.slice(0, 10).map(a => `${line(a)} — ${a.status === 'blocked' ? 'bloquée' : a.status === 'waiting' ? 'en attente' : isOverdue(a) ? 'en retard (' + fmtS(a.due) + ')' : 'risque'}${a.risk ? ' : ' + a.risk : ''}`) : ['• Rien de bloquant']));
   if (dec.length) out.push('', `❓ Décisions attendues (${dec.length})`, ...dec.slice(0, 8).map(a => `• ${a.ref ? a.ref + ' — ' : ''}${a.decision}`));
@@ -3461,7 +3560,7 @@ function createIstpTemplate() {
   const pid = uid('p'), now = new Date().toISOString();
   const p = migrate({ projects: [{ id: pid, tpl: 'istp', ref: 'ISTP', name: "Parcours ISTP — dernière année", context: 'istp', status: 'active', priority: 'high', risk: 'low', color: nextColor(), manager: S.profile.name || 'Moi', domain: 'Formation ingénieur (FA)', start: t, end, description: "Suivre les échéances de l'école jusqu'au diplôme : rapport, livret d'apprentissage, visites, évaluations, soutenance et épreuves finales.", objectives: "Rapport d'alternance rendu dans les délais\nLivret d'apprentissage à jour\nSoutenance préparée et répétée\nÉpreuves finales réussies", comment: "Modèle à compléter : renseigne les dates exactes communiquées par l'ISTP (les actions sans date apparaissent dans « Contrôle du plan »).", createdAt: now }], actions: [] }).projects[0];
   const me = S.profile.name || 'Moi';
-  const A = (phase, title, result, due, start) => ({ id: uid('a'), projectId: pid, ref: '', phase, title, result, owner: me, priority: 'high', status: 'todo', progress: 0, start: start || null, due: due || null, effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], link: '', recur: '', next: '', nextDate: null, risk: '', decision: '', description: '', createdAt: now, doneAt: null });
+  const A = (phase, title, result, due, start) => ({ id: uid('a'), projectId: pid, ref: '', phase, title, result, owner: me, priority: 'high', status: 'todo', progress: 0, start: start || null, due: due || null, effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], log: [], link: '', recur: '', next: '', nextDate: null, risk: '', decision: '', description: '', createdAt: now, doneAt: null });
   const acts = [
     A('Rapport & soutenance', 'Valider le sujet du rapport final avec les tuteurs', 'Sujet et plan validés par le tuteur école et le maître d’apprentissage'),
     A('Rapport & soutenance', "Rédiger le rapport d'alternance", 'Rapport complet, relu et mis en forme'),
@@ -3624,6 +3723,36 @@ function depsOptions(pid, selfId, sel) {
 }
 const clRow = (c = { text: '', done: false }) => `<div class="cl-row"><input type="checkbox" class="cb" data-cl-done ${c.done ? 'checked' : ''} aria-label="Sous-tâche faite"><input class="input" data-cl-text value="${esc(c.text)}" placeholder="Sous-tâche…" aria-label="Sous-tâche"><button type="button" class="btn btn-ghost btn-icon btn-sm" data-cl-del aria-label="Supprimer la sous-tâche">${ic('x', 15)}</button></div>`;
 
+function ajItem(a, l) {
+  return `<li class="aj-e"><span class="aj-dt"><b>${+l.date.slice(8)}</b><small>${fmtMonS(l.date)}</small></span><div class="aj-b"><div class="aj-txt">${esc(l.text)}</div><div class="aj-m">${cap(fmtL(l.date))}${l.progress != null ? ` · avancement <b>${l.progress} %</b>` : ''}</div></div><button type="button" class="btn btn-ghost btn-icon btn-sm" data-aj-del="${l.id}" aria-label="Supprimer cette entrée" title="Supprimer">${ic('trash', 14)}</button></li>`;
+}
+function ajList(a) {
+  const ls = logsOf(a);
+  return ls.length ? ls.map(l => ajItem(a, l)).join('') : `<li class="aj-empty">Aucune entrée pour l'instant. Note ici, au fil des jours, ce que tu as fait : c'est ton historique pour les points avec ton manager et pour ton rapport.</li>`;
+}
+function actionRecap(a) {
+  const p = proj(a.projectId), pr = actionProgress(a), al = alertOf(a), cl = a.checklist.length > 0;
+  const dates = a.start || a.due ? `${a.start ? fmtS(a.start) : '—'} → ${a.due ? fmtS(a.due, true) : '—'}` : 'Pas de date';
+  return `<section class="arecap" style="--c:${p ? colorOf(p) : 'var(--y)'}">
+    <div class="ar-h">${p ? `<a href="#/projet/${p.id}/actions" class="ar-p"><span class="dot" style="--c:${colorOf(p)}"></span>${p.ref ? `<b>${esc(p.ref)}</b> · ` : ''}${esc(p.name)}</a>` : ''}${a.phase ? `<span class="muted">· ${esc(a.phase)}</span>` : ''}</div>
+    <div class="ar-g">
+      <div class="ar-i"><span class="k">Statut</span><span id="ar-st">${stChip(a.status)}</span></div>
+      <div class="ar-i ar-pg"><span class="k">Avancement</span><div class="row" style="flex-wrap:nowrap;gap:10px">${pbar(pr, p ? colorOf(p) : 'var(--y)', null, 'sm')}<b class="tnum" id="ar-pct">${pr} %</b></div></div>
+      <div class="ar-i"><span class="k">Dates</span><span>${dates}</span>${!['ok', 'closed', 'none'].includes(al) ? `<span class="chip ${ALERT[al].cls}" style="height:20px;font-size:11px">${ALERT[al].g} ${al === 'late' ? relDue(a.due) : ALERT[al].label}</span>` : ''}</div>
+      <div class="ar-i"><span class="k">Responsable</span><span>${esc(a.owner || '—')}${isMine(a) ? ' <span class="me-tag">Moi</span>' : ''}</span></div>
+    </div>
+    ${a.next ? `<div class="ar-next">${ic('chevR', 14)} <span><b>Prochaine étape :</b> ${esc(a.next)}${a.nextDate ? ` · ${fmtS(a.nextDate)}` : ''}</span></div>` : ''}
+  </section>
+  <section class="fsec aj">
+    <h4><span class="n">${ic('edit', 12, 2.4)}</span>Suivi de l'action <span class="aj-cnt" id="aj-cnt">${a.log && a.log.length ? plural(a.log.length, 'entrée') : ''}</span></h4>
+    <div class="aj-new">
+      <div class="aj-r1"><input class="input sm" type="date" id="aj-d" value="${today()}" aria-label="Date du suivi"><span class="muted small">Qu'as-tu fait sur cette action ?</span></div>
+      <textarea class="textarea" id="aj-t" rows="3" autofocus placeholder="Ex. Classé 12 termes sur 20, relancé les référents du site de Lyon…" aria-label="Ce que j'ai fait"></textarea>
+      <div class="aj-r2">${cl ? `<span class="muted small">Avancement calculé depuis la checklist (${pr} %)</span>` : `<label for="aj-pg" class="lbl">Avancement après</label><input type="range" id="aj-pg" min="0" max="100" step="5" value="${pr}" aria-label="Avancement après ce suivi"><b class="tnum" id="aj-pv">${pr} %</b>`}<span class="spacer"></span><button type="button" class="btn btn-primary btn-sm" id="aj-add">${ic('plus', 15)} Ajouter au suivi</button></div>
+    </div>
+    <ol class="aj-list" id="aj-list">${ajList(a)}</ol>
+  </section>`;
+}
 function editAction(id, preset = {}) {
   const a = id ? act(id) : null;
   if (id && !a) return;
@@ -3631,11 +3760,12 @@ function editAction(id, preset = {}) {
   const ctxPid = R.page === 'projet' && proj(R.id) ? R.id : (R.page === 'actions' && UI.afG.project !== 'all' ? UI.afG.project : null);
   const pid = a ? a.projectId : (preset.projectId && proj(preset.projectId) ? preset.projectId : ctxPid || sortedProjects()[0].id);
   const d0 = preset.date || today();
-  const v = a || { ref: '', title: '', projectId: pid, phase: preset.phase || '', result: '', status: preset.status || 'todo', priority: 'normal', start: d0, due: preset.date || addDays(d0, 7), progress: 0, effort: '', owner: S.profile.name || proj(pid)?.manager || 'Moi', milestoneId: null, dependsOn: [], checklist: [], skills: [], link: '', recur: '', next: '', nextDate: null, risk: '', decision: '', description: '' };
+  const v = a || { ref: '', title: '', projectId: pid, phase: preset.phase || '', result: '', status: preset.status || 'todo', priority: 'normal', start: d0, due: preset.date || addDays(d0, 7), progress: 0, effort: '', owner: S.profile.name || proj(pid)?.manager || 'Moi', milestoneId: null, dependsOn: [], checklist: [], skills: [], log: [], link: '', recur: '', next: '', nextDate: null, risk: '', decision: '', description: '' };
   const pct = actionProgress(v);
   openModal({
-    title: a ? `${refTag(a.ref)} Action` : 'Nouvelle action', size: 'drawer', focus: !a,
+    title: a ? `${refTag(a.ref)} Action` : 'Nouvelle action', size: 'drawer', focus: !a || matchMedia('(pointer:fine)').matches,
     body: `<div class="fgrid">
+      ${a ? actionRecap(a) : ''}
       ${sec(1, "Définition de l'action", `
         ${fld('a-t', 'Action / livrable *', `<input class="input" id="a-t" name="title" required maxlength="220" value="${esc(v.title)}" placeholder="Verbe d'action + livrable" autofocus>`)}
         <div class="f2">${fld('a-p', 'Projet', `<select class="select" id="a-p" name="projectId">${projOpts(v.projectId)}</select>`)}${fld('a-ph', 'Axe / lot (phase)', `<input class="input" id="a-ph" name="phase" list="dl-ph" value="${esc(v.phase)}" placeholder="Ex. Phase 2 – Cartographie"><datalist id="dl-ph">${phasesOf(v.projectId).map(x => `<option value="${esc(x)}">`).join('')}</datalist>`)}</div>
@@ -3690,8 +3820,47 @@ function editAction(id, preset = {}) {
         else warn.hidden = true;
       };
       d2.addEventListener('change', checkWarn); ow.addEventListener('input', checkWarn); checkWarn();
+      if (a) {
+        const ajT = $('#aj-t', form), ajD = $('#aj-d', form), ajPg = $('#aj-pg', form), ajPv = $('#aj-pv', form), ajL = $('#aj-list', form);
+        const reopen = () => { undo(); if (modalOpen()) { closeModal(); editAction(a.id); } };
+        if (ajPg) ajPg.addEventListener('input', () => { ajPv.textContent = ajPg.value + ' %'; });
+        const paintList = () => { const x = act(a.id); if (!x) return; ajL.innerHTML = ajList(x); $('#aj-cnt', form).textContent = x.log.length ? plural(x.log.length, 'entrée') : ''; };
+        form._addLog = () => {
+          const txt = ajT.value.trim();
+          if (!txt) { ajT.focus(); toast("Écris d'abord ce que tu as fait.", 'error'); return false; }
+          const x0 = act(a.id); if (!x0) return false;
+          const p = proj(x0.projectId), b = actionProgress(x0), pb = p ? projectProgress(p) : null, sb = x0.status;
+          const date = ajD.value || today(), prev = lastLog(x0), newest = !prev || date >= prev.date;
+          const np = ajPg ? +ajPg.value : null;
+          commit(() => {
+            const x = act(a.id); if (!x) return;
+            // une entrée antidatée garde son % sans modifier l'avancement actuel de l'action
+            if (newest && np != null && np !== actionProgress(x)) applyProgress(x, np);
+            x.log = [...(x.log || []), { id: uid('l'), date, text: txt, progress: newest || np == null ? actionProgress(x) : np, at: new Date().toISOString() }];
+          });
+          const x = act(a.id), af = actionProgress(x), pa = p ? projectProgress(proj(p.id)) : null;
+          ajT.value = ''; ajD.value = today(); paintList();
+          $('#ar-pct', form).textContent = af + ' %'; const bar = $('.arecap .pbar i', form); if (bar) bar.style.width = af + '%';
+          $('#ar-st', form).innerHTML = stChip(x.status);
+          if (ajPg) { ajPg.value = af; ajPv.textContent = af + ' %'; }
+          if (af !== b) pg.value = af;
+          if (x.status !== sb) st.value = x.status;
+          syncPg();
+          toast(`Suivi ajouté${af !== b ? ` · action ${b} % → ${af} %` : ''}${p && pa !== pb ? ` · projet ${p.ref || ''} ${pb} % → ${pa} %` : ''}.`, 'success', { label: 'Annuler', fn: reopen });
+          return true;
+        };
+        $('#aj-add', form).addEventListener('click', () => form._addLog());
+        ajT.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form._addLog(); } });
+        ajL.addEventListener('click', e => {
+          const b = e.target.closest('[data-aj-del]'); if (!b) return;
+          const id = b.dataset.ajDel;
+          commit(() => { const x = act(a.id); if (x) x.log = (x.log || []).filter(l => l.id !== id); });
+          paintList(); toast('Entrée de suivi supprimée.', '', { label: 'Annuler', fn: reopen });
+        });
+      }
     },
     onSubmit: form => {
+      if (a && form._addLog && $('#aj-t', form).value.trim()) form._addLog();
       const d = formData(form);
       if (!d.title.trim()) return false;
       if (d.start && d.due && d.due < d.start) { toast('La date cible doit être après la date de début.', 'error'); return false; }
@@ -3725,7 +3894,7 @@ function duplicateAction(id) {
   const a = act(id); if (!a) return;
   const c = JSON.parse(JSON.stringify(a));
   c.id = uid('a'); c.ref = nextRef(a.projectId); c.title = a.title + ' (copie)'; c.status = 'todo'; c.progress = 0; c.doneAt = null; c.createdAt = new Date().toISOString();
-  c.checklist = c.checklist.map(x => Object.assign(x, { id: uid('c'), done: false }));
+  c.checklist = c.checklist.map(x => Object.assign(x, { id: uid('c'), done: false })); c.log = [];
   closeModal(); commit(s => s.actions.push(c)); editAction(c.id);
 }
 
@@ -3848,7 +4017,8 @@ const ACT = {
   'delete-note': el => deleteNote(el.dataset.id),
   'weekly-review': el => weeklyReview(el.dataset.id),
   'av': el => { UI.av = el.dataset.v; saveUI(); render(); },
-  'af-reset': () => { Object.assign(AF(), { status: 'open', q: '', prio: 'all', owner: 'all', project: 'all' }); saveUI(); render(); },
+  'af-reset': () => { Object.assign(AF(), { status: 'open', q: '', prio: 'all', owner: 'all' }); saveUI(); render(); },
+  'af-proj': el => { UI.afG.project = el.dataset.v; SEL.clear(); saveUI(); render(); },
   'af-clear': el => { const f = AF(), d = AF_DEFAULT(); f[el.dataset.k] = d[el.dataset.k]; saveUI(); render(); },
   'sel-mode': () => { selMode = !selMode; SEL.clear(); render(); },
   'sel-row': el => { const id = el.dataset.id; if (SEL.has(id)) SEL.delete(id); else SEL.add(id); refreshSel(); },
@@ -3986,7 +4156,7 @@ const SUB = {
     if (!pid || !proj(pid)) { toast('Choisis un projet.', 'error'); return; }
     const due = el('due').value || null;
     const phase = el('phase') ? el('phase').value.trim() : '';
-    const a = { id: uid('a'), ref: nextRef(pid), projectId: pid, phase, title, result: '', description: '', status: 'todo', priority: 'normal', start: due ? minD(today(), due) : today(), due: due || addDays(today(), 7), progress: 0, effort: null, owner: S.profile.name || proj(pid).manager || '', milestoneId: null, dependsOn: [], checklist: [], skills: [], link: '', recur: '', next: '', nextDate: null, risk: '', decision: '', createdAt: new Date().toISOString(), doneAt: null };
+    const a = { id: uid('a'), ref: nextRef(pid), projectId: pid, phase, title, result: '', description: '', status: 'todo', priority: 'normal', start: due ? minD(today(), due) : today(), due: due || addDays(today(), 7), progress: 0, effort: null, owner: S.profile.name || proj(pid).manager || '', milestoneId: null, dependsOn: [], checklist: [], skills: [], log: [], link: '', recur: '', next: '', nextDate: null, risk: '', decision: '', createdAt: new Date().toISOString(), doneAt: null };
     commit(s => s.actions.push(a));
     toast(`${a.ref} ajoutée (date cible ${fmtS(a.due)}).`, 'success', { label: 'Compléter', fn: () => editAction(a.id) });
     const inp = $('.quickadd input[name=title]'); if (inp) inp.focus();
@@ -4079,7 +4249,7 @@ function doSearch(q) {
   const out = [];
   S.projects.forEach(p => { if (norm(`${p.ref} ${p.name} ${p.domain} ${p.manager} ${p.description}`).includes(q)) out.push({ k: 'Projet', t: (p.ref ? p.ref + ' · ' : '') + p.name, c: colorOf(p), run: () => go(`#/projet/${p.id}`) }); });
   S.milestones.forEach(m => { if (norm(`${m.ref} ${m.title} ${m.description}`).includes(q)) out.push({ k: 'Jalon · ' + fmtS(m.date), t: '◆ ' + (m.ref ? m.ref + ' · ' : '') + m.title, c: colorOf(proj(m.projectId)), run: () => editMilestone(m.id) }); });
-  S.actions.forEach(a => { if (norm(`${a.ref} ${a.title} ${a.result} ${a.owner} ${a.phase} ${a.next} ${a.description} ${a.checklist.map(c => c.text).join(' ')}`).includes(q)) out.push({ k: (a.ref ? a.ref + ' · ' : '') + (a.owner || proj(a.projectId)?.name || ''), t: a.title, c: colorOf(proj(a.projectId)), run: () => editAction(a.id) }); });
+  S.actions.forEach(a => { if (norm(`${a.ref} ${a.title} ${a.result} ${a.owner} ${a.phase} ${a.next} ${a.description} ${a.checklist.map(c => c.text).join(' ')} ${(a.log || []).map(l => l.text).join(' ')}`).includes(q)) out.push({ k: (a.ref ? a.ref + ' · ' : '') + (a.owner || proj(a.projectId)?.name || ''), t: a.title, c: colorOf(proj(a.projectId)), run: () => editAction(a.id) }); });
   S.journal.forEach(j => { const txt = j.type === 'review' ? `${j.done || ''} ${j.blockers || ''} ${j.next || ''}` : (j.text || ''); if (norm(txt).includes(q)) out.push({ k: 'Journal · ' + fmtS(j.date), t: txt.replace(/\s+/g, ' ').slice(0, 80), c: 'var(--muted)', run: () => go('#/journal') }); });
   return out.slice(0, 14);
 }
