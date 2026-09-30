@@ -1,8 +1,9 @@
 # Logos
 
-Dépose ici les logos officiels ; la page les détecte automatiquement :
+Copies des logos intégrés dans `index.html` (la page n'a pas besoin de ce dossier pour fonctionner) :
 
-- `logo-natran.svg` ou `logo-natran.png` (ou `.webp`, `.jpg`)
-- `logo-istp.svg` ou `logo-istp.png` (ou `.webp`, `.jpg`)
+- `logo-natran.png` : logo NaTran jaune, pour les fonds sombres
+- `logo-natran-noir.png` : logo NaTran noir, pour l'impression
+- `logo-istp.svg` : logo ISTP redessiné à partir de l'image fournie (qui était coupée)
 
-Un logo importé depuis *Paramètres → Logos* est prioritaire sur ces fichiers.
+Pour utiliser une autre version, passe par *Paramètres → Logos → Remplacer* dans la page.

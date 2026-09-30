@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 284 184" role="img" aria-label="ISTP Ingénieurs">
+  <g fill="#213777">
+    <rect x="1" y="0" width="18" height="137"/>
+    <path d="M1 0H114a15 15 0 0 1 15 15V57H111V18H1Z"/>
+    <rect x="1" y="119" width="52" height="18"/>
+    <rect x="66" y="70" width="18" height="67"/>
+    <rect x="154" y="70" width="65" height="18"/>
+    <rect x="178" y="70" width="18" height="67"/>
+    <rect x="221" y="70" width="18" height="67"/>
+  </g>
+  <g fill="none" stroke="#213777" stroke-width="17.5">
+    <path d="M139 86C134 80.5 127 78.8 119.5 78.8C109 78.8 103 84 103 91.5C103 99.5 110.5 101.8 120.5 103.8C131 105.8 137.5 109.5 137.5 116.5C137.5 124.5 130 128.3 120 128.3C111 128.3 104 125.5 99.5 119.5"/>
+    <path d="M230 79H251.5a16.5 16.5 0 0 1 0 33H230"/>
+  </g>
+  <text x="1" y="176" fill="#3D3D3D" font-family="Montserrat, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="300" textLength="194" lengthAdjust="spacing">INGÉNIEURS</text>
+</svg>
