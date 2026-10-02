@@ -704,6 +704,7 @@ a.kpi-t.alert{border-color:rgba(208,59,59,.35)}
 #tooltip div{color:var(--tip-2)}
 #toasts{position:fixed;right:18px;bottom:18px;z-index:250;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none;transition:bottom .2s}
 #toasts>*{pointer-events:auto}
+.is-embed .no-embed{display:none!important}
 body:has(.modal-bd.is-drawer) #toasts{right:auto;left:18px;align-items:flex-start}
 #view:focus{outline:none}
 body:has(.bulkbar) #toasts{bottom:92px}
@@ -1104,6 +1105,13 @@ body:has(.bulkbar) #view{padding-bottom:96px}
    1. Constantes & utilitaires
    ===================================================================== */
 const KEY = 'plan-action-natran-istp:v1';
+/* Page ouverte depuis un lien claude.ai (dans un cadre) : impression, sélecteur de fichier et
+   téléchargements directs y sont bloqués ; les fichiers passent par une fenêtre de confirmation. */
+const EMBED = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+const HOST_THEME = document.documentElement.dataset.theme || null;
+const DOWNLOADS = EMBED && window.claude && typeof window.claude.use === 'function' ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+if (EMBED) document.documentElement.classList.add('is-embed');
+document.documentElement.lang = 'fr';
 const SNAP_KEY = KEY + ':snapshots';
 const UI_KEY = KEY + ':ui';
 const APP_VERSION = 2;
@@ -1509,7 +1517,7 @@ const IDB = {
 };
 const FILE_TYPES = [{ description: "Plan d'action (JSON)", accept: { 'application/json': ['.json'] } }];
 const FileSync = {
-  supported: typeof window.showSaveFilePicker === 'function' && typeof indexedDB !== 'undefined',
+  supported: !EMBED && typeof window.showSaveFilePicker === 'function' && typeof indexedDB !== 'undefined',
   handle: null, status: 'off', lastWrite: null, timer: null, chain: Promise.resolve(),
   async init() {
     if (!this.supported) { this.status = 'unsupported'; return; }
@@ -1596,21 +1604,27 @@ const FileSync = {
 /* ---------- Export / import JSON & CSV ---------- */
 function download(name, data, type) {
   const blob = data instanceof Blob ? data : new Blob([data], { type: type || 'application/json' });
+  if (EMBED) return DOWNLOADS.then(dl => {
+    if (!dl) { toast("L'enregistrement de fichiers n'est pas disponible ici : ouvre le fichier index.html pour exporter.", 'error'); return false; }
+    return dl.save({ filename: name, data: blob }).then(() => true, e => {
+      if (e && e.code !== 'declined') toast(e && e.code === 'rejected_extension' ? "Ce format de fichier ne peut pas être enregistré depuis ce lien." : `Le fichier n'a pas pu être enregistré (${(e && e.code) || 'erreur'}).`, 'error');
+      return false;
+    });
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
+  return Promise.resolve(true);
 }
 function markExport() { commit(s => { s.settings.lastExport = new Date().toISOString(); }, { undo: false, render: false }); }
 function exportJSON() {
-  download(`plan-action-${today()}.json`, JSON.stringify(S, null, 2));
-  markExport(); toast('Sauvegarde exportée.', 'success');
+  download(`plan-action-${today()}.json`, JSON.stringify(S, null, 2)).then(ok => { if (ok) { markExport(); toast('Sauvegarde exportée.', 'success'); } });
 }
 function exportCSV() {
   const q = v => { const s = String(v ?? ''); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
   const rows = actionRows();
-  download(`plan-action-${today()}.csv`, '﻿' + rows.map(r => r.map(v => q(isDate(v) ? fmtFR(v) : v)).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
-  toast('Actions exportées (CSV compatible Excel).', 'success');
+  download(`plan-action-${today()}.csv`, '﻿' + rows.map(r => r.map(v => q(isDate(v) ? fmtFR(v) : v)).join(';')).join('\r\n'), 'text/csv;charset=utf-8').then(ok => { if (ok) toast('Actions exportées (CSV compatible Excel).', 'success'); });
 }
 function importJSONFile(file) {
   const r = new FileReader();
@@ -1670,8 +1684,7 @@ async function exportXLSX() {
   X.utils.book_append_sheet(wb, sheet(jRows, [11, 12, 30, 80]), 'Journal');
   X.utils.book_append_sheet(wb, sheet(sRows, [13, 50, 30, 11, 12, 80]), 'Suivi des actions');
   const out = X.write(wb, { bookType: 'xlsx', type: 'array', compression: true });
-  download(`plan-action-${today()}.xlsx`, new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-  markExport(); toast('Classeur Excel exporté.', 'success');
+  download(`plan-action-${today()}.xlsx`, new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })).then(ok => { if (ok) { markExport(); toast('Classeur Excel exporté.', 'success'); } });
 }
 const H = s => norm(String(s ?? '')).replace(/\*/g, '').replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
 function xDate(v) {
@@ -2236,6 +2249,7 @@ function paintSave() {
 function applyTheme() {
   const t = S.settings.theme;
   if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  else if (EMBED && HOST_THEME) document.documentElement.dataset.theme = HOST_THEME;
   else delete document.documentElement.dataset.theme;
   paintTheme();
 }
@@ -2445,7 +2459,8 @@ function onboardingCard() {
   const items = [
     ['onb-name', 'user', 'Indique ton prénom', 'Et le nom qui te désigne dans tes plans (« Pilote projet »).', !!S.profile.name],
     ['go-cal', 'calendar', "Vérifie ton calendrier d'alternance", 'Périodes ISTP P13 à P17 et épreuves finales déjà saisies.', !!S.settings.calChecked],
-    ['file-link', 'file', 'Active la sauvegarde dans un fichier', 'Une copie automatique, par exemple dans OneDrive.', FileSync.status === 'on' || FileSync.status === 'unsupported'],
+    EMBED ? ['export-json', 'download', 'Garde une sauvegarde (.json)', 'Un fichier à ranger dans OneDrive, à refaire de temps en temps.', !!S.settings.lastExport]
+      : ['file-link', 'file', 'Active la sauvegarde dans un fichier', 'Une copie automatique, par exemple dans OneDrive.', FileSync.status === 'on' || FileSync.status === 'unsupported'],
     ['tpl-istp', 'school', 'Crée ton parcours ISTP', 'Rapport, livret, soutenance, épreuves : un modèle à compléter.', S.projects.some(p => p.tpl === 'istp')],
     ['weekly-review', 'sparkle', 'Fais ta première revue de la semaine', '10 minutes pour faire le point.', !!S.settings.lastReview]
   ];
@@ -2623,7 +2638,7 @@ VIEWS.projet = () => {
     <div class="phead-r">
       <div class="bigpct"><b>${pr}</b><span>%</span></div>
       ${pbar(pr, colorOf(p), ex)}
-      <div class="row no-print"><button class="btn btn-sm" data-act="edit-project" data-id="${p.id}">${ic('edit', 15)} Modifier</button><button class="btn btn-sm" data-act="new-milestone" data-project="${p.id}">${ic('flag', 15)} Jalon</button><button class="btn btn-sm btn-primary" data-act="new-action" data-project="${p.id}">${ic('plus', 15)} Action</button><button class="btn btn-sm btn-ghost btn-icon" data-act="print" title="Imprimer la fiche projet / PDF" aria-label="Imprimer la fiche projet">${ic('printer', 16)}</button></div>
+      <div class="row no-print"><button class="btn btn-sm" data-act="edit-project" data-id="${p.id}">${ic('edit', 15)} Modifier</button><button class="btn btn-sm" data-act="new-milestone" data-project="${p.id}">${ic('flag', 15)} Jalon</button><button class="btn btn-sm btn-primary" data-act="new-action" data-project="${p.id}">${ic('plus', 15)} Action</button><button class="btn btn-sm btn-ghost btn-icon no-embed" data-act="print" title="Imprimer la fiche projet / PDF" aria-label="Imprimer la fiche projet">${ic('printer', 16)}</button></div>
     </div>
   </section>
   <nav class="tabs" aria-label="Sections du projet">${TABS.map(([k, l, i, n]) => `<a href="#/projet/${p.id}/${k}" class="${tab === k ? 'on' : ''}">${ic(i, 16)} ${l}${n != null ? ` <span class="n">${n}</span>` : ''}</a>`).join('')}</nav>`;
@@ -3232,7 +3247,7 @@ function calendarHTML(projectId) {
     <div class="row"><button type="button" class="btn btn-icon btn-sm" data-act="cal-nav" data-v="-1" aria-label="Précédent">${ic('chevL')}</button><button type="button" class="btn btn-sm" data-act="cal-nav" data-v="0">Aujourd'hui</button><button type="button" class="btn btn-icon btn-sm" data-act="cal-nav" data-v="1" aria-label="Suivant">${ic('chevR')}</button></div>
     <h3>${title}</h3><span class="spacer"></span>
     <label class="toggle"><input type="checkbox" data-change="cal-pts" ${UI.calPts ? 'checked' : ''}> Prochains points</label>
-    <button type="button" class="btn btn-sm" data-act="ics" title="Ajouter tes échéances à ton agenda Outlook">${ic('calendar', 15)} Vers Outlook</button>
+    <button type="button" class="btn btn-sm no-embed" data-act="ics" title="Ajouter tes échéances à ton agenda Outlook">${ic('calendar', 15)} Vers Outlook</button>
     <div class="seg"><button type="button" class="${mode === 'month' ? 'on' : ''}" data-act="cal-mode" data-v="month">Mois</button><button type="button" class="${mode === 'week' ? 'on' : ''}" data-act="cal-mode" data-v="week">Semaine</button></div>
     <button type="button" class="btn btn-sm btn-primary" data-act="new-action" data-project="${projectId || ''}">${ic('plus', 15)} Action</button>
   </div>${grid}
@@ -3359,7 +3374,7 @@ VIEWS.parametres = () => {
     on: `<span class="okline">${ic('check', 16)} Actif</span> — chaque modification est copiée dans « <b>${esc(FileSync.handle?.name || '')}</b> »${FileSync.lastWrite ? ' (dernière écriture ' + hhmm(FileSync.lastWrite) + ')' : ''}.`,
     perm: `<span class="warnline">${ic('alert', 16)} En pause</span> — le navigateur demande de réautoriser « <b>${esc(FileSync.handle?.name || '')}</b> ».`,
     off: `Non activé. Choisis un fichier (par ex. dans OneDrive) : il sera mis à jour automatiquement à chaque modification.`,
-    unsupported: `Ton navigateur ne permet pas l'écriture automatique dans un fichier (disponible sur Chrome et Edge). Utilise l'export régulièrement.`
+    unsupported: EMBED ? `Indisponible depuis un lien claude.ai : exporte une sauvegarde (.json) régulièrement, ou ouvre le fichier index.html pour activer la copie automatique.` : `Ton navigateur ne permet pas l'écriture automatique dans un fichier (disponible sur Chrome et Edge). Utilise l'export régulièrement.`
   }[FileSync.status];
   const field = (name, label, type = 'text', hint = '') => `<div class="field"><label for="pf-${name}">${label}</label><input class="input" id="pf-${name}" type="${type}" name="${name}" value="${esc(P[name] || '')}" data-change="profile">${hint ? `<span class="hint">${hint}</span>` : ''}</div>`;
   const logoSlot = (k, label, dark) => `<div class="logo-slot"><div class="logo-prev ${dark ? 'dark' : 'light'}"><img data-logo="${k}" alt="${label}"></div><div><b>${label}</b><p class="muted small" style="margin:4px 0 10px">${S.settings.logos[k] ? 'Logo importé.' : 'Logo intégré au fichier.'}</p><div class="row"><button class="btn btn-sm" data-act="logo-upload" data-k="${k}">${ic('upload', 15)} Remplacer</button>${S.settings.logos[k] ? `<button class="btn btn-sm btn-ghost btn-danger" data-act="logo-clear" data-k="${k}">Revenir au logo d'origine</button>` : ''}</div></div></div>`;
@@ -3383,7 +3398,7 @@ VIEWS.parametres = () => {
         <section class="card ssec" id="excel"><h3>Excel & Outlook</h3><p class="muted">Garde le lien avec ton classeur : même colonnes que ton fichier « Plan d'action NaTran » (Projets, Plan d'action, Jalons).</p>
           <div class="srow"><div class="grow"><b>Exporter vers Excel (.xlsx)</b><span class="small muted">Un classeur avec les onglets Projets, Plan d'action, Jalons et Journal — prêt à partager avec ton manager.</span></div><button class="btn btn-primary" data-act="export-xlsx">${ic('download', 16)} Exporter en Excel</button></div>
           <div class="srow"><div class="grow"><b>Importer un classeur Excel</b><span class="small muted">Lit les onglets « Projets », « Plan d'action » et « Planning Gantt » de ton modèle. Les éléments existants sont mis à jour, les nouveaux ajoutés.</span></div><button class="btn" data-act="import-xlsx">${ic('upload', 16)} Importer un Excel</button></div>
-          <div class="srow"><div class="grow"><b>Ajouter à mon agenda Outlook (.ics)</b><span class="small muted">Tes dates cibles, points de suivi, jalons et périodes à l'ISTP, avec un rappel la veille.</span></div><button class="btn" data-act="ics">${ic('calendar', 16)} Exporter vers Outlook</button></div>
+          <div class="srow no-embed"><div class="grow"><b>Ajouter à mon agenda Outlook (.ics)</b><span class="small muted">Tes dates cibles, points de suivi, jalons et périodes à l'ISTP, avec un rappel la veille.</span></div><button class="btn" data-act="ics">${ic('calendar', 16)} Exporter vers Outlook</button></div>
           <p class="muted small">L'export et l'import Excel utilisent un module téléchargé à la demande : une connexion Internet est nécessaire. Hors ligne, utilise l'export CSV ci-dessous.</p></section>
 
         <section class="card ssec" id="sauvegarde"><h3>Sauvegarde</h3><p class="muted">Tes données restent sur ton ordinateur. Rien n'est envoyé sur Internet.</p>
@@ -3540,7 +3555,7 @@ function pointHebdoModal() {
   openModal({
     title: `${ic('send', 20)} Mon point hebdo`, size: 'wide',
     body: `<p class="muted" style="margin-bottom:10px">Généré à partir de ton plan : relis, complète, puis copie-le dans Teams ou dans un mail à ton manager ou ton tuteur.</p><textarea class="textarea mono" id="ph-txt" name="txt" rows="20">${esc(txt)}</textarea>`,
-    footer: `<button type="button" class="btn" id="ph-mail">${ic('mail', 16)} Ouvrir dans un mail</button><button type="button" class="btn" id="ph-save">${ic('book', 16)} Garder dans le journal</button><span class="spacer"></span><button type="button" class="btn" data-cancel>Fermer</button><button type="button" class="btn btn-primary" id="ph-copy">${ic('copy', 16)} Copier le texte</button>`,
+    footer: `<button type="button" class="btn no-embed" id="ph-mail">${ic('mail', 16)} Ouvrir dans un mail</button><button type="button" class="btn" id="ph-save">${ic('book', 16)} Garder dans le journal</button><span class="spacer"></span><button type="button" class="btn" data-cancel>Fermer</button><button type="button" class="btn btn-primary" id="ph-copy">${ic('copy', 16)} Copier le texte</button>`,
     onMount: form => {
       const ta = $('#ph-txt', form);
       $('#ph-copy', form).addEventListener('click', async () => {
