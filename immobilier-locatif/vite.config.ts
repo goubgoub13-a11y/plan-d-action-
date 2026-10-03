@@ -1,7 +1,26 @@
 import { defineConfig } from 'vitest/config';
 import type { Plugin } from 'vite';
 import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { join, relative, sep } from 'node:path';
 import pkg from './package.json' with { type: 'json' };
+
+const PUBLIC_DIR = join(import.meta.dirname, 'public');
+
+function publicFiles(dir = PUBLIC_DIR): string[] {
+  return readdirSync(dir).flatMap((name) => {
+    const full = join(dir, name);
+    return statSync(full).isDirectory() ? publicFiles(full) : [relative(PUBLIC_DIR, full).split(sep).join('/')];
+  });
+}
+
+/** Échoue le build si une icône déclarée dans le manifeste n'existe pas dans public/. */
+function checkManifestIcons(): void {
+  const manifest = JSON.parse(readFileSync(join(PUBLIC_DIR, 'manifest.webmanifest'), 'utf8')) as { icons: { src: string }[] };
+  for (const icon of manifest.icons) {
+    if (!existsSync(join(PUBLIC_DIR, icon.src))) throw new Error(`Icône du manifeste introuvable : ${icon.src}`);
+  }
+}
 
 /**
  * Service worker minimal et sans dépendance : précache tous les fichiers
@@ -14,7 +33,9 @@ function offlineServiceWorker(): Plugin {
     apply: 'build',
     generateBundle(_options, bundle) {
       const files = Object.keys(bundle).filter((f) => f !== 'sw.js');
-      files.push('manifest.webmanifest', 'icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png');
+      // Tous les fichiers de public/ (manifeste, icônes…) : la liste ne peut plus se désynchroniser.
+      files.push(...publicFiles());
+      checkManifestIcons();
       const hash = createHash('sha256').update(files.join('|') + pkg.version)
         .update(Object.values(bundle).map((b) => ('code' in b ? b.code : String(b.source))).join(''))
         .digest('hex').slice(0, 10);

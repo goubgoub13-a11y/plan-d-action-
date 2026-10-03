@@ -77,6 +77,12 @@ export function StoreProvider({ children, storage: injected }: { children: React
 
   /** Toute modification passe par ici : mémoire d'abord, puis écriture fiable (cf. persister.ts). */
   const setData = useCallback((updater: (d: AppData) => AppData) => {
+    // Restauration en cours (quelques millisecondes) : toute modification porterait sur les
+    // données sur le point d'être remplacées. Elle est ignorée (option A, cf. persister.ts).
+    if (persisterRef.current?.isReplacing()) {
+      console.warn('Modification ignorée : restauration en cours');
+      return;
+    }
     const next = updater(dataRef.current);
     if (next === dataRef.current) return;
     dataRef.current = next;

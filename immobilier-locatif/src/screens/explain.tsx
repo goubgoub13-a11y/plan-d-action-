@@ -162,6 +162,12 @@ export const EXPLAIN: Record<ExplainKey, { title: string; body: ReactNode }> = {
           le bien et sert les mois suivants : il n'efface pas une injection passée.
         </p>
         <p>Les paiements d'achat (prix, notaire, travaux…) ne s'y ajoutent pas : ils sont déjà couverts par l'apport et le prêt.</p>
+        <p>
+          <b>C'est une estimation</b>, basée sur les déficits mensuels cumulés du projet, pas le relevé exact de vos
+          virements. À l'intérieur d'un même mois, les dates ne comptent pas : une dépense de 500 € le 2 et un loyer de
+          600 € le 25 donnent un mois à +100 €, donc aucune injection, même si vous avez avancé les 500 € pendant
+          quelques jours.
+        </p>
         <p>Pensez à saisir vos mensualités de crédit comme mouvements pour qu'elles soient comptées.</p>
       </>
     ),

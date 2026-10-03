@@ -15,7 +15,7 @@ export function Welcome({ onCreated }: { onCreated: () => void }) {
       <h1>Mon bien locatif</h1>
       <p className="lead">
         Combien votre appartement vous coûte, ce qu'il vous rapporte, et s'il est vraiment rentable. Du projet jusqu'au
-        suivi réel.
+        suivi de ce que vous payez et encaissez.
       </p>
       <form
         className="card welcome-form"

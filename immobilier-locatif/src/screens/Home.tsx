@@ -503,7 +503,7 @@ function Realized({ j, apportEstimated, go }: { j: JournalSummary; apportEstimat
         <div className="main">
           <span>Argent personnel injecté</span>
           <strong>{eur(j.personalInjected)}</strong>
-          <small>depuis le début</small>
+          <small>estimation, déficits mensuels cumulés</small>
         </div>
         <div>
           <span>Solde net du projet</span>

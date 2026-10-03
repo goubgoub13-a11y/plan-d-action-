@@ -1,3 +1,11 @@
+# Migrations
+
+## v1.0.1 → v1.0.2
+
+Aucun changement de données : même schéma de sauvegarde (1), même base IndexedDB (version 2). Les sauvegardes v1.0.0 et v1.0.1 s'importent telles quelles.
+
+---
+
 # Migration v1.0.0 → v1.0.1
 
 ## En résumé

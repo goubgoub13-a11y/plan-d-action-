@@ -93,7 +93,8 @@ export function Movements() {
           <h2>Aucun mouvement</h2>
           <p className="muted">
             Notez chaque dépense et chaque loyer encaissé : frais de notaire, travaux, mensualités, taxe foncière, loyers…
-            Ils alimentent le « réel » de votre projet.
+            Ils alimentent le suivi réalisé de votre projet (argent injecté, solde net). Les montants réels de
+            référence (prix signé, mensualité de la banque…) se saisissent, eux, dans « Projet ».
           </p>
           <button className="btn btn-primary" onClick={() => setEditing('new')}>
             <Icon name="plus" size={18} /> Premier mouvement

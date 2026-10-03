@@ -1,4 +1,6 @@
-# Mon bien locatif — v1.0.1
+# Mon bien locatif — v1.0.2
+
+> **v1.0.2** : sécurisation du socle. La restauration d'une sauvegarde (`replaceAll`) devient une opération exclusive : aucune écriture engagée avant elle (timer, nouvelle tentative, écriture en cours) ne peut plus réécrire d'anciennes données ensuite. S'y ajoutent des textes Prévu / Réel / Réalisé harmonisés, l'argent injecté présenté comme une estimation, et l'icône maskable désormais précachée. Détail : [CHANGELOG.md](CHANGELOG.md).
 
 > **v1.0.1** : correctif ciblé issu d'un audit indépendant (fiabilité de l'enregistrement local, distinction Prévu / Réel / Réalisé, charges récupérables neutres, argent personnel injecté, validation des imports, données locales endommagées, mensualité incohérente). Détail : [CHANGELOG.md](CHANGELOG.md). Migration : [docs/MIGRATION.md](docs/MIGRATION.md).
 
@@ -38,7 +40,7 @@ Prérequis : **Node.js 22.12 ou plus récent** (voir `.nvmrc`) et npm.
 ```bash
 npm install          # installe les dépendances
 npm run dev          # serveur de développement : http://localhost:5173
-npm test             # lance les 154 tests
+npm test             # lance les 167 tests
 npm run typecheck    # vérification TypeScript
 npm run build        # build de production dans dist/
 npm run preview      # sert le build : http://localhost:4173
@@ -197,6 +199,8 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 
 **Persistance** (`src/state/persister.ts`, v1.0.1) : chaque modification est d'abord marquée **non enregistrée**, puis écrite environ 250 ms après la saisie. Elle n'est marquée enregistrée **qu'après le succès** de l'écriture IndexedDB. En cas d'échec, la version reste non enregistrée, reste en mémoire et est réécrite automatiquement (1 s, 3 s, 10 s puis toutes les 30 s) ; un bandeau l'indique avec un bouton « Réessayer ». Les écritures sont strictement séquentielles : une ancienne écriture qui se termine après une nouvelle modification ne marque comme enregistrée que la version qu'elle a écrite. Seuls les biens modifiés sont réécrits, l'enregistrement est immédiat quand l'application passe en arrière-plan, et le navigateur avertit si l'on ferme la page avec des modifications non écrites.
 
+**Restauration exclusive** (v1.0.2) : toutes les opérations de stockage passent par une file unique. Chaque restauration (`replaceAll`, utilisée par l'import et l'effacement) incrémente un numéro de génération qui rend caduque toute écriture engagée avant elle : à sa fin, une telle écriture ne modifie plus l'état et ne programme plus ni timer ni nouvelle tentative. Pendant la restauration (quelques millisecondes), les modifications sont **refusées** (option A) : elles porteraient sur des données sur le point d'être remplacées. Si plusieurs restaurations se suivent, c'est la dernière demandée qui l'emporte. Invariant testé : quand `replaceAll(B)` réussit, la mémoire, l'état du persister et IndexedDB valent tous B.
+
 **Données locales endommagées** (v1.0.1) : à la lecture, ce qui est sain est conservé (un bien partiellement corrompu est récupéré), une copie brute de l'enregistrement d'origine est placée dans une table de quarantaine (jamais effacée automatiquement), et l'utilisateur est prévenu (bandeau + carte dans Réglages, avec téléchargement de la copie). L'application demande au navigateur un stockage persistant (`navigator.storage.persist()`). Si IndexedDB est indisponible (certaines navigations privées), l'application fonctionne en mémoire et affiche un avertissement permanent.
 
 **Ajouter un module fiscal plus tard** : créer `src/calc/tax/` qui consomme `ResolvedInputs` et `Metrics` (déjà calculés et testés) et produit des indicateurs « après impôts ». Il faudrait aussi ajouter au modèle un champ optionnel `tax` dans `Property` (avec une migration de schéma 1 → 2 dans `backup.ts`), puis une rubrique *Fiscalité* dans l'écran Projet. Les calculs existants ne changent pas.
@@ -244,7 +248,7 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 npm test
 ```
 
-**154 tests** (Vitest, 8 fichiers) dans `tests/` :
+**167 tests** (Vitest, 10 fichiers) dans `tests/` :
 
 | Fichier | Couverture |
 |---|---|
@@ -252,6 +256,8 @@ npm test
 | `metrics.test.ts` | coût total, travaux importants, rentabilités brute et nette, charges récupérables neutres, vacance et impayés, loyer nul, coût nul, conversion des charges, cash-flow, effort d'épargne, aucun apport, aucun crédit, emprunt > coût, rendement de l'apport, données incomplètes, distinction prévu/réel, réel à 0 €, mensualité réelle vs prévue, mouvements et paiements partiels |
 | `reference.test.ts` | **Prévu / Réel / Réalisé** : projet avec un mouvement mais sans réel de référence, montants confirmés / encore prévus par indicateur, mensualité confirmée |
 | `journal.test.ts` | **argent personnel injecté** (cas 1, 2, 3 de l'audit), **solde net**, alternance de mois déficitaires et bénéficiaires, identité solde net = trésorerie − injecté, absence de double comptage, **charges récupérées neutres**, écart réel / réalisé (notaire 5 000 € prévu, 5 400 € payés) |
+| `persister-replace.test.ts` | **v1.0.2** : course de l'audit reproduite (sauvegarde de A′ en cours, puis restauration de B : A′ n'est jamais réécrit après), échec puis restauration, timer en attente, deux restaurations rapprochées, modification après et pendant une restauration, restauration en échec, effacement pendant une écriture |
+| `pwa.test.ts` | **v1.0.2** : icônes du manifeste présentes (dont maskable), manifeste relatif, ressources de `index.html`, précache de tout `public/` |
 | `persister.test.ts` | **échec d'écriture IndexedDB**, nouvelle tentative automatique et manuelle, échec partiel rejoué, **sauvegardes successives** et écritures concurrentes, ancienne écriture terminant après une nouvelle modification, remplacement complet |
 | `robustness.test.ts` | **compatibilité avec une sauvegarde v1.0.0** réelle (`tests/fixtures/backup-v1.0.0.json`), **montants négatifs** à l'import (15 champs), **identifiants dupliqués** (mouvements, charges, biens, catégories), **données locales corrompues** (récupération partielle, quarantaine, rien d'effacé), migration de la base IndexedDB v1 → v2 |
 | `backup.test.ts` | export versionné, nom du fichier, aller-retour exact, indicateurs identiques après restauration, rejets (vide, tronqué, étranger, version future…), migrations, stockage IndexedDB et mémoire, restauration remplaçant des données existantes |
@@ -288,6 +294,7 @@ L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, 
 
 - **Stockage navigateur** : les données vivent dans le navigateur où l'application est ouverte. Effacer les données du site, désinstaller la PWA ou (sur iOS) une longue inutilisation peut les supprimer : **exportez des sauvegardes régulières**. Une PWA installée et une ouverture dans le navigateur ne partagent pas forcément le même stockage sur iOS.
 - Le crédit est modélisé à taux fixe et mensualités constantes, sans différé ni remboursement anticipé.
+- L'argent injecté est une **estimation** fondée sur les déficits mensuels cumulés, pas le relevé exact des virements : une dépense avancée en début de mois et compensée par le loyer du même mois ne compte pas comme une injection.
 - L'argent injecté et le solde net ne comptent que ce qui est saisi en mouvements (notamment les mensualités) ; l'apport initial utilise le coût d'acquisition de référence (réel, sinon prévu — signalé par ◦).
 - Les déficits sont calculés par mois civil : à l'intérieur d'un mois, l'ordre des recettes et des dépenses n'a pas d'effet.
 - Le rendement de l'apport est un indicateur de trésorerie : il compte le remboursement du capital comme une dépense.
@@ -296,4 +303,4 @@ L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, 
 
 ---
 
-Version **1.0.1** — voir [CHANGELOG.md](CHANGELOG.md).
+Version **1.0.2** — voir [CHANGELOG.md](CHANGELOG.md).

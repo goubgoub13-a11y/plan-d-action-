@@ -1,5 +1,28 @@
 # Historique des versions
 
+## 1.0.2 — 2026-10-03
+
+Sécurisation du socle, sans nouvelle fonctionnalité. Schéma de sauvegarde et base locale inchangés.
+
+**P1 — `replaceAll()` exclusif** (`src/state/persister.ts`)
+- *Avant* : une écriture incrémentale déjà engagée (échec suivi d'une nouvelle tentative, ou modification pendant l'écriture) pouvait programmer un timer après l'annulation faite par `replaceAll()`. Ce timer écrivait alors l'ancienne version **après** la restauration (course reproduite par un test, qui échouait sur la v1.0.1).
+- *Correctif* :
+  - une file unique pour toutes les opérations de stockage ;
+  - un numéro de génération incrémenté par chaque restauration : une écriture antérieure ne modifie plus l'état et ne programme plus ni timer ni nouvelle tentative ;
+  - aucun timer pendant une restauration ;
+  - des restaurations successives exécutées dans l'ordre demandé.
+- *Modifications pendant une restauration* : refusées (option A), dans le persister comme dans le store. Après la restauration, l'enregistrement normal reprend.
+
+**Textes**
+- Mouvements : ils alimentent le **suivi réalisé** et non plus « le réel ». Écran de bienvenue harmonisé.
+- Argent personnel injecté : présenté comme une **estimation** fondée sur les déficits mensuels cumulés (sous-texte et aide détaillée avec exemple).
+
+**PWA**
+- `icon-maskable-512.png` est désormais précachée. Le service worker précache tout `public/` (liste générée, non codée en dur), et le build échoue si une icône du manifeste est absente.
+- Plus d'avertissement au build (`import.meta.dirname`).
+
+**Tests** : 154 → 167 (9 tests de concurrence `persister-replace.test.ts`, 4 tests PWA). Aucun test existant supprimé ni modifié.
+
 ## 1.0.1 — 2026-10-03
 
 Correctif ciblé après audit indépendant. Pas de nouvelle fonctionnalité, ni d'écran ou de dépendance supplémentaire. Le schéma de sauvegarde est inchangé (voir [docs/MIGRATION.md](docs/MIGRATION.md)).

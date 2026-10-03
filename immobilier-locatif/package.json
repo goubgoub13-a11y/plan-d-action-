@@ -1,7 +1,7 @@
 {
   "name": "immobilier-locatif",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Suivi personnel d'un investissement immobilier locatif (PWA locale, sans serveur)",
   "type": "module",
   "scripts": {

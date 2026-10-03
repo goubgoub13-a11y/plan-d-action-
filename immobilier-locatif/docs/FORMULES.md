@@ -1,4 +1,4 @@
-# Formules de calcul — v1.0.1
+# Formules de calcul — v1.0.2
 
 Toutes les formules sont implémentées **une seule fois**, dans `src/calc/` :
 
@@ -202,6 +202,8 @@ Argent personnel injecté = apport initial + Σ injections du mois
 ```
 
 Propriétés : un mois bénéficiaire n'efface jamais une injection passée ; dans un même mois l'ordre de saisie n'a pas d'effet ; l'ordre de saisie des mois non plus (tri chronologique). Les paiements d'achat ne s'ajoutent pas à l'apport : ils sont déjà couverts par l'apport (part personnelle) et le prêt (part bancaire, remboursée via les mensualités) — **aucun double comptage**.
+
+**C'est une estimation** fondée sur les déficits mensuels cumulés du projet, pas le relevé exact des virements depuis le compte personnel. À l'intérieur d'un mois civil, les dates ne comptent pas. Exemple : 500 € payés le 2 et un loyer de 600 € le 25 donnent un mois à +100 €, donc aucune injection, même si les 500 € ont été avancés quelques jours.
 
 | Cas (audit) | Injecté | Solde net |
 |---|---|---|
