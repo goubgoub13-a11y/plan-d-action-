@@ -1,0 +1,280 @@
+{
+  "app": "immobilier-locatif",
+  "schemaVersion": 1,
+  "appVersion": "1.0.0",
+  "exportedAt": "2026-10-03T10:12:00.000Z",
+  "data": {
+    "properties": [
+      {
+        "id": "bien-1627aa60d46a",
+        "name": "Appartement Saint-Étienne",
+        "address": "Saint-Étienne (42)",
+        "phase": "owned",
+        "purchaseDate": "2026-09-15",
+        "createdAt": "2026-10-03T10:00:00.000Z",
+        "updatedAt": "2026-10-03T10:00:00.000Z",
+        "acquisition": {
+          "price": {
+            "planned": 60000,
+            "actual": 60000
+          },
+          "notary": {
+            "planned": 4600,
+            "actual": 4780
+          },
+          "agency": {
+            "planned": null,
+            "actual": null
+          },
+          "loanFees": {
+            "planned": 600,
+            "actual": 600
+          },
+          "guarantee": {
+            "planned": 800,
+            "actual": 810
+          },
+          "broker": {
+            "planned": 600,
+            "actual": 600
+          },
+          "works": {
+            "planned": 5000,
+            "actual": null
+          },
+          "furniture": {
+            "planned": 900,
+            "actual": null
+          },
+          "otherFees": {
+            "planned": null,
+            "actual": null
+          }
+        },
+        "loan": {
+          "borrowed": {
+            "planned": 67650,
+            "actual": 67650
+          },
+          "ratePct": {
+            "planned": 3.7,
+            "actual": 3.7
+          },
+          "durationMonths": {
+            "planned": 300,
+            "actual": 300
+          },
+          "monthlyPayment": {
+            "planned": null,
+            "actual": 346.1
+          },
+          "insuranceMonthly": {
+            "planned": 19,
+            "actual": 19.5
+          }
+        },
+        "rental": {
+          "rent": {
+            "planned": 580,
+            "actual": 560
+          },
+          "recoverableCharges": {
+            "planned": 40,
+            "actual": 40
+          },
+          "startDate": "2026-11-01",
+          "vacancyMonthsPerYear": 1,
+          "unpaidPct": 0
+        },
+        "charges": [
+          {
+            "id": "ch-b041f19d955d",
+            "label": "Taxe foncière",
+            "frequency": "yearly",
+            "amount": {
+              "planned": 600,
+              "actual": 640
+            },
+            "categoryId": "propertyTax"
+          },
+          {
+            "id": "ch-6d5e0be45718",
+            "label": "Assurance PNO",
+            "frequency": "yearly",
+            "amount": {
+              "planned": 130,
+              "actual": null
+            },
+            "categoryId": "pno"
+          },
+          {
+            "id": "ch-db725ce2acf8",
+            "label": "Copropriété (non récupérable)",
+            "frequency": "monthly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "coproNonRecoverable"
+          },
+          {
+            "id": "ch-181e40be1c7c",
+            "label": "Entretien",
+            "frequency": "yearly",
+            "amount": {
+              "planned": 300,
+              "actual": null
+            },
+            "categoryId": "maintenance"
+          },
+          {
+            "id": "ch-e64f026712d3",
+            "label": "Réparations",
+            "frequency": "yearly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "repairs"
+          },
+          {
+            "id": "ch-651e0a6deb38",
+            "label": "Gestion locative",
+            "frequency": "monthly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "management"
+          },
+          {
+            "id": "ch-9c6db797ee43",
+            "label": "Frais bancaires du projet",
+            "frequency": "yearly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "bankFees"
+          },
+          {
+            "id": "ch-7140896ce089",
+            "label": "Comptabilité",
+            "frequency": "yearly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "accounting"
+          },
+          {
+            "id": "ch-24cd4ceaa2f5",
+            "label": "Autres taxes",
+            "frequency": "yearly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "otherTaxes"
+          },
+          {
+            "id": "ch-ed092cc45710",
+            "label": "Autres dépenses",
+            "frequency": "yearly",
+            "amount": {
+              "planned": null,
+              "actual": null
+            },
+            "categoryId": "otherExpenses"
+          },
+          {
+            "id": "ch-ramonage",
+            "label": "Ramonage",
+            "frequency": "once",
+            "amount": {
+              "planned": 90,
+              "actual": null
+            }
+          }
+        ],
+        "movements": [
+          {
+            "id": "mv-886f8ac007d4",
+            "date": "2026-09-15",
+            "type": "expense",
+            "categoryId": "price",
+            "amount": 60000,
+            "note": "Acte de vente"
+          },
+          {
+            "id": "mv-bd0e0a88e9cd",
+            "date": "2026-09-15",
+            "type": "expense",
+            "categoryId": "notary",
+            "amount": 4780,
+            "note": ""
+          },
+          {
+            "id": "mv-97a68627689c",
+            "date": "2026-10-18",
+            "type": "expense",
+            "categoryId": "works",
+            "amount": 620,
+            "note": "Peinture"
+          },
+          {
+            "id": "mv-06f484554dfa",
+            "date": "2026-11-05",
+            "type": "income",
+            "categoryId": "rent",
+            "amount": 560,
+            "note": "Premier loyer"
+          },
+          {
+            "id": "mv-ecb98ba27ce1",
+            "date": "2026-11-05",
+            "type": "expense",
+            "categoryId": "loanPayment",
+            "amount": 346.1,
+            "note": ""
+          },
+          {
+            "id": "mv-0a530198ea11",
+            "date": "2026-11-05",
+            "type": "expense",
+            "categoryId": "loanInsurance",
+            "amount": 19.5,
+            "note": ""
+          },
+          {
+            "id": "mv-serrurier",
+            "date": "2026-11-20",
+            "type": "expense",
+            "categoryId": "cat-serrurier",
+            "amount": 95,
+            "note": "Porte"
+          },
+          {
+            "id": "mv-recup",
+            "date": "2026-11-05",
+            "type": "income",
+            "categoryId": "recoveredCharges",
+            "amount": 40,
+            "note": ""
+          }
+        ]
+      }
+    ],
+    "settings": {
+      "activePropertyId": "bien-1627aa60d46a",
+      "customCategories": [
+        {
+          "id": "cat-serrurier",
+          "label": "Serrurier",
+          "kind": "expense"
+        }
+      ],
+      "lastBackupAt": null
+    }
+  }
+}
