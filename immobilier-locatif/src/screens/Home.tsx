@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { estimatedInputs, type KpiKey } from '../calc/resolve';
 import type { Scenario } from '../domain/types';
-import { eur, monthFr, pctFmt } from '../lib/format';
+import { eur, monthFr, pctFmt, todayIso } from '../lib/format';
+import { monthSeries } from '../lib/series';
+import { Sparkline } from '../ui/MonthlyChart';
 import { useProperty, useStore } from '../state/store';
 import { usePropertyMetrics } from '../state/useMetrics';
 import { Amount, EmptyState, Percent, Stat } from '../ui/Display';
@@ -170,6 +172,7 @@ export function Home({ go, choice, setChoice }: { go: Go; choice: Scenario | nul
                   <span className="mini-note">{journal.netBalance >= 0 ? 'rapporté' : 'coûté'} à ce jour</span>
                 </span>
               </span>
+              <Sparkline series={monthSeries(journal.months, todayIso().slice(0, 7))} label="Évolution du résultat cumulé" />
             </button>
           ) : (
             <div className="card">

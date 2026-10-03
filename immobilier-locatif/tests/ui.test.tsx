@@ -61,3 +61,31 @@ describe('composants d’affichage (v1.1.0)', () => {
     expect(categoryIcon('inconnue', 'custom')).toBe('tag');
   });
 });
+
+describe('composants v1.2.0', () => {
+  it('Line cliquable : un vrai bouton, avec chevron', async () => {
+    const out = html(<Line label="Prix" value="1" onClick={() => {}} />);
+    expect(out).toMatch(/^<button[^>]*class="line line-tap"/);
+  });
+
+  it('Sparkline : rien avec moins de deux mois, une courbe sinon', async () => {
+    const { Sparkline } = await import('../src/ui/MonthlyChart');
+    const { monthSeries } = await import('../src/lib/series');
+    const one = monthSeries([{ month: '2025-01', income: 0, expenses: 10, net: -10, injected: 10 } as never]);
+    expect(html(<Sparkline series={one} label="x" />)).toBe('');
+    const two = monthSeries([{ month: '2025-01', income: 0, expenses: 10, net: -10, injected: 10 } as never], '2025-02');
+    expect(html(<Sparkline series={two} label="Évolution" />)).toContain('aria-label="Évolution"');
+  });
+
+  it('saisie champ par champ : nombre et ordre des champs', async () => {
+    const { fieldsFor } = await import('../src/screens/FieldFlow');
+    const { newProperty } = await import('../src/domain/factory');
+    const p = newProperty();
+    expect(fieldsFor('purchase', p)).toHaveLength(9);
+    expect(fieldsFor('financing', p).map((f) => f.id)).toEqual([
+      'loan.borrowed', 'loan.apport', 'loan.rate', 'loan.duration', 'loan.payment', 'loan.insurance',
+    ]);
+    expect(fieldsFor('rental', p)).toHaveLength(5);
+    expect(fieldsFor('charges', p)[0].title).toMatch(/foncière/i);
+  });
+});

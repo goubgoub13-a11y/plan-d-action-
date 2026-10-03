@@ -1,5 +1,5 @@
-import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react';
-import { formatInput, parseDecimal, eurSigned, plain } from '../lib/format';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { formatInput, parseDecimal } from '../lib/format';
 import { Icon } from './Icon';
 import { Sheet } from './Sheet';
 
@@ -16,6 +16,7 @@ export function NumberInput({
   allowNegative = false,
   autoFocus,
   big,
+  field,
   id,
 }: {
   value: number | null;
@@ -26,6 +27,8 @@ export function NumberInput({
   allowNegative?: boolean;
   autoFocus?: boolean;
   big?: boolean;
+  /** Grand champ d'une saisie champ par champ. */
+  field?: boolean;
   id?: string;
 }) {
   // Hors saisie : « 60 000 » (séparateurs) ; relisible par parseDecimal.
@@ -42,7 +45,7 @@ export function NumberInput({
   }, [value]);
 
   return (
-    <div className={`num-input${invalid ? ' is-invalid' : ''}${big ? ' is-big' : ''}`}>
+    <div className={`num-input${invalid ? ' is-invalid' : ''}${big ? ' is-big' : ''}${field ? ' is-field' : ''}`}>
       <input
         id={id}
         type="text"
@@ -72,75 +75,6 @@ export function NumberInput({
         onFocus={(e) => e.currentTarget.select()}
       />
       {suffix && <span className="num-suffix">{suffix}</span>}
-    </div>
-  );
-}
-
-export interface DualRowProps {
-  label: string;
-  hint?: ReactNode;
-  planned: number | null;
-  actual: number | null;
-  onPlanned: (v: number | null) => void;
-  onActual: (v: number | null) => void;
-  showReal: boolean;
-  suffix?: string;
-  plannedPlaceholder?: string;
-  actualPlaceholder?: string;
-  actualHint?: ReactNode;
-  /** Pour colorer l'écart : un coût plus élevé que prévu est défavorable. */
-  higherIsBetter?: boolean;
-  extra?: ReactNode;
-}
-
-/** Une ligne « Prévu / Réel » : la brique de base de tous les formulaires du projet. */
-export function DualRow(p: DualRowProps) {
-  const id = useId();
-  const suffix = p.suffix ?? '€';
-  const d = p.planned !== null && p.actual !== null ? p.actual - p.planned : null;
-  const tone = d === null || Math.abs(d) < 0.005 ? '' : (d > 0) === !!p.higherIsBetter ? 'pos' : 'neg';
-  return (
-    <div className="dual-row">
-      <div className="dual-label">
-        <label htmlFor={`${id}-p`}>{p.label}</label>
-        {p.hint && <span className="dual-hint">{p.hint}</span>}
-      </div>
-      <div className={`dual-inputs${p.showReal ? '' : ' single'}`}>
-        <div>
-          {p.showReal && <span className="mini-label">Prévu</span>}
-          <NumberInput
-            id={`${id}-p`}
-            label={`${p.label} — prévu`}
-            value={p.planned}
-            onChange={p.onPlanned}
-            suffix={suffix}
-            placeholder={p.plannedPlaceholder ?? '—'}
-          />
-        </div>
-        {p.showReal && (
-          <div>
-            <span className="mini-label real">Réel</span>
-            <NumberInput
-              label={`${p.label} — réel`}
-              value={p.actual}
-              onChange={p.onActual}
-              suffix={suffix}
-              placeholder={p.actualPlaceholder ?? 'à venir'}
-            />
-          </div>
-        )}
-      </div>
-      {p.showReal && (p.actualHint || d !== null) && (
-        <div className="dual-foot">
-          {p.actualHint && <span className="muted">{p.actualHint}</span>}
-          {d !== null && Math.abs(d) >= 0.005 && (
-            <span className={`delta ${tone}`}>
-              Écart {suffix === '€' ? eurSigned(d) : `${d > 0 ? '+' : ''}${plain(d)} ${suffix}`}
-            </span>
-          )}
-        </div>
-      )}
-      {p.extra}
     </div>
   );
 }

@@ -1,3 +1,53 @@
+# Design — v1.2.0
+
+## v1.2.0 — ce qui change
+
+### Inspirations (recherche, octobre 2026)
+
+Pratiques observées dans les applications financières et les guides de conception de formulaires mobiles :
+
+- [onething.design — pratiques UX fintech 2026](https://www.onething.design/post/top-10-fintech-ux-design-practices-2026) : une action par écran, divulgation progressive, chiffres clés en premier.
+- [wandr.studio — tendances fintech mobile](https://www.wandr.studio/blog/fintech-mobile-app-design-trends) : visualisations simples, interactions tactiles sur les graphiques, palettes sobres.
+- [saasfactor — guide fintech mobile](https://www.saasfactor.co/blogs/fintech-mobile-app-design) : navigation basse flottante, hiérarchie typographique forte.
+- [Typeform — formulaires mobiles](https://www.typeform.com/blog/mobile-form-design-best-practices) et [IxDF — conception de formulaires](https://ixdf.org/literature/article/ui-form-design) : une question à la fois, progression visible, valeurs par défaut et suggestions, champs larges.
+- [Finary](https://finary.com/en/app) : courbe d'évolution du patrimoine, détail au toucher.
+
+Rien n'est copié : ce sont des principes, appliqués dans la direction « patrimonial calme » existante.
+
+### Saisie champ par champ (`src/screens/FieldFlow.tsx`)
+
+Les formulaires à colonnes Prévu / Réel restaient denses sur 390 px. Chaque rubrique se saisit maintenant un champ à la fois :
+
+| Élément | Rôle |
+|---|---|
+| Progression | Points cliquables (« Aller à : Frais de notaire ») et compteur « 3 / 9 » |
+| `BigDual` | Le montant **Prévu** en grand (36 px), puis la carte **Réel** avec une note (« Pas encore connu : le montant prévu est utilisé ») et l'écart en pastille |
+| Aide | Une ligne sous le titre, jamais un paragraphe |
+| Suggestions | Pastilles d'un geste : estimation des frais de notaire, reprise du montant payé, retour à la mensualité calculée |
+| Total en direct | Le total de la rubrique se met à jour pendant la saisie |
+| Pied | Retour (56 px) et « Suivant » / « Terminé » ; la touche Entrée avance |
+
+L'écran Projet devient une vue de lecture : chaque ligne (`Line` avec `onClick`) ouvre directement son champ.
+
+### Mois par mois (`src/ui/MonthlyChart.tsx`, `src/lib/series.ts`)
+
+Le but du suivi est de voir l'évolution mois après mois. Le graphique est donc conçu pour une chronologie :
+
+- `monthSeries` produit une série **continue** : les mois sans mouvement valent 0 et apparaissent jusqu'au mois en cours (fonction pure, testée) ;
+- vue **Par mois** : barres autour d'une ligne zéro placée proportionnellement (positif en sapin, négatif en terre cuite) ;
+- vue **Cumulé** : courbe et aire dégradée du résultat cumulé ;
+- toucher un mois affiche son détail (recettes, dépenses, cumul, argent injecté) ; chaque colonne est un bouton avec un libellé accessible complet ;
+- au-delà de 9 mois : colonnes de 34 px, défilement horizontal, ouverture sur les mois récents ;
+- `Sparkline` : mini-courbe du cumul dans la carte « Réalisé » de l'accueil (masquée sous deux mois).
+
+### Finitions
+
+- Barre d'onglets flottante en pilule (flou, ombre douce), tokens `--tabbar-space` et `--halo`.
+- Halo radial discret en haut de l'écran, sapin en clair et menthe en sombre.
+- Animation `step-in` entre deux champs (désactivée avec `prefers-reduced-motion`).
+
+---
+
 # Design — v1.1.0
 
 La v1.1.0 change uniquement la présentation. Le modèle de données, les calculs, le stockage, le persister, l'import/export, la PWA et le fonctionnement hors connexion sont ceux de la v1.0.2. Les 167 tests métier existants passent sans modification.

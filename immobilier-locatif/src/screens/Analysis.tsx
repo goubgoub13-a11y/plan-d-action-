@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { estimatedInputs, resolveInputs, type KpiKey } from '../calc/resolve';
 import type { Scenario } from '../domain/types';
-import { eur, eurSigned, monthFr, pctFmt } from '../lib/format';
+import { eur, eurSigned, pctFmt, todayIso } from '../lib/format';
+import { monthSeries } from '../lib/series';
+import { MonthlyChart } from '../ui/MonthlyChart';
 import { useProperty } from '../state/store';
 import { usePropertyMetrics } from '../state/useMetrics';
 import { Amount, EmptyState, Legend, Line, Section, StackBar } from '../ui/Display';
@@ -11,8 +13,6 @@ import { Sheet } from '../ui/Sheet';
 import { EXPLAIN, type ExplainKey } from './explain';
 import type { Go } from './nav';
 import { Comparison, KPI_OF, KpiDetail } from './shared';
-
-const SHORT_MONTHS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
 
 /**
  * Analyse — l'information la plus importante : ce que le bien a réellement rapporté ou coûté.
@@ -35,8 +35,7 @@ export function Analysis({ go, choice, setChoice }: { go: Go; choice: Scenario |
     { label: 'Travaux, mobilier', value: acq.works + acq.furniture, tone: 'd' as const },
   ];
 
-  const months = j.months.slice(-12);
-  const maxAbs = Math.max(1, ...months.map((x) => Math.abs(x.net)));
+  const series = monthSeries(j.months, todayIso().slice(0, 7));
 
   return (
     <div className="screen">
@@ -86,29 +85,7 @@ export function Analysis({ go, choice, setChoice }: { go: Go; choice: Scenario |
               )}
             </div>
 
-            {months.length > 0 && (
-              <figure className="monthly" aria-label="Résultat d'exploitation par mois">
-                <figcaption className="mini-label">Résultat par mois</figcaption>
-                <div className="monthly-chart">
-                  {months.map((x) => {
-                    const h = (Math.abs(x.net) / maxAbs) * 50;
-                    const [y, mm] = x.month.split('-').map(Number);
-                    return (
-                      <div
-                        key={x.month}
-                        className="monthly-col"
-                        title={`${monthFr(x.month)} : ${eurSigned(x.net)}`}
-                        aria-label={`${monthFr(x.month)} : ${eurSigned(x.net)}`}
-                        role="img"
-                      >
-                        <span className={`monthly-bar ${x.net >= 0 ? 'is-pos' : 'is-neg'}`} style={{ height: `${Math.max(h, 2)}%`, [x.net >= 0 ? 'bottom' : 'top']: '50%' }} />
-                        <span className="monthly-tick">{SHORT_MONTHS[mm - 1]}{months.length <= 6 || mm === 1 ? ` ${String(y).slice(2)}` : ''}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </figure>
-            )}
+            {series.length > 0 && <MonthlyChart series={series} />}
           </>
         )}
       </Section>

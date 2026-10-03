@@ -125,7 +125,7 @@ export function Section({
   );
 }
 
-/** Ligne libellé / valeur, avec valeur secondaire facultative (ex. « prévu 4 600 € »). */
+/** Ligne libellé / valeur, avec aide sous le libellé et précision sous la valeur. Touchable si `onClick`. */
 export function Line({
   label,
   hint,
@@ -134,6 +134,7 @@ export function Line({
   tone,
   strong,
   indent,
+  onClick,
 }: {
   label: ReactNode;
   /** Précision sous le libellé (texte long). */
@@ -144,9 +145,12 @@ export function Line({
   tone?: Tone;
   strong?: boolean;
   indent?: boolean;
+  /** Rend la ligne touchable (ouvre la saisie du champ). */
+  onClick?: () => void;
 }) {
-  return (
-    <div className={`line${strong ? ' line-strong' : ''}${indent ? ' line-indent' : ''}`}>
+  const cls = `line${strong ? ' line-strong' : ''}${indent ? ' line-indent' : ''}${onClick ? ' line-tap' : ''}`;
+  const content = (
+    <>
       <span className="line-label">
         {label}
         {hint && <span className="line-hint">{hint}</span>}
@@ -155,7 +159,15 @@ export function Line({
         <span className={`line-value${tone ? ` tone-${tone}` : ''}`}>{value}</span>
         {secondary && <span className="line-secondary">{secondary}</span>}
       </span>
-    </div>
+      {onClick && <Icon name="chevron" size={16} className="line-chevron" />}
+    </>
+  );
+  return onClick ? (
+    <button type="button" className={cls} onClick={onClick}>
+      {content}
+    </button>
+  ) : (
+    <div className={cls}>{content}</div>
   );
 }
 

@@ -1,5 +1,30 @@
 # Historique des versions
 
+## 1.2.0 — 2026-10-03
+
+Finitions visuelles et deux évolutions d'expérience. **Aucun changement du moteur métier** : calculs, modèle de données, stockage, persister, import/export et PWA sont inchangés. Les 178 tests de la 1.1.0 passent sans modification ; 7 tests ajoutés (185).
+
+**Saisie champ par champ** (onglet Projet)
+- Les formulaires à colonnes Prévu / Réel sont remplacés par un parcours d'un seul champ par écran : grand montant, « Prévu » puis « Réel » (avec « Pas encore connu : le montant prévu est utilisé »), une aide d'une ligne et l'écart en pastille.
+- Progression par points (cliquables), « 3 / 9 », Entrée ou « Suivant » pour avancer, « Terminé » sur le dernier champ ; total de la rubrique mis à jour en direct.
+- Suggestions en un geste : frais de notaire estimés à 7,5 % du prix, reprise du montant payé quand une dépense est terminée, retour au calcul automatique de la mensualité.
+- Financement : apport et montant emprunté liés, durée en années ou en mois ; l'alerte de mensualité incohérente reste affichée.
+- Charges : les charges essentielles et celles déjà renseignées en premier ; nom, fréquence et suppression d'une charge personnalisée dans le même écran.
+- L'écran Projet est en lecture : toucher une ligne ouvre directement le champ correspondant ; une rubrique vide propose « Renseigner ».
+
+**Mois par mois** (onglet Analyse)
+- Nouveau graphique : vue « Par mois » (barres autour de zéro) et vue « Cumulé » (courbe et aire).
+- Série continue : les mois sans mouvement apparaissent (à zéro) jusqu'au mois en cours, pour lire une vraie chronologie.
+- Toucher un mois affiche son détail : résultat, recettes, dépenses, cumul, argent injecté.
+- Au-delà de 9 mois, le graphique défile horizontalement et s'ouvre sur les mois les plus récents.
+- Accueil : mini-courbe du résultat cumulé dans la carte « Réalisé ».
+
+**Finitions**
+- Barre d'onglets flottante (pilule, flou d'arrière-plan), halo discret en fond d'écran.
+- Contrôle segmenté et champs « grand montant » harmonisés ; animations d'entrée des étapes (désactivées si moins de mouvement demandé).
+- Code retiré : ancien composant `DualRow` et anciens éditeurs de rubrique, styles devenus inutiles.
+- Aucune dépendance ajoutée.
+
 ## 1.1.0 — 2026-10-03
 
 Refonte du design et de l'expérience. **Aucun changement du moteur métier** : modèle de données, calculs, stockage, persister, import/export, Prévu / Réel / Réalisé, PWA et mode hors connexion sont ceux de la 1.0.2. Les 167 tests existants passent sans modification. Audit de l'interface et design system : [docs/DESIGN.md](docs/DESIGN.md).

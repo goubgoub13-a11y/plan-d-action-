@@ -1,6 +1,6 @@
-# Mon bien locatif — v1.1.0
+# Mon bien locatif — v1.2.0
 
-> **v1.1.0** : refonte du design et de l'expérience, sans changement du moteur métier.
+> **v1.2.0** : saisie champ par champ, graphique mois par mois (par mois / cumulé), finitions visuelles. Moteur métier inchangé depuis la v1.0.2.
 > - nouvelle identité « patrimonial calme » et design system à base de tokens ;
 > - accueil hiérarchisé autour du cash-flow ;
 > - onglet Analyse ;
@@ -50,7 +50,7 @@ Prérequis : **Node.js 22.12 ou plus récent** (voir `.nvmrc`) et npm.
 ```bash
 npm install          # installe les dépendances
 npm run dev          # serveur de développement : http://localhost:5173
-npm test             # lance les 178 tests
+npm test             # lance les 185 tests
 npm run typecheck    # vérification TypeScript
 npm run build        # build de production dans dist/
 npm run preview      # sert le build : http://localhost:4173
@@ -99,14 +99,14 @@ Tous les indicateurs sont **avant fiscalité**.
 
 ## 4. Les écrans
 
-Cinq onglets, en bas de l'écran (v1.1.0). Chaque écran met en avant une seule information principale. Le détail de la refonte visuelle est dans [docs/DESIGN.md](docs/DESIGN.md).
+Cinq onglets, dans une barre flottante en bas de l'écran (v1.2.0). Chaque écran met en avant une seule information principale. Le détail de la refonte visuelle est dans [docs/DESIGN.md](docs/DESIGN.md).
 
 | Onglet | Contenu |
 |---|---|
-| **Accueil** | Nom du bien et contexte (« Acquis en septembre 2026 », « Projet en cours »). Contrôle **Prévu / Réel** (seulement si un montant réel de référence existe), avec une ligne « N montants encore prévus » ; un petit rond creux ◦ marque les indicateurs concernés. Grande carte **cash-flow** (« +82 € par mois »), avec une barre revenus / dépenses et l'effort d'épargne s'il est négatif. 4 cartes : rentabilité nette (avec « vs 7,4 % prévu »), loyer, mensualité, coût du projet. Carte **Réalisé** (argent injecté, solde net). Encadré « À vérifier ». Toucher une carte affiche son calcul et sa formule. |
-| **Projet** | Lecture d'abord : le bien, puis **Acquisition**, **Financement** (mensualité, montant, durée, taux, barre capital / intérêts / assurance), **Location**, **Charges**. Chaque rubrique affiche son total et ses lignes (réel, ou « prévu X » en secondaire). « Modifier » ouvre le formulaire Prévu / Réel de la rubrique dans un panneau, avec l'état d'enregistrement. |
+| **Accueil** | Nom du bien et contexte (« Acquis en septembre 2026 », « Projet en cours »). Contrôle **Prévu / Réel** (seulement si un montant réel de référence existe), avec une ligne « N montants encore prévus » ; un petit rond creux ◦ marque les indicateurs concernés. Grande carte **cash-flow** (« +82 € par mois »), avec une barre revenus / dépenses et l'effort d'épargne s'il est négatif. 4 cartes : rentabilité nette (avec « vs 7,4 % prévu »), loyer, mensualité, coût du projet. Carte **Réalisé** (argent injecté, solde net, mini-courbe du résultat cumulé). Encadré « À vérifier ». Toucher une carte affiche son calcul et sa formule. |
+| **Projet** | Lecture d'abord : le bien, puis **Acquisition**, **Financement** (mensualité, montant, durée, taux, barre capital / intérêts / assurance), **Location**, **Charges**. Chaque rubrique affiche son total et ses lignes (réel, ou « prévu X » en secondaire). Toucher une ligne ouvre directement ce champ ; « Modifier » ouvre la rubrique au premier champ. **Saisie champ par champ** (v1.2.0) : un seul montant par écran, en grand, avec Prévu puis Réel, une aide, des suggestions (« Estimer à 7,5 % du prix », « reprendre le montant payé »), le total de la rubrique en direct, une progression par points, Entrée ou « Suivant » pour avancer. |
 | **Mouvements** | Liste groupée par jour (« 5 novembre »), icône par catégorie, recettes « + » en vert et dépenses « − » en encre neutre. Totaux, filtre, bouton + toujours accessible. Ajout rapide : type, grand montant, pastilles des catégories fréquentes (liste complète dans « Autre catégorie… »), date, note. Montant suggéré pour le loyer, la mensualité et l'assurance. « Copier au mois suivant ». |
-| **Analyse** | Depuis l'achat : solde net du projet en grand, recettes, dépenses courantes, résultat d'exploitation, apport, argent personnel injecté (estimation), résultat mois par mois (barres). Prévu / Réel sans tableau (valeur réelle, prévu en secondaire, écart en pastille). Rentabilité (nette, brute, rendement de l'apport, charges, investi). Composition du coût du projet. |
+| **Analyse** | Depuis l'achat : solde net du projet en grand, recettes, dépenses courantes, résultat d'exploitation, apport, argent personnel injecté (estimation), graphique **mois par mois** (v1.2.0) : vue « Par mois » (barres autour de zéro) ou « Cumulé » (courbe), mois sans mouvement affichés jusqu'au mois en cours, défilement horizontal au-delà de 9 mois, détail d'un mois au toucher (recettes, dépenses, cumul, argent injecté). Prévu / Réel sans tableau (valeur réelle, prévu en secondaire, écart en pastille). Rentabilité (nette, brute, rendement de l'apport, charges, investi). Composition du coût du projet. |
 | **Réglages** | **Sauvegarde** en premier (« Sauvegarder mes données → Exporter », « Restaurer une sauvegarde → Choisir un fichier », rappel rassurant). Mes biens, confidentialité, toutes les formules, bien d'exemple, zone sensible (effacement) séparée. |
 
 Au premier lancement, un écran d'accueil propose de créer son projet (l'éditeur Acquisition s'ouvre directement), de découvrir un exemple (« Appartement Saint-Étienne ») ou de restaurer une sauvegarde.
@@ -265,7 +265,7 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 npm test
 ```
 
-**178 tests** (Vitest, 12 fichiers) dans `tests/` :
+**185 tests** (Vitest, 13 fichiers) dans `tests/` :
 
 | Fichier | Couverture |
 |---|---|
@@ -274,7 +274,8 @@ npm test
 | `reference.test.ts` | **Prévu / Réel / Réalisé** : projet avec un mouvement mais sans réel de référence, montants confirmés / encore prévus par indicateur, mensualité confirmée |
 | `journal.test.ts` | **argent personnel injecté** (cas 1, 2, 3 de l'audit), **solde net**, alternance de mois déficitaires et bénéficiaires, identité solde net = trésorerie − injecté, absence de double comptage, **charges récupérées neutres**, écart réel / réalisé (notaire 5 000 € prévu, 5 400 € payés) |
 | `presentation.test.ts` | **v1.1.0** : séparateurs de milliers dans les champs (aller-retour exact avec la lecture), découpage nombre / signe / unité des montants et pourcentages, libellés de jour |
-| `ui.test.tsx` | **v1.1.0** : rendu des composants d'affichage (libellés accessibles, signe « − », barres proportionnelles, état vide), icône pour chaque catégorie |
+| `ui.test.tsx` | **v1.1.0** : rendu des composants d'affichage (libellés accessibles, signe « − », barres proportionnelles, état vide), icône pour chaque catégorie ; **v1.2.0** : ligne cliquable, mini-courbe, nombre et ordre des champs de la saisie champ par champ |
+| `series.test.ts` | **v1.2.0** : série mensuelle continue (vide sans mouvement, mois vides comblés, cumul, prolongation jusqu’au mois courant) |
 | `persister-replace.test.ts` | **v1.0.2** : course de l'audit reproduite (sauvegarde de A′ en cours, puis restauration de B : A′ n'est jamais réécrit après), échec puis restauration, timer en attente, deux restaurations rapprochées, modification après et pendant une restauration, restauration en échec, effacement pendant une écriture |
 | `pwa.test.ts` | **v1.0.2** : icônes du manifeste présentes (dont maskable), manifeste relatif, ressources de `index.html`, précache de tout `public/` |
 | `persister.test.ts` | **échec d'écriture IndexedDB**, nouvelle tentative automatique et manuelle, échec partiel rejoué, **sauvegardes successives** et écritures concurrentes, ancienne écriture terminant après une nouvelle modification, remplacement complet |
@@ -322,4 +323,4 @@ L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, 
 
 ---
 
-Version **1.1.0** — voir [CHANGELOG.md](CHANGELOG.md).
+Version **1.2.0** — voir [CHANGELOG.md](CHANGELOG.md).
