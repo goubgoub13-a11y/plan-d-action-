@@ -8,38 +8,45 @@ import { fileURLToPath } from 'node:url';
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'icons');
 mkdirSync(OUT, { recursive: true });
 
-const C1 = [0x14, 0xb8, 0xa6];
-const C2 = [0x0f, 0x76, 0x6e];
-// Maison dans un repère 512 × 512 (identique à public/icon.svg)
-const HOUSE = [[256, 110], [106, 238], [146, 238], [146, 388], [366, 388], [366, 238], [406, 238]];
-const DOOR = [226, 290, 286, 388];
+// Monogramme (identique à public/icon.svg) dans un repère 512 × 512.
+const C1 = [0x1a, 0x4a, 0x3e];
+const C2 = [0x0c, 0x2c, 0x24];
+const INK = [0xf3, 0xf7, 0xf5];
+const MINT = [0x8f, 0xdc, 0xc0];
+const ROOF = [[120, 262], [256, 146], [392, 262]];
+const ROOF_HALF_WIDTH = 19;
+const BARS = [
+  { x: 170, y: 300, w: 44, h: 82, color: INK, alpha: 0.5 },
+  { x: 234, y: 262, w: 44, h: 120, color: INK, alpha: 0.78 },
+  { x: 298, y: 222, w: 44, h: 160, color: MINT, alpha: 1 },
+];
 
-function inPoly(x, y, poly) {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const [xi, yi] = poly[i];
-    const [xj, yj] = poly[j];
-    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
+function distToSegment(x, y, [ax, ay], [bx, by]) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy)));
+  return Math.hypot(x - (ax + t * dx), y - (ay + t * dy));
 }
 
-function inRoundRect(x, y, s, r) {
-  const cx = Math.min(Math.max(x, r), s - r);
-  const cy = Math.min(Math.max(y, r), s - r);
+function inRoundRect(x, y, rx, ry, w, h, r) {
+  if (x < rx || x > rx + w || y < ry || y > ry + h) return false;
+  const cx = Math.min(Math.max(x, rx + r), rx + w - r);
+  const cy = Math.min(Math.max(y, ry + r), ry + h - r);
   return (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
 }
 
+const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+
 /** Couleur RGBA d'un point (coordonnées 0–512). */
 function sample(x, y, { rounded, scale }) {
-  if (rounded && !inRoundRect(x, y, 512, 112)) return [0, 0, 0, 0];
-  // Repère de la maison, éventuellement réduit autour du centre (zone sûre des icônes « maskable »).
+  if (rounded && !inRoundRect(x, y, 0, 0, 512, 512, 116)) return [0, 0, 0, 0];
+  // Contenu éventuellement réduit autour du centre (zone sûre des icônes « maskable »).
   const hx = 256 + (x - 256) / scale;
   const hy = 256 + (y - 256) / scale;
-  if (hx >= DOOR[0] && hx <= DOOR[2] && hy >= DOOR[1] && hy <= DOOR[3]) return [...C2, 255];
-  if (inPoly(hx, hy, HOUSE)) return [255, 255, 255, 255];
-  const t = (x + y) / 1024;
-  return [0, 1, 2].map((i) => Math.round(C1[i] + (C2[i] - C1[i]) * t)).concat(255);
+  let c = mix(C1, C2, (x + y) / 1024);
+  for (const b of BARS) if (inRoundRect(hx, hy, b.x, b.y, b.w, b.h, 12)) c = mix(c, b.color, b.alpha);
+  if (distToSegment(hx, hy, ROOF[0], ROOF[1]) <= ROOF_HALF_WIDTH || distToSegment(hx, hy, ROOF[1], ROOF[2]) <= ROOF_HALF_WIDTH) c = INK;
+  return [...c.map(Math.round), 255];
 }
 
 function render(size, opts) {

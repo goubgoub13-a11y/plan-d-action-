@@ -1,4 +1,14 @@
-# Mon bien locatif — v1.0.2
+# Mon bien locatif — v1.1.0
+
+> **v1.1.0** : refonte du design et de l'expérience, sans changement du moteur métier.
+> - nouvelle identité « patrimonial calme » et design system à base de tokens ;
+> - accueil hiérarchisé autour du cash-flow ;
+> - onglet Analyse ;
+> - Projet en lecture d'abord, édition dans des panneaux ;
+> - mouvements groupés par jour et ajout rapide ;
+> - mode sombre retravaillé, nouveau monogramme.
+>
+> Voir [docs/DESIGN.md](docs/DESIGN.md) et [CHANGELOG.md](CHANGELOG.md).
 
 > **v1.0.2** : sécurisation du socle. La restauration d'une sauvegarde (`replaceAll`) devient une opération exclusive : aucune écriture engagée avant elle (timer, nouvelle tentative, écriture en cours) ne peut plus réécrire d'anciennes données ensuite. S'y ajoutent des textes Prévu / Réel / Réalisé harmonisés, l'argent injecté présenté comme une estimation, et l'icône maskable désormais précachée. Détail : [CHANGELOG.md](CHANGELOG.md).
 
@@ -40,7 +50,7 @@ Prérequis : **Node.js 22.12 ou plus récent** (voir `.nvmrc`) et npm.
 ```bash
 npm install          # installe les dépendances
 npm run dev          # serveur de développement : http://localhost:5173
-npm test             # lance les 167 tests
+npm test             # lance les 178 tests
 npm run typecheck    # vérification TypeScript
 npm run build        # build de production dans dist/
 npm run preview      # sert le build : http://localhost:4173
@@ -89,18 +99,25 @@ Tous les indicateurs sont **avant fiscalité**.
 
 ## 4. Les écrans
 
-Quatre onglets, en bas de l'écran :
+Cinq onglets, en bas de l'écran (v1.1.0). Chaque écran met en avant une seule information principale. Le détail de la refonte visuelle est dans [docs/DESIGN.md](docs/DESIGN.md).
 
 | Onglet | Contenu |
 |---|---|
-| **Accueil** | Nom du bien ; bascule *Prévu / Réel* (dès qu'un montant **réel de référence** existe — un mouvement ne suffit pas) ; en vue *Réel*, une ligne « N montants encore prévus » et un petit rond creux ◦ sur les indicateurs qui utilisent encore du prévu (détail en touchant la carte) ; grande carte **cash-flow** (avec l'effort d'épargne s'il est négatif) ; 8 cartes : coût du projet, investi personnellement, loyer, mensualité, rentabilité brute, rentabilité nette, charges, rendement de l'apport ; **un seul graphique** (revenus vs dépenses mensuels) ; tableau *Prévu / Réel / Écart* ; carte **Réalisé** (argent personnel injecté, solde net du projet, résultat d'exploitation) ; alertes (mensualité incohérente, paiement d'achat supérieur au montant utilisé) ; détail du crédit replié. Chaque carte s'ouvre sur sa formule et son calcul détaillé. |
-| **Projet** | Quatre rubriques : **Achat** (bien, phase « acheté », 9 postes de coût), **Financement** (apport, emprunt, taux, durée en années ou mois, mensualité auto ou saisie, assurance, coût du crédit), **Location** (loyer HC, charges récupérables, date de début, vacance, impayés), **Charges** (mensuelles, annuelles ou ponctuelles, avec équivalents mensuel et annuel). Chaque montant : colonnes *Prévu* et *Réel*. Les colonnes *Réel* n'apparaissent qu'une fois le bien marqué « acheté » (ou dès qu'un montant réel existe). |
-| **Mouvements** | Journal par mois, filtre dépenses / recettes, totaux. Ajout en un écran : type, montant, catégorie (préremplie ou nouvelle), date, note. Montant suggéré pour le loyer, la mensualité et l'assurance. « Copier au mois suivant » pour les mouvements récurrents. |
-| **Réglages** | Mes biens (ajouter, renommer, choisir, supprimer), **sauvegarde** (exporter, partager, restaurer, date de la dernière sauvegarde), confidentialité, toutes les formules, bien d'exemple, effacement complet. |
+| **Accueil** | Nom du bien et contexte (« Acquis en septembre 2026 », « Projet en cours »). Contrôle **Prévu / Réel** (seulement si un montant réel de référence existe), avec une ligne « N montants encore prévus » ; un petit rond creux ◦ marque les indicateurs concernés. Grande carte **cash-flow** (« +82 € par mois »), avec une barre revenus / dépenses et l'effort d'épargne s'il est négatif. 4 cartes : rentabilité nette (avec « vs 7,4 % prévu »), loyer, mensualité, coût du projet. Carte **Réalisé** (argent injecté, solde net). Encadré « À vérifier ». Toucher une carte affiche son calcul et sa formule. |
+| **Projet** | Lecture d'abord : le bien, puis **Acquisition**, **Financement** (mensualité, montant, durée, taux, barre capital / intérêts / assurance), **Location**, **Charges**. Chaque rubrique affiche son total et ses lignes (réel, ou « prévu X » en secondaire). « Modifier » ouvre le formulaire Prévu / Réel de la rubrique dans un panneau, avec l'état d'enregistrement. |
+| **Mouvements** | Liste groupée par jour (« 5 novembre »), icône par catégorie, recettes « + » en vert et dépenses « − » en encre neutre. Totaux, filtre, bouton + toujours accessible. Ajout rapide : type, grand montant, pastilles des catégories fréquentes (liste complète dans « Autre catégorie… »), date, note. Montant suggéré pour le loyer, la mensualité et l'assurance. « Copier au mois suivant ». |
+| **Analyse** | Depuis l'achat : solde net du projet en grand, recettes, dépenses courantes, résultat d'exploitation, apport, argent personnel injecté (estimation), résultat mois par mois (barres). Prévu / Réel sans tableau (valeur réelle, prévu en secondaire, écart en pastille). Rentabilité (nette, brute, rendement de l'apport, charges, investi). Composition du coût du projet. |
+| **Réglages** | **Sauvegarde** en premier (« Sauvegarder mes données → Exporter », « Restaurer une sauvegarde → Choisir un fichier », rappel rassurant). Mes biens, confidentialité, toutes les formules, bien d'exemple, zone sensible (effacement) séparée. |
 
-Au premier lancement, un écran d'accueil propose de créer son projet, de découvrir un exemple (« Appartement Saint-Étienne ») ou de restaurer une sauvegarde.
+Au premier lancement, un écran d'accueil propose de créer son projet (l'éditeur Acquisition s'ouvre directement), de découvrir un exemple (« Appartement Saint-Étienne ») ou de restaurer une sauvegarde.
 
-**Principes UX** : boutons et champs de 44 à 48 px de haut, clavier numérique décimal (virgule acceptée), champ vide = « non renseigné », panneaux qui montent du bas plutôt que de nouvelles pages, aide « i » plutôt que des infobulles (inutilisables au doigt), mode sombre automatique, animations réduites si le système le demande.
+**Principes UX** :
+- boutons et champs de 48 px, montants saisis avec le clavier numérique et affichés avec des séparateurs (« 60 000 ») ;
+- champ vide = « non renseigné » ;
+- panneaux qui montent du bas plutôt que de nouvelles pages ;
+- aide « i » plutôt que des infobulles ;
+- mode sombre automatique ;
+- animations brèves, désactivées si le système le demande.
 
 ## 5. Modèle de données
 
@@ -186,9 +203,9 @@ src/
     backup.ts      export, import, versions, migrations
     schema.ts      validation stricte de toutes les données lues
   state/         store React (contexte) + persister.ts (écriture fiable, testée sans React)
-  ui/            composants génériques (champs, panneaux, dialogues, icônes)
-  screens/       les écrans (Accueil, Projet, Mouvements, Réglages, Bienvenue)
-  styles/        une feuille de style (thème clair/sombre)
+  ui/            composants génériques : Display (montants, cartes, sections, barres), champs, panneaux, dialogues, icônes, logo
+  screens/       les écrans (Accueil, Projet, Mouvements, Analyse, Réglages, Bienvenue) + shared.tsx
+  styles/        une feuille de style : design system à base de tokens (thème clair/sombre), voir docs/DESIGN.md
 tests/           tests Vitest
 docs/            FORMULES.md
 scripts/         génération des icônes
@@ -248,7 +265,7 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 npm test
 ```
 
-**167 tests** (Vitest, 10 fichiers) dans `tests/` :
+**178 tests** (Vitest, 12 fichiers) dans `tests/` :
 
 | Fichier | Couverture |
 |---|---|
@@ -256,6 +273,8 @@ npm test
 | `metrics.test.ts` | coût total, travaux importants, rentabilités brute et nette, charges récupérables neutres, vacance et impayés, loyer nul, coût nul, conversion des charges, cash-flow, effort d'épargne, aucun apport, aucun crédit, emprunt > coût, rendement de l'apport, données incomplètes, distinction prévu/réel, réel à 0 €, mensualité réelle vs prévue, mouvements et paiements partiels |
 | `reference.test.ts` | **Prévu / Réel / Réalisé** : projet avec un mouvement mais sans réel de référence, montants confirmés / encore prévus par indicateur, mensualité confirmée |
 | `journal.test.ts` | **argent personnel injecté** (cas 1, 2, 3 de l'audit), **solde net**, alternance de mois déficitaires et bénéficiaires, identité solde net = trésorerie − injecté, absence de double comptage, **charges récupérées neutres**, écart réel / réalisé (notaire 5 000 € prévu, 5 400 € payés) |
+| `presentation.test.ts` | **v1.1.0** : séparateurs de milliers dans les champs (aller-retour exact avec la lecture), découpage nombre / signe / unité des montants et pourcentages, libellés de jour |
+| `ui.test.tsx` | **v1.1.0** : rendu des composants d'affichage (libellés accessibles, signe « − », barres proportionnelles, état vide), icône pour chaque catégorie |
 | `persister-replace.test.ts` | **v1.0.2** : course de l'audit reproduite (sauvegarde de A′ en cours, puis restauration de B : A′ n'est jamais réécrit après), échec puis restauration, timer en attente, deux restaurations rapprochées, modification après et pendant une restauration, restauration en échec, effacement pendant une écriture |
 | `pwa.test.ts` | **v1.0.2** : icônes du manifeste présentes (dont maskable), manifeste relatif, ressources de `index.html`, précache de tout `public/` |
 | `persister.test.ts` | **échec d'écriture IndexedDB**, nouvelle tentative automatique et manuelle, échec partiel rejoué, **sauvegardes successives** et écritures concurrentes, ancienne écriture terminant après une nouvelle modification, remplacement complet |
@@ -303,4 +322,4 @@ L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, 
 
 ---
 
-Version **1.0.2** — voir [CHANGELOG.md](CHANGELOG.md).
+Version **1.1.0** — voir [CHANGELOG.md](CHANGELOG.md).

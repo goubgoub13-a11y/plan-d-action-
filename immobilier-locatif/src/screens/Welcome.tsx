@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../state/store';
 import { TextInput } from '../ui/Fields';
 import { Icon } from '../ui/Icon';
+import { Logo } from '../ui/Logo';
 import { ImportButton } from './BackupActions';
 
 export function Welcome({ onCreated }: { onCreated: () => void }) {
@@ -9,12 +10,12 @@ export function Welcome({ onCreated }: { onCreated: () => void }) {
   const [name, setName] = useState('');
   return (
     <div className="welcome">
-      <div className="welcome-logo" aria-hidden="true">
-        <Icon name="home" size={40} />
+      <div className="welcome-logo">
+        <Logo />
       </div>
       <h1>Mon bien locatif</h1>
       <p className="lead">
-        Combien votre appartement vous coûte, ce qu'il vous rapporte, et s'il est vraiment rentable. Du projet jusqu'au
+        Ce que votre appartement vous coûte, ce qu'il vous rapporte, et s'il est vraiment rentable. Du projet jusqu'au
         suivi de ce que vous payez et encaissez.
       </p>
       <form
@@ -34,12 +35,12 @@ export function Welcome({ onCreated }: { onCreated: () => void }) {
         </button>
       </form>
       <div className="stack">
-        <button className="btn btn-ghost" onClick={addSample}>
+        <button className="btn btn-secondary" onClick={addSample}>
           Découvrir avec un exemple
         </button>
         <ImportButton />
       </div>
-      <p className="muted small center">
+      <p className="welcome-foot">
         <Icon name="shield" size={15} /> Sans compte. Vos données restent sur cet appareil.
       </p>
     </div>

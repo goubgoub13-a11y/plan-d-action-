@@ -1,5 +1,37 @@
 # Historique des versions
 
+## 1.1.0 — 2026-10-03
+
+Refonte du design et de l'expérience. **Aucun changement du moteur métier** : modèle de données, calculs, stockage, persister, import/export, Prévu / Réel / Réalisé, PWA et mode hors connexion sont ceux de la 1.0.2. Les 167 tests existants passent sans modification. Audit de l'interface et design system : [docs/DESIGN.md](docs/DESIGN.md).
+
+**Identité**
+- Direction « patrimonial calme » : fond pierre, une seule couleur de marque (vert sapin), couleurs fonctionnelles rares, terre cuite plutôt que rouge vif.
+- Nouveau monogramme (un toit et trois barres montantes) pour l'écran d'accueil et toutes les icônes de la PWA. `theme-color` clair et sombre.
+- Design system à base de tokens (couleurs, surfaces, typographie, espacements en base 4, rayons, ombres, durées d'animation). Mode sombre retravaillé avec les mêmes tokens.
+
+**Écrans**
+- **Accueil** :
+  - grande carte cash-flow avec barre revenus / dépenses ;
+  - 4 indicateurs au lieu de 8, et une carte « Réalisé » ;
+  - encadré « À vérifier » ;
+  - le contrôle Prévu / Réel n'apparaît que lorsqu'il est utile.
+- **Analyse** (nouvel onglet) :
+  - solde net du projet et résultat par mois ;
+  - Prévu / Réel sans tableau (valeur réelle, prévu, écart) ;
+  - rentabilité et composition du coût.
+- **Projet** : lecture d'abord, chaque rubrique affichant son total et ses lignes. « Modifier » ouvre le formulaire dans un panneau, avec l'état d'enregistrement. La synthèse du financement affiche une barre capital / intérêts / assurance.
+- **Mouvements** : regroupement par jour, icône par catégorie, recettes en vert et dépenses en encre neutre. Ajout rapide : grand montant, pastilles de catégories fréquentes, bouton « Ajouter 620 € ».
+- **Réglages** : la sauvegarde en premier, formulée sans jargon. L'effacement est isolé dans une « zone sensible ».
+- Messages d'erreur reformulés : « Impossible d'enregistrer vos modifications. Vos données sont toujours visibles… ».
+
+**Composants** : `Amount`, `Percent`, `Stat`, `Section`, `Line`, `DeltaPill`, `StackBar`, `Legend`, `EmptyState`, `Logo` ; contrôle segmenté à indicateur glissant ; jeu d'icônes unifié ; champs de montant avec séparateurs de milliers.
+
+**Micro-interactions** : apparitions et transitions brèves, indicateur glissant, appui, panneaux, confirmations. Toutes sont désactivées si `prefers-reduced-motion` est actif.
+
+**Dépendances** : aucune ajoutée.
+
+**Tests** : 167 → 178 (`presentation.test.ts`, `ui.test.tsx`). Aucun test existant supprimé ni modifié.
+
 ## 1.0.2 — 2026-10-03
 
 Sécurisation du socle, sans nouvelle fonctionnalité. Schéma de sauvegarde et base locale inchangés.

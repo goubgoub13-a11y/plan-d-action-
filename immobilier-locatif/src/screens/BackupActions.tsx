@@ -55,7 +55,7 @@ export function useExport() {
   return { download, share };
 }
 
-export function ImportButton({ className = 'btn btn-ghost', label = 'Restaurer une sauvegarde' }: { className?: string; label?: string }) {
+export function ImportButton({ className = 'btn btn-secondary', label = 'Restaurer une sauvegarde' }: { className?: string; label?: string }) {
   const { data, replaceAll } = useStore();
   const { confirm, toast } = useDialogs();
   const input = useRef<HTMLInputElement>(null);

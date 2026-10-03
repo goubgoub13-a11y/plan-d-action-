@@ -57,7 +57,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
             <h2>{pending.title}</h2>
             {pending.message && <div className="dialog-msg">{pending.message}</div>}
             <div className="dialog-actions">
-              <button type="button" className="btn btn-ghost" onClick={() => close(false)}>
+              <button type="button" className="btn btn-secondary" onClick={() => close(false)}>
                 {pending.cancelLabel ?? 'Annuler'}
               </button>
               <button

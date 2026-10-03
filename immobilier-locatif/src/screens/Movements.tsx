@@ -1,23 +1,15 @@
 import { useMemo, useState } from 'react';
 import { allCategories, getCategory, isRecoverableCategory, type Category, type CategoryGroup } from '../domain/categories';
 import type { Movement, MovementType, Property } from '../domain/types';
-import { addOneMonth, dateFr, eur, eur2, eurSigned, monthFr, todayIso } from '../lib/format';
+import { addOneMonth, dateFr, dayLabel, eur, eur2, todayIso } from '../lib/format';
 import { newId } from '../lib/id';
 import { useProperty, useStore } from '../state/store';
 import { usePropertyMetrics } from '../state/useMetrics';
 import { useDialogs } from '../ui/Dialogs';
+import { Amount, EmptyState } from '../ui/Display';
 import { NumberInput, Segmented, TextInput } from '../ui/Fields';
-import { Icon, type IconName } from '../ui/Icon';
+import { Icon, categoryIcon } from '../ui/Icon';
 import { Sheet } from '../ui/Sheet';
-
-const GROUP_ICON: Record<CategoryGroup, IconName> = {
-  acquisition: 'key',
-  operating: 'receipt',
-  financing: 'bank',
-  income: 'wallet',
-  recoverable: 'receipt',
-  custom: 'tag',
-};
 
 const GROUP_LABEL: Record<CategoryGroup, string> = {
   acquisition: 'Achat',
@@ -28,8 +20,15 @@ const GROUP_LABEL: Record<CategoryGroup, string> = {
   custom: 'Mes catégories',
 };
 
+/** Catégories proposées en un geste ; les autres restent dans « Autre catégorie ». */
+const QUICK: Record<MovementType, string[]> = {
+  expense: ['loanPayment', 'loanInsurance', 'propertyTax', 'coproNonRecoverable', 'works', 'repairs'],
+  income: ['rent', 'recoveredCharges', 'otherIncome'],
+};
+
 type Filter = 'all' | MovementType;
 
+/** Mouvements — l'information la plus importante : la liste de ce qui a été payé et encaissé. */
 export function Movements() {
   const p = useProperty();
   const { data } = useStore();
@@ -38,111 +37,116 @@ export function Movements() {
   const [filter, setFilter] = useState<Filter>('all');
   const [editing, setEditing] = useState<Movement | 'new' | null>(null);
 
-  const groups = useMemo(() => {
+  const days = useMemo(() => {
     const list = p.movements
       .filter((m) => filter === 'all' || m.type === filter)
       .slice()
       .sort((a, b) => (a.date === b.date ? 0 : a.date < b.date ? 1 : -1));
-    const byMonth = new Map<string, Movement[]>();
+    const byDay = new Map<string, Movement[]>();
     for (const m of list) {
-      const k = m.date.slice(0, 7);
-      if (!byMonth.has(k)) byMonth.set(k, []);
-      byMonth.get(k)!.push(m);
+      if (!byDay.has(m.date)) byDay.set(m.date, []);
+      byDay.get(m.date)!.push(m);
     }
-    return [...byMonth.entries()];
+    return [...byDay.entries()];
   }, [p.movements, filter]);
 
   return (
     <div className="screen">
-      <header className="screen-head">
+      <header className="page-head">
+        <p className="eyebrow">Réalisé</p>
         <h1>Mouvements</h1>
-        <p className="muted">Le réalisé : ce que vous avez réellement payé et encaissé.</p>
       </header>
 
-      <section className="card totals">
-        <div>
-          <span className="kpi-label">Payé</span>
-          <strong>{eur(journal.spent)}</strong>
-        </div>
-        <div>
-          <span className="kpi-label">Encaissé</span>
-          <strong>{eur(journal.received)}</strong>
-        </div>
-        <div>
-          <span className="kpi-label">Exploitation</span>
-          <strong className={journal.operatingResult >= 0 ? 'pos' : 'neg'}>{eurSigned(journal.operatingResult)}</strong>
-        </div>
-      </section>
-
-      {p.movements.length > 0 && (
-        <Segmented
-          label="Filtrer"
-          value={filter}
-          onChange={setFilter}
-          options={[
-            { value: 'all', label: 'Tout' },
-            { value: 'expense', label: 'Dépenses' },
-            { value: 'income', label: 'Recettes' },
-          ]}
-        />
-      )}
-
       {p.movements.length === 0 ? (
-        <section className="card empty-card">
-          <Icon name="list" size={30} />
-          <h2>Aucun mouvement</h2>
-          <p className="muted">
-            Notez chaque dépense et chaque loyer encaissé : frais de notaire, travaux, mensualités, taxe foncière, loyers…
-            Ils alimentent le suivi réalisé de votre projet (argent injecté, solde net). Les montants réels de
+        <div className="card">
+          <EmptyState
+            icon="swap"
+            title="Aucun mouvement pour le moment"
+            action={
+              <button className="btn btn-primary" onClick={() => setEditing('new')}>
+                <Icon name="plus" size={18} /> Ajouter un mouvement
+              </button>
+            }
+          >
+            Ajoutez votre premier loyer ou votre première dépense pour commencer le suivi réalisé. Les montants de
             référence (prix signé, mensualité de la banque…) se saisissent, eux, dans « Projet ».
-          </p>
-          <button className="btn btn-primary" onClick={() => setEditing('new')}>
-            <Icon name="plus" size={18} /> Premier mouvement
-          </button>
-        </section>
-      ) : groups.length === 0 ? (
-        <p className="muted center">Rien dans ce filtre.</p>
+          </EmptyState>
+        </div>
       ) : (
-        groups.map(([month, items]) => (
-          <section key={month} className="mv-group">
-            <h2 className="mv-month">{monthFr(month)}</h2>
-            <div className="card list">
-              {items.map((m) => {
-                const cat = getCategory(m.categoryId, custom);
-                return (
-                  <button key={m.id} className="mv-row" onClick={() => setEditing(m)}>
-                    <span className={`mv-icon ${m.type}`}>
-                      <Icon name={GROUP_ICON[cat.group]} size={19} />
-                    </span>
-                    <span className="mv-text">
-                      <strong>{cat.label}</strong>
-                      <span className="muted small">
-                        {dateFr(m.date)}
-                        {m.note && ` · ${m.note}`}
-                      </span>
-                    </span>
-                    <span className={`mv-amount ${m.type === 'income' ? 'pos' : ''}`}>
-                      {m.type === 'income' ? '+' : '−'}
-                      {eur2(m.amount).replace('-', '')}
-                    </span>
-                  </button>
-                );
-              })}
+        <>
+          <div className="flow-summary" aria-label="Totaux hors charges récupérables">
+            <div>
+              <span className="mini-label">Encaissé</span>
+              <Amount value={journal.received} size="lg" />
             </div>
-          </section>
-        ))
-      )}
+            <div>
+              <span className="mini-label">Payé</span>
+              <Amount value={journal.spent} size="lg" />
+            </div>
+            <div>
+              <span className="mini-label">Exploitation</span>
+              <Amount value={journal.operatingResult} size="lg" signed tone={journal.operatingResult >= 0 ? 'pos' : undefined} />
+            </div>
+          </div>
 
-      <p className="muted small center fab-spacer">
-        « Exploitation » : recettes − dépenses courantes (crédit, charges, taxes…), hors achat. Les charges récupérables
-        sont exclues des totaux : elles sont neutres.
-      </p>
+          <Segmented
+            small
+            label="Filtrer"
+            value={filter}
+            onChange={setFilter}
+            options={[
+              { value: 'all', label: 'Tout' },
+              { value: 'expense', label: 'Dépenses' },
+              { value: 'income', label: 'Recettes' },
+            ]}
+          />
+
+          {days.length === 0 ? (
+            <p className="section-empty center">Rien dans ce filtre.</p>
+          ) : (
+            <div className="day-list">
+              {days.map(([day, items]) => (
+                <section key={day} className="day-group" aria-label={dayLabel(day)}>
+                  <h2 className="day-head">{dayLabel(day)}</h2>
+                  <div className="list-card">
+                    {items.map((m) => {
+                      const cat = getCategory(m.categoryId, custom);
+                      const neutral = cat.group === 'recoverable';
+                      return (
+                        <button key={m.id} className="mv-row" onClick={() => setEditing(m)}>
+                          <span className={`mv-icon ${m.type}${neutral ? ' neutral' : ''}`} aria-hidden="true">
+                            <Icon name={categoryIcon(cat.id, cat.group)} size={19} />
+                          </span>
+                          <span className="mv-text">
+                            <span className="mv-label">{cat.label}</span>
+                            {(m.note || neutral) && <span className="mv-note">{m.note || 'neutre'}</span>}
+                          </span>
+                          <span className={`mv-amount ${m.type === 'income' ? 'is-in' : 'is-out'}`}>
+                            {m.type === 'income' ? '+' : '−'}
+                            {eur2(m.amount).replace('-', '')}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+
+          <p className="footnote">
+            Totaux hors charges récupérables (neutres). « Exploitation » = recettes − dépenses courantes, hors achat.
+          </p>
+        </>
+      )}
 
       <button className="fab" aria-label="Ajouter un mouvement" onClick={() => setEditing('new')}>
         <Icon name="plus" size={26} />
       </button>
 
-      {editing && <MovementSheet key={editing === 'new' ? 'new' : editing.id} property={p} movement={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
+      {editing && (
+        <MovementSheet key={editing === 'new' ? 'new' : editing.id} property={p} movement={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />
+      )}
     </div>
   );
 }
@@ -167,6 +171,8 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
     (acc[c.group] ??= []).push(c);
     return acc;
   }, {});
+  const quick = QUICK[type].map((id) => getCategory(id, custom));
+  const inQuick = QUICK[type].includes(categoryId);
 
   /** Montant suggéré pour les mouvements récurrents (loyer, mensualité, assurance). */
   const suggest = (id: string): number | null => {
@@ -176,7 +182,14 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
     return null;
   };
 
-  const valid = amount !== null && amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(date) && categoryId !== '' && (categoryId !== NEW_CATEGORY || newCat.trim() !== '');
+  const choose = (id: string) => {
+    setCategoryId(id);
+    const s = suggest(id);
+    if (amount === null && s) setAmount(Math.round(s * 100) / 100);
+  };
+
+  const valid =
+    amount !== null && amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(date) && categoryId !== '' && (categoryId !== NEW_CATEGORY || newCat.trim() !== '');
 
   const save = () => {
     if (!valid) return;
@@ -188,7 +201,7 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
       if (i >= 0) d.movements[i] = mv;
       else d.movements.push(mv);
     });
-    toast(movement ? 'Mouvement modifié' : 'Mouvement ajouté');
+    toast(movement ? 'Mouvement modifié' : `${type === 'income' ? 'Recette' : 'Dépense'} de ${eur2(mv.amount)} ajoutée`);
     onClose();
   };
 
@@ -202,7 +215,14 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
 
   const remove = async () => {
     if (!movement) return;
-    if (await confirm({ title: 'Supprimer ce mouvement ?', message: `${getCategory(movement.categoryId, custom).label} · ${eur2(movement.amount)}`, confirmLabel: 'Supprimer', danger: true })) {
+    if (
+      await confirm({
+        title: 'Supprimer ce mouvement ?',
+        message: `${getCategory(movement.categoryId, custom).label} · ${eur2(movement.amount)}`,
+        confirmLabel: 'Supprimer',
+        danger: true,
+      })
+    ) {
       updateProperty(property.id, (d) => void (d.movements = d.movements.filter((x) => x.id !== movement.id)));
       toast('Mouvement supprimé');
       onClose();
@@ -217,14 +237,14 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
       footer={
         <>
           <button className="btn btn-primary wide" disabled={!valid} onClick={save}>
-            Enregistrer
+            {movement ? 'Enregistrer' : `Ajouter${amount ? ` ${eur(amount)}` : ''}`}
           </button>
           {movement && (
             <div className="sheet-secondary">
-              <button className="btn btn-ghost" onClick={duplicateNextMonth}>
+              <button className="btn btn-secondary" onClick={duplicateNextMonth}>
                 <Icon name="copy" size={18} /> Copier au mois suivant
               </button>
-              <button className="btn btn-ghost danger" onClick={remove}>
+              <button className="btn btn-secondary is-danger" onClick={remove}>
                 <Icon name="trash" size={18} /> Supprimer
               </button>
             </div>
@@ -244,25 +264,38 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
           { value: 'income', label: 'Recette' },
         ]}
       />
-      <div className="field">
-        <span>Montant</span>
-        <NumberInput big label="Montant" value={amount} onChange={setAmount} autoFocus={!movement} />
+
+      <div className={`amount-entry ${type === 'income' ? 'is-in' : 'is-out'}`}>
+        <span className="amount-entry-sign" aria-hidden="true">
+          {type === 'income' ? '+' : '−'}
+        </span>
+        <NumberInput big label="Montant" value={amount} onChange={setAmount} autoFocus={!movement} placeholder="0" />
       </div>
-      <label className="field">
+
+      <div className="field">
         <span>Catégorie</span>
+        <div className="chip-grid" role="radiogroup" aria-label="Catégorie">
+          {quick.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              role="radio"
+              aria-checked={categoryId === c.id}
+              className={`cat-chip${categoryId === c.id ? ' on' : ''}`}
+              onClick={() => choose(c.id)}
+            >
+              <Icon name={categoryIcon(c.id, c.group)} size={16} />
+              {c.label}
+            </button>
+          ))}
+        </div>
         <select
-          className="text-input"
-          value={categoryId}
-          onChange={(e) => {
-            const id = e.target.value;
-            setCategoryId(id);
-            const s = suggest(id);
-            if (amount === null && s) setAmount(Math.round(s * 100) / 100);
-          }}
+          className={`text-input select${!inQuick && categoryId ? ' has-value' : ''}`}
+          aria-label="Autre catégorie"
+          value={inQuick ? '' : categoryId}
+          onChange={(e) => choose(e.target.value)}
         >
-          <option value="" disabled>
-            Choisir…
-          </option>
+          <option value="">Autre catégorie…</option>
           {(Object.keys(grouped) as CategoryGroup[]).map((g) => (
             <optgroup key={g} label={GROUP_LABEL[g]}>
               {grouped[g].map((c) => (
@@ -274,12 +307,9 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
           ))}
           <option value={NEW_CATEGORY}>+ Nouvelle catégorie…</option>
         </select>
-      </label>
+      </div>
       {isRecoverableCategory(categoryId) && (
-        <p className="field-hint">
-          Neutre : les charges récupérables transitent pour le compte du locataire. Elles n'augmentent ni votre résultat ni
-          votre rentabilité.
-        </p>
+        <p className="note">Neutre : les charges récupérables transitent pour le compte du locataire. Elles n'augmentent ni votre résultat ni votre rentabilité.</p>
       )}
       {categoryId === NEW_CATEGORY && (
         <label className="field">
@@ -287,10 +317,12 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
           <TextInput label="Nom de la nouvelle catégorie" value={newCat} onChange={setNewCat} maxLength={80} autoFocus />
         </label>
       )}
-      <label className="field">
-        <span>Date</span>
-        <input type="date" className="text-input" value={date} onChange={(e) => setDate(e.target.value)} />
-      </label>
+      <div className="field-row">
+        <label className="field">
+          <span>Date</span>
+          <input type="date" className="text-input" value={date} onChange={(e) => setDate(e.target.value)} />
+        </label>
+      </div>
       <label className="field">
         <span>Note (facultatif)</span>
         <TextInput label="Note" value={note} onChange={setNote} placeholder="Ex. : Peinture du séjour" maxLength={300} />

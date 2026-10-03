@@ -3,68 +3,240 @@ import { monthlyPayment } from '../calc/loan';
 import { annualEquivalent, monthlyEquivalent, type Metrics } from '../calc/metrics';
 import { expensesInCategory, resolveInputs } from '../calc/resolve';
 import { ACQUISITION_LABELS } from '../domain/categories';
-import type { AcquisitionKey, Amount, Frequency, Property, Scenario } from '../domain/types';
-import { durationLabel, eur, eur2, eurOrDash, eurSigned, pctFmt, plain, todayIso } from '../lib/format';
+import { ACQUISITION_KEYS, type AcquisitionKey, type Amount, type Frequency, type Property, type Scenario } from '../domain/types';
+import { dateFr, durationLabel, eur, eur2, eurOrDash, eurSigned, pctFmt, plain, todayIso } from '../lib/format';
 import { newId } from '../lib/id';
 import { useProperty, useStore } from '../state/store';
 import { usePropertyMetrics, type PropertyMetrics } from '../state/useMetrics';
 import { useDialogs } from '../ui/Dialogs';
+import { Amount as Money, Legend, Line as Row, Section, StackBar } from '../ui/Display';
 import { DualRow, Info, NumberInput, Segmented, TextInput } from '../ui/Fields';
 import { Icon } from '../ui/Icon';
 import { Sheet } from '../ui/Sheet';
 import { EXPLAIN } from './explain';
-import { Row } from './Home';
 import type { ProjectSection } from './nav';
 
-const SECTIONS: { value: ProjectSection; label: string }[] = [
-  { value: 'purchase', label: 'Achat' },
-  { value: 'financing', label: 'Financement' },
-  { value: 'rental', label: 'Location' },
-  { value: 'charges', label: 'Charges' },
-];
+const EDITOR_TITLES: Record<ProjectSection, string> = {
+  property: 'Le bien',
+  purchase: 'Acquisition',
+  financing: 'Financement',
+  rental: 'Location',
+  charges: 'Charges',
+};
 
 type Update = (recipe: (d: Property) => void) => void;
 
-export function Project({ section, setSection }: { section: ProjectSection; setSection: (s: ProjectSection) => void }) {
+/** Montant de référence d'une ligne : réel s'il est connu, sinon prévu. */
+const ref = (a: Amount) => a.actual ?? a.planned;
+const FREQ_SHORT: Record<Frequency, string> = { monthly: '/mois', yearly: '/an', once: 'une fois' };
+
+/**
+ * Projet — lecture d'abord : chaque rubrique affiche son total et ses lignes.
+ * « Modifier » ouvre le formulaire de la rubrique dans un panneau (mêmes champs, mêmes règles).
+ */
+export function Project({ editing, setEditing }: { editing: ProjectSection | null; setEditing: (s: ProjectSection | null) => void }) {
   const p = useProperty();
-  const { updateProperty } = useStore();
+  const { updateProperty, saveStatus } = useStore();
   const pm = usePropertyMetrics(p);
   const update: Update = (recipe) => updateProperty(p.id, recipe);
+  const { planned, actual, showReal } = pm;
+  const m = showReal ? actual : planned;
+
+  const showDiff = (a: Amount) => showReal && a.actual !== null && a.planned !== null && Math.abs(a.actual - a.planned) >= 0.5;
+  const valueOf = (a: Amount, unit = '') => (ref(a) === null ? '—' : `${eur(ref(a)!)}${unit}`);
+  const acqLines = ACQUISITION_KEYS.filter((k) => ref(p.acquisition[k]) !== null);
+  const chargeLines = p.charges.filter((c) => ref(c.amount) !== null);
+  const l = p.loan;
+  const loan = m.loan;
+
+  const edit = (s: ProjectSection) => (
+    <button className="btn btn-quiet" onClick={() => setEditing(s)} aria-label={`Modifier : ${EDITOR_TITLES[s]}`}>
+      <Icon name="edit" size={16} /> Modifier
+    </button>
+  );
 
   return (
     <div className="screen">
-      <header className="screen-head">
-        <h1>Projet</h1>
-        <p className="muted">{p.name}</p>
+      <header className="page-head">
+        <p className="eyebrow">Projet</p>
+        <h1>{p.name}</h1>
       </header>
-      <nav className="section-tabs" aria-label="Rubriques du projet">
-        {SECTIONS.map((s) => (
-          <button
-            key={s.value}
-            className={section === s.value ? 'on' : ''}
-            aria-current={section === s.value ? 'page' : undefined}
-            onClick={() => setSection(s.value)}
-          >
-            {s.label}
-          </button>
-        ))}
-      </nav>
-      {section === 'purchase' && <Purchase p={p} pm={pm} update={update} />}
-      {section === 'financing' && <Financing p={p} pm={pm} update={update} />}
-      {section === 'rental' && <Rental p={p} pm={pm} update={update} />}
-      {section === 'charges' && <Charges p={p} pm={pm} update={update} />}
-      <div className="next-hint">
-        {section !== 'charges' && (
-          <button
-            className="btn btn-ghost"
-            onClick={() => setSection(SECTIONS[SECTIONS.findIndex((s) => s.value === section) + 1].value)}
-          >
-            Suivant : {SECTIONS[SECTIONS.findIndex((s) => s.value === section) + 1].label}
-            <Icon name="chevron" size={18} />
-          </button>
+
+      <button className="card card-link property-card" onClick={() => setEditing('property')}>
+        <span className="property-icon" aria-hidden="true">
+          <Icon name="building" size={22} />
+        </span>
+        <span className="property-text">
+          <strong>{p.address || 'Adresse non renseignée'}</strong>
+          <span>{p.phase === 'owned' ? `Acquis${p.purchaseDate ? ` le ${dateFr(p.purchaseDate)}` : ''}` : 'En projet — simulation avant achat'}</span>
+        </span>
+        <Icon name="chevron" size={18} />
+      </button>
+
+      <Section title="Acquisition" icon="layers" headline={<Money value={m.totalCost} size="xl" />} action={edit('purchase')}>
+        {acqLines.length === 0 ? (
+          <p className="section-empty">Prix, frais de notaire, travaux… Touchez « Modifier » pour commencer.</p>
+        ) : (
+          <div className="lines">
+            {acqLines.map((k) => {
+              const a = p.acquisition[k];
+              return <Row key={k} label={ACQUISITION_LABELS[k]} value={valueOf(a)} secondary={showDiff(a) ? `prévu ${eur(a.planned!)}` : undefined} />;
+            })}
+          </div>
         )}
-      </div>
+      </Section>
+
+      <Section
+        title="Financement"
+        icon="bank"
+        headline={<Money value={loan.paymentWithInsurance} size="xl" decimals={2} />}
+        headlineUnit="par mois"
+        action={edit('financing')}
+      >
+        {m.borrowed > 0 ? (
+          <>
+            <div className="lines">
+              <Row label="Montant emprunté" value={eur(m.borrowed)} secondary={showDiff(l.borrowed) ? `prévu ${eur(l.borrowed.planned!)}` : undefined} />
+              <Row label="Apport" value={eur(m.equity)} />
+              <Row label="Durée" value={durationLabel(loan.months)} />
+              <Row label="Taux" value={ref(l.ratePct) === null ? '—' : pctFmt(ref(l.ratePct), 2)} />
+              <Row label="Assurance" value={`${eur2(loan.insuranceMonthly)} /mois`} />
+            </div>
+            {loan.paymentInconsistent ? (
+              <p className="note note-warn">La mensualité saisie ne rembourse pas le capital : coût du crédit incohérent.</p>
+            ) : (
+              loan.months > 0 && (
+                <div className="credit-cost">
+                  <div className="credit-cost-head">
+                    <span className="mini-label">Coût total remboursé</span>
+                    <Money value={loan.totalRepaid ?? 0} size="md" />
+                  </div>
+                  <StackBar
+                    label="Capital, intérêts et assurance"
+                    parts={[
+                      { label: 'Capital', value: loan.principal, tone: 'a' },
+                      { label: 'Intérêts', value: loan.interestCost ?? 0, tone: 'b' },
+                      { label: 'Assurance', value: loan.insuranceCost, tone: 'c' },
+                    ]}
+                  />
+                  <Legend
+                    items={[
+                      { tone: 'a', label: `Capital ${eur(loan.principal)}` },
+                      { tone: 'b', label: `Intérêts ${eur(loan.interestCost ?? 0)}` },
+                      { tone: 'c', label: `Assurance ${eur(loan.insuranceCost)}` },
+                    ]}
+                  />
+                </div>
+              )
+            )}
+          </>
+        ) : (
+          <p className="section-empty">Aucun crédit saisi. Montant, taux, durée : la mensualité se calcule toute seule.</p>
+        )}
+      </Section>
+
+      <Section title="Location" icon="key" headline={<Money value={m.rentAnnualNominal / 12} size="xl" />} headlineUnit="par mois, hors charges" action={edit('rental')}>
+        {ref(p.rental.rent) === null ? (
+          <p className="section-empty">Indiquez le loyer hors charges et, si besoin, une vacance locative.</p>
+        ) : (
+          <div className="lines">
+            <Row label="Loyer annuel conservé" hint="après vacance et impayés" value={eur(m.rentAnnualEffective)} />
+            <Row label="Charges récupérables" hint="payées par le locataire, neutres" value={valueOf(p.rental.recoverableCharges, ' /mois')} />
+            <Row label="Vacance locative" value={`${p.rental.vacancyMonthsPerYear.toLocaleString('fr-FR')} mois/an`} />
+            {p.rental.unpaidPct > 0 && <Row label="Provision impayés" value={`${p.rental.unpaidPct.toLocaleString('fr-FR')} %`} />}
+            {p.rental.startDate && <Row label="Début de location" value={dateFr(p.rental.startDate)} />}
+          </div>
+        )}
+      </Section>
+
+      <Section title="Charges" icon="receipt" headline={<Money value={m.chargesMonthly} size="xl" />} headlineUnit="par mois" action={edit('charges')}>
+        {chargeLines.length === 0 ? (
+          <p className="section-empty">Taxe foncière, assurance PNO, copropriété… Ajoutez vos charges de propriétaire.</p>
+        ) : (
+          <div className="lines">
+            {chargeLines.map((c) => (
+              <Row
+                key={c.id}
+                label={c.label}
+                value={`${eur(ref(c.amount)!)} ${FREQ_SHORT[c.frequency]}`}
+                secondary={showDiff(c.amount) ? `prévu ${eur(c.amount.planned!)}` : undefined}
+              />
+            ))}
+          </div>
+        )}
+      </Section>
+
+      <Sheet
+        open={editing !== null}
+        title={editing ? EDITOR_TITLES[editing] : ''}
+        onClose={() => setEditing(null)}
+        footer={
+          <div className="editor-foot">
+            <span className={`save-state save-${saveStatus}`} aria-live="polite">
+              {saveStatus === 'saved' ? (
+                <>
+                  <Icon name="check" size={16} /> Enregistré sur l'appareil
+                </>
+              ) : saveStatus === 'error' ? (
+                'Enregistrement en attente'
+              ) : (
+                'Enregistrement…'
+              )}
+            </span>
+            <button className="btn btn-primary" onClick={() => setEditing(null)}>
+              Terminé
+            </button>
+          </div>
+        }
+      >
+        <div className="editor">
+          {editing === 'property' && <PropertyEditor p={p} update={update} />}
+          {editing === 'purchase' && <Purchase p={p} pm={pm} update={update} />}
+          {editing === 'financing' && <Financing p={p} pm={pm} update={update} />}
+          {editing === 'rental' && <Rental p={p} pm={pm} update={update} />}
+          {editing === 'charges' && <Charges p={p} pm={pm} update={update} />}
+        </div>
+      </Sheet>
     </div>
+  );
+}
+
+function PropertyEditor({ p, update }: { p: Property; update: Update }) {
+  return (
+    <section className="card">
+      <label className="field">
+        <span>Nom</span>
+        <TextInput label="Nom du bien" value={p.name} onChange={(v) => update((d) => void (d.name = v))} placeholder="Appartement Saint-Étienne" />
+      </label>
+      <label className="field">
+        <span>Adresse ou ville (facultatif)</span>
+        <TextInput label="Adresse" value={p.address} onChange={(v) => update((d) => void (d.address = v))} />
+      </label>
+      <div className="switch-row">
+        <div>
+          <strong>J'ai acheté ce bien</strong>
+          <p className="field-hint">Affiche les colonnes « Réel » pour saisir les montants définitifs.</p>
+        </div>
+        <button
+          role="switch"
+          aria-checked={p.phase === 'owned'}
+          aria-label="J'ai acheté ce bien"
+          className={`switch${p.phase === 'owned' ? ' on' : ''}`}
+          onClick={() =>
+            update((d) => {
+              d.phase = d.phase === 'owned' ? 'project' : 'owned';
+              if (d.phase === 'owned' && !d.purchaseDate) d.purchaseDate = todayIso();
+            })
+          }
+        />
+      </div>
+      {p.phase === 'owned' && (
+        <label className="field">
+          <span>Date d'achat</span>
+          <input type="date" className="text-input" value={p.purchaseDate ?? ''} onChange={(e) => update((d) => void (d.purchaseDate = e.target.value || null))} />
+        </label>
+      )}
+    </section>
   );
 }
 
@@ -141,52 +313,6 @@ function Purchase({ p, pm, update }: { p: Property; pm: PropertyMetrics; update:
 
   return (
     <>
-      <section className="card">
-        <h2 className="card-h">Le bien</h2>
-        <label className="field">
-          <span>Nom</span>
-          <TextInput
-            label="Nom du bien"
-            value={p.name}
-            onChange={(v) => update((d) => void (d.name = v))}
-            placeholder="Appartement Saint-Étienne"
-          />
-        </label>
-        <label className="field">
-          <span>Adresse ou ville (facultatif)</span>
-          <TextInput label="Adresse" value={p.address} onChange={(v) => update((d) => void (d.address = v))} />
-        </label>
-        <div className="switch-row">
-          <div>
-            <strong>J'ai acheté ce bien</strong>
-            <p className="muted small">Affiche les colonnes « Réel » pour saisir les montants effectivement payés.</p>
-          </div>
-          <button
-            role="switch"
-            aria-checked={p.phase === 'owned'}
-            aria-label="J'ai acheté ce bien"
-            className={`switch${p.phase === 'owned' ? ' on' : ''}`}
-            onClick={() =>
-              update((d) => {
-                d.phase = d.phase === 'owned' ? 'project' : 'owned';
-                if (d.phase === 'owned' && !d.purchaseDate) d.purchaseDate = todayIso();
-              })
-            }
-          />
-        </div>
-        {p.phase === 'owned' && (
-          <label className="field">
-            <span>Date d'achat</span>
-            <input
-              type="date"
-              className="text-input"
-              value={p.purchaseDate ?? ''}
-              onChange={(e) => update((d) => void (d.purchaseDate = e.target.value || null))}
-            />
-          </label>
-        )}
-      </section>
-
       <Summary
         label="Coût total d'acquisition"
         planned={pm.planned.totalCost}
@@ -616,11 +742,11 @@ function Charges({ p, pm, update }: { p: Property; pm: PropertyMetrics; update: 
 
       <div className="stack">
         {empty.length > 0 && (
-          <button className="btn btn-ghost" onClick={() => setShowEmpty((s) => !s)}>
+          <button className="btn btn-secondary" onClick={() => setShowEmpty((s) => !s)}>
             {showEmpty ? 'Masquer les rubriques vides' : `Afficher les autres rubriques (${empty.length})`}
           </button>
         )}
-        <button className="btn btn-ghost" onClick={() => setAdding(true)}>
+        <button className="btn btn-secondary" onClick={() => setAdding(true)}>
           <Icon name="plus" size={18} /> Ajouter une dépense
         </button>
       </div>

@@ -112,3 +112,48 @@ export function addOneMonth(iso: string): string {
   const daysInNext = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
   return new Date(Date.UTC(y, m, Math.min(d, daysInNext))).toISOString().slice(0, 10);
 }
+
+/* ───────── v1.1.0 : présentation (aucun impact sur les calculs) ───────── */
+
+const groupFmt = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+
+/** Valeur affichée dans un champ hors saisie : « 60 000 », « 3,7 ». Relisible par parseDecimal. */
+export function formatInput(n: number | null): string {
+  if (n === null) return '';
+  return groupFmt.format(Math.round(n * 100) / 100);
+}
+
+export interface Parts {
+  /** « + », « − » ou vide. */
+  sign: string;
+  /** Nombre formaté sans signe ni unité : « 72 500 », « 346,10 », « 7,1 ». */
+  number: string;
+  unit: string;
+}
+
+/** Montant découpé pour une typographie soignée : grand nombre, petit « € ». */
+export function moneyParts(n: number, opts: { signed?: boolean; decimals?: 0 | 2 } = {}): Parts {
+  const decimals = opts.decimals ?? 0;
+  const v = clean(decimals === 0 ? Math.round(n) : Math.round(n * 100) / 100);
+  const number = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(Math.abs(v));
+  const sign = v < 0 ? '−' : opts.signed && v > 0 ? '+' : '';
+  return { sign, number, unit: '€' };
+}
+
+/** Pourcentage découpé ; « — » si non calculable. */
+export function pctParts(n: number | null, digits = 1): Parts {
+  if (n === null || !Number.isFinite(n)) return { sign: '', number: '—', unit: '' };
+  const v = clean(Number(n.toFixed(digits)));
+  return {
+    sign: v < 0 ? '−' : '',
+    number: Math.abs(v).toLocaleString('fr-FR', { minimumFractionDigits: digits, maximumFractionDigits: digits }),
+    unit: '%',
+  };
+}
+
+/** En-tête de jour dans une liste : « 5 novembre », ou « 5 novembre 2025 » hors année courante. */
+export function dayLabel(iso: string, now = new Date()): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  return y === now.getFullYear() ? `${d} ${MONTHS[m - 1]}` : `${d} ${MONTHS[m - 1]} ${y}`;
+}

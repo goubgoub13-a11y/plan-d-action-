@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { QuarantineEntry } from '../storage/types';
-import { todayIso } from '../lib/format';
-import { daysSince, dateFr } from '../lib/format';
+import { daysSince, dateFr, todayIso } from '../lib/format';
+import { Section } from '../ui/Display';
 import { useStore } from '../state/store';
 import { useDialogs } from '../ui/Dialogs';
 import { Formula, Info, TextInput } from '../ui/Fields';
@@ -25,13 +25,17 @@ export function Settings() {
 
   return (
     <div className="screen">
-      <header className="screen-head">
+      <header className="page-head">
+        <p className="eyebrow">Mon bien locatif</p>
         <h1>Réglages</h1>
       </header>
 
       {(storageIssues.length > 0 || quarantine.length > 0) && (
-        <section className="card warn-card">
-          <h2 className="card-h">Données locales endommagées</h2>
+        <section className="card notice" aria-label="Données locales endommagées">
+          <div className="notice-head">
+            <Icon name="alert" size={18} />
+            <h2>Données locales endommagées</h2>
+          </div>
           <p className="small">
             Certaines données enregistrées sur cet appareil n'ont pas pu être lues correctement. Ce qui était lisible a été
             conservé. Rien n'a été effacé : une copie brute des éléments concernés est gardée à part.
@@ -45,7 +49,7 @@ export function Settings() {
           )}
           <div className="stack">
             <button
-              className="btn btn-ghost"
+              className="btn btn-secondary"
               disabled={quarantine.length === 0}
               onClick={() => {
                 const blob = new Blob([JSON.stringify({ app: 'immobilier-locatif', kind: 'quarantine', entries: quarantine }, null, 2)], {
@@ -64,7 +68,7 @@ export function Settings() {
               <Icon name="download" size={18} /> Télécharger la copie ({quarantine.length})
             </button>
             <button
-              className="btn btn-ghost"
+              className="btn btn-secondary"
               onClick={async () => {
                 const ok = await confirm({
                   title: 'Supprimer la copie des données endommagées ?',
@@ -85,8 +89,39 @@ export function Settings() {
         </section>
       )}
 
-      <section className="card">
-        <h2 className="card-h">Mes biens</h2>
+      <Section title="Sauvegarde" icon="shieldCheck">
+        <p className={`backup-status${!last || daysSince(last) > 30 ? ' is-warn' : ''}`}>
+          {last ? `Dernière sauvegarde exportée le ${dateFr(last.slice(0, 10))}` : 'Aucune sauvegarde exportée pour le moment'}
+        </p>
+        <div className="action-list">
+          <div className="action-item">
+            <span className="action-text">
+              <strong>Sauvegarder mes données</strong>
+              <span>Un fichier à garder en lieu sûr : il permet de tout retrouver, ici ou sur un autre téléphone.</span>
+            </span>
+            <button className="btn btn-primary btn-sm" onClick={download} disabled={data.properties.length === 0}>
+              <Icon name="download" size={18} /> Exporter
+            </button>
+          </div>
+          {canShareFiles() && (
+            <button className="btn btn-quiet" onClick={share} disabled={data.properties.length === 0}>
+              Partager le fichier (Fichiers, e-mail…)
+            </button>
+          )}
+          <div className="action-item">
+            <span className="action-text">
+              <strong>Restaurer une sauvegarde</strong>
+              <span>Remplace les données de cet appareil, après confirmation.</span>
+            </span>
+            <ImportButton className="btn btn-secondary btn-sm" label="Choisir un fichier" />
+          </div>
+        </div>
+        <p className="reassure">
+          <Icon name="shield" size={16} /> Vos données restent sur votre appareil. Rien n'est envoyé sur Internet.
+        </p>
+      </Section>
+
+      <Section title="Mes biens" icon="building">
         <div className="list">
           {data.properties.map((p) => (
             <div key={p.id} className={`prop-row${p.id === active ? ' on' : ''}`}>
@@ -125,36 +160,12 @@ export function Settings() {
             </div>
           ))}
         </div>
-        <button className="btn btn-ghost" onClick={() => setNaming({ id: null, name: '' })}>
+        <button className="btn btn-secondary" onClick={() => setNaming({ id: null, name: '' })}>
           <Icon name="plus" size={18} /> Ajouter un bien
         </button>
-      </section>
+      </Section>
 
-      <section className="card">
-        <h2 className="card-h">Sauvegarde</h2>
-        <p className="muted small">
-          Vos données ne sont stockées que sur cet appareil. Exportez régulièrement un fichier de sauvegarde et gardez-le
-          en lieu sûr : il permet de tout restaurer, ici ou sur un autre téléphone.
-        </p>
-        <p className={`backup-state${!last || daysSince(last) > 30 ? ' warn' : ''}`}>
-          <Icon name="shield" size={18} />
-          {last ? `Dernière sauvegarde : ${dateFr(last.slice(0, 10))}` : 'Aucune sauvegarde exportée pour le moment'}
-        </p>
-        <div className="stack">
-          <button className="btn btn-primary" onClick={download} disabled={data.properties.length === 0}>
-            <Icon name="download" size={18} /> Exporter une sauvegarde
-          </button>
-          {canShareFiles() && (
-            <button className="btn btn-ghost" onClick={share} disabled={data.properties.length === 0}>
-              Partager le fichier…
-            </button>
-          )}
-          <ImportButton />
-        </div>
-      </section>
-
-      <section className="card">
-        <h2 className="card-h">Confidentialité</h2>
+      <Section title="Confidentialité" icon="shield">
         <ul className="checks">
           <li><Icon name="check" size={18} /> Pas de compte, pas de serveur</li>
           <li><Icon name="check" size={18} /> Aucune donnée envoyée sur Internet</li>
@@ -167,10 +178,9 @@ export function Settings() {
             vos saisies seront perdues à la fermeture. Exportez une sauvegarde.
           </p>
         )}
-      </section>
+      </Section>
 
-      <section className="card">
-        <h2 className="card-h">Aide</h2>
+      <Section title="Aide" icon="info">
         <Info title="Toutes les formules" label="Voir toutes les formules de calcul">
           {Object.values(EXPLAIN).map((e) => (
             <div key={e.title} className="formula-block">
@@ -185,7 +195,7 @@ export function Settings() {
           </div>
         </Info>
         <button
-          className="btn btn-ghost"
+          className="btn btn-secondary"
           onClick={() => {
             addSample();
             toast("Exemple ajouté : « Appartement Saint-Étienne »");
@@ -193,12 +203,12 @@ export function Settings() {
         >
           Ajouter le bien d'exemple
         </button>
-      </section>
+      </Section>
 
-      <section className="card">
-        <h2 className="card-h">Données</h2>
+      <Section title="Zone sensible" icon="trash" className="section-danger">
+        <p className="field-hint">Supprime définitivement toutes les données de cet appareil. Exportez une sauvegarde avant.</p>
         <button
-          className="btn btn-ghost danger"
+          className="btn btn-secondary is-danger"
           onClick={async () => {
             const ok = await confirm({
               title: 'Tout effacer ?',
@@ -214,7 +224,7 @@ export function Settings() {
         >
           <Icon name="trash" size={18} /> Effacer toutes les données
         </button>
-      </section>
+      </Section>
 
       <p className="version">Mon bien locatif · version {__APP_VERSION__}</p>
 

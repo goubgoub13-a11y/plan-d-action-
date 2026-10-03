@@ -1,5 +1,5 @@
-import { useEffect, useId, useState, type ReactNode } from 'react';
-import { parseDecimal, toInputText, eurSigned, plain } from '../lib/format';
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react';
+import { formatInput, parseDecimal, eurSigned, plain } from '../lib/format';
 import { Icon } from './Icon';
 import { Sheet } from './Sheet';
 
@@ -28,13 +28,14 @@ export function NumberInput({
   big?: boolean;
   id?: string;
 }) {
-  const [text, setText] = useState(() => toInputText(value));
+  // Hors saisie : « 60 000 » (séparateurs) ; relisible par parseDecimal.
+  const [text, setText] = useState(() => formatInput(value));
   const [invalid, setInvalid] = useState(false);
 
   // Resynchronise si la valeur change ailleurs (import, calcul, autre champ lié).
   useEffect(() => {
     if (parseDecimal(text) !== value) {
-      setText(toInputText(value));
+      setText(formatInput(value));
       setInvalid(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,7 +67,7 @@ export function NumberInput({
           if (n !== null) onChange(n);
         }}
         onBlur={() => {
-          if (!invalid) setText(toInputText(value));
+          if (!invalid) setText(formatInput(value));
         }}
         onFocus={(e) => e.currentTarget.select()}
       />
@@ -157,8 +158,15 @@ export function Segmented<T extends string>({
   label: string;
   small?: boolean;
 }) {
+  const idx = Math.max(0, options.findIndex((o) => o.value === value));
   return (
-    <div className={`segmented${small ? ' small' : ''}`} role="radiogroup" aria-label={label}>
+    <div
+      className={`segmented${small ? ' small' : ''}`}
+      role="radiogroup"
+      aria-label={label}
+      style={{ '--seg-count': options.length, '--seg-index': idx } as CSSProperties}
+    >
+      <span className="segmented-thumb" aria-hidden="true" />
       {options.map((o) => (
         <button
           key={o.value}

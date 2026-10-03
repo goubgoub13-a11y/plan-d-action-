@@ -104,5 +104,5 @@ export default defineConfig({
   plugins: [offlineServiceWorker(), contentSecurityPolicy()],
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   build: { target: 'es2020', sourcemap: false },
-  test: { environment: 'node', include: ['tests/**/*.test.ts'] },
+  test: { environment: 'node', include: ['tests/**/*.test.{ts,tsx}'] },
 });
