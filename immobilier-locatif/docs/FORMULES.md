@@ -1,4 +1,4 @@
-# Formules de calcul — v1.0.0
+# Formules de calcul — v1.0.1
 
 Toutes les formules sont implémentées **une seule fois**, dans `src/calc/` :
 
@@ -7,7 +7,7 @@ Toutes les formules sont implémentées **une seule fois**, dans `src/calc/` :
 | `src/calc/loan.ts` | mensualité, coût du crédit |
 | `src/calc/resolve.ts` | règle Prévu / Réel (quel montant utiliser) |
 | `src/calc/metrics.ts` | coût du projet, rentabilités, cash-flow, effort d'épargne, rendement de l'apport |
-| `src/calc/journal.ts` | synthèse des mouvements réels, « sorti de ma poche » |
+| `src/calc/journal.ts` | réalisé : argent personnel injecté, solde net, charges récupérables, écarts réel / réalisé |
 
 Ces fonctions sont pures (aucun accès au stockage ni à l'interface) et couvertes par `tests/`.
 Les textes d'aide affichés dans l'application (`src/screens/explain.tsx`) décrivent ces mêmes formules.
@@ -16,18 +16,42 @@ Tout est **avant fiscalité**.
 
 ---
 
-## 1. Prévu / Réel : quel montant est utilisé ?
+## 1. Prévu / Réel / Réalisé
 
-Chaque montant du projet est stocké sous la forme `{ planned, actual }` (`null` = non renseigné).
+| Notion | Définition | Données |
+|---|---|---|
+| **Prévu** | estimation avant l'achat | champ `planned` de chaque montant |
+| **Réel** | caractéristiques définitives / connues du projet (prix signé, prêt, mensualité bancaire, loyer du bail, taxe foncière connue…) | champ `actual` de chaque montant |
+| **Réalisé** | flux effectivement payés et encaissés, dans le temps | mouvements |
+
+**Quel montant est utilisé ?**
 
 - **Scénario Prévu** : `planned`, ou 0 s'il est vide.
-- **Scénario Réel** : `actual` s'il est renseigné (y compris 0 €), sinon `planned`, sinon 0.
+- **Scénario Réel** : `actual` s'il est renseigné (y compris 0 €), sinon `planned` (repli), sinon 0.
 
-Le « Réel » est donc toujours le **meilleur chiffre connu** : il part de la simulation et se précise au fur et à mesure des saisies.
+**Quand afficher « Réel » ?** Seulement si au moins un montant `actual` est saisi. Un mouvement ne suffit jamais (v1.0.1).
+
+**Repli identifiable** : en vue Réel, chaque indicateur connaît les montants encore prévus qu'il utilise (`referenceFields`, `estimatedInputs`, `KPI_INPUTS` dans `src/calc/resolve.ts`) :
+
+| Indicateur | Montants utilisés |
+|---|---|
+| Coût du projet | achat |
+| Investi personnellement | achat, prêt, charges |
+| Loyer | location |
+| Mensualité | prêt |
+| Charges | charges |
+| Rentabilité brute | achat, location |
+| Rentabilité nette | achat, location, charges |
+| Cash-flow, effort d'épargne | location, prêt, charges |
+| Rendement de l'apport | tout |
+
+La **mensualité** est considérée comme réelle si la banque l'a donnée (`monthlyPayment.actual`), ou si le capital, le taux et la durée réels sont tous saisis.
 
 **Mensualité de crédit en Réel** : la mensualité réelle saisie si elle existe ; sinon la mensualité prévue saisie à la main, *tant que* le capital, le taux et la durée n'ont pas été corrigés en réel ; sinon le calcul automatique.
 
-**Mouvements et rubriques d'achat** : les mouvements ne remplacent **pas** automatiquement un montant prévu. Un acompte de travaux de 620 € ne signifie pas que les travaux prévus à 5 000 € ont coûté 620 €. L'écran *Projet › Achat* affiche « Payé à ce jour » et propose de reprendre ce total comme montant réel quand la dépense est terminée. Il n'y a donc jamais de double comptage.
+**Réel et réalisé ne se mélangent pas** : un mouvement ne remplace **jamais** automatiquement un montant (un acompte de travaux de 620 € n'est pas le coût final de travaux prévus à 5 000 €). Deux aides :
+- *Projet › Achat* affiche « Payé à ce jour » et propose de reprendre ce total comme montant réel ;
+- si le payé d'une rubrique d'achat **dépasse** le montant utilisé par les calculs (ex. notaire : 5 000 € prévus, 5 400 € payés, réel non saisi), une alerte le signale (`acquisitionDiscrepancies`).
 
 **Écart** = Réel − Prévu. Vert si favorable (coût plus bas, loyer ou cash-flow plus hauts), rouge sinon.
 
@@ -63,9 +87,11 @@ Si C ≤ 0 ou n ≤ 0 :         M = 0  (données incomplètes)
 
 Une mensualité saisie à la main (montant exact de la banque) **remplace** M.
 
+**Mensualité incohérente** (v1.0.1) : si une mensualité saisie vérifie `M × n < C`, le prêt ne serait jamais remboursé. La saisie est conservée (non bloquante) et utilisée pour le cash-flow, mais un avertissement s'affiche et les intérêts, le coût total du financement et le total remboursé valent « incohérent » (null) au lieu d'un 0 € trompeur.
+
 ```
 Mensualité avec assurance   = M + assurance mensuelle
-Coût des intérêts           = max(0, M × n − C)
+Coût des intérêts           = M × n − C      (null si M × n < C : saisie incohérente)
 Coût de l'assurance         = assurance mensuelle × n
 Frais de financement        = frais de dossier + garantie + courtier
 Coût total du financement   = intérêts + assurance + frais de financement
@@ -137,25 +163,64 @@ Rendement de mon apport = cash-flow annuel / investi personnellement × 100
 
 Indicateur de **trésorerie** : le remboursement du capital y est compté comme une dépense alors qu'il constitue un enrichissement (vous possédez une part croissante du bien). Le rendement économique réel est donc supérieur. Non calculable (« — ») si rien n'a été investi personnellement.
 
-## 10. Suivi réel (mouvements)
+## 10. Réalisé (mouvements)
 
-Calculé uniquement à partir des mouvements enregistrés (dépenses et recettes réellement payées ou encaissées).
+Calculé uniquement à partir des mouvements (`src/calc/journal.ts`), sauf l'apport initial.
+
+### 10.1 Classement des mouvements
+
+| Classe | Catégories | Traitement |
+|---|---|---|
+| Achat | prix, notaire, agence, dossier, garantie, courtier, travaux, mobilier, autres frais | coût d'acquisition, financé par l'apport + le prêt : **hors** résultat d'exploitation |
+| Récupérables | « Charges récupérées (locataire) », « Charges récupérables payées » | **neutres** : exclus de tous les indicateurs, affichés à part |
+| Exploitation | tout le reste (loyers, autres recettes, mensualités, assurance, charges, taxes, catégories personnalisées) | résultat d'exploitation |
+
+### 10.2 Charges récupérables : neutres
+
+Les charges récupérables sont collectées auprès du locataire pour payer une dépense correspondante : ce n'est pas un revenu. Ces deux catégories n'augmentent ni ne diminuent jamais : les recettes, le résultat d'exploitation, le solde net, l'argent injecté, le cash-flow ou les rentabilités. Côté projet, le champ « Charges récupérables » de la location n'entre déjà dans aucun calcul. Les montants reçus et payés sont affichés à titre informatif (« Charges récupérables (neutres) »). Exemple : loyer 550 € + charges récupérées 50 € → recettes = 550 €.
+
+### 10.3 Résultat d'exploitation
 
 ```
-Total payé            = Σ dépenses
-Total encaissé        = Σ recettes
-Résultat global       = total encaissé − total payé
-Dépenses d'achat      = Σ dépenses des catégories d'achat (prix, notaire, travaux…)
-Résultat hors achat   = total encaissé − (total payé − dépenses d'achat)
-Déficit cumulé        = max(0, − résultat hors achat)
-
-Sorti de ma poche     = apport réel (coût total réel − emprunt réel)
-                      + déficit cumulé
+Recettes             = Σ recettes d'exploitation            (hors récupérables)
+Dépenses courantes   = Σ dépenses d'exploitation            (hors achat, hors récupérables)
+Résultat d'exploitation cumulé = recettes − dépenses courantes
 ```
 
-- Pour que les mensualités soient prises en compte, elles doivent être saisies comme mouvements (catégories « Mensualité de crédit » et « Assurance emprunteur »). Le bouton « Copier au mois suivant » rend cette saisie rapide.
-- Un excédent d'exploitation ne vient pas diminuer l'apport : il apparaît dans « Résultat hors achat ».
-- Les catégories personnalisées sont traitées comme des dépenses ou recettes d'exploitation.
+### 10.4 Argent personnel injecté (ne diminue jamais)
+
+```
+Apport initial = max(0, coût d'acquisition − montant emprunté)   (scénario Réel : réel, sinon prévu)
+                 compté dès que le bien est marqué « acheté », 0 avant.
+
+Injections d'exploitation : pour chaque mois civil, dans l'ordre chronologique,
+    trésorerie du bien ← trésorerie + (recettes du mois − dépenses courantes du mois)
+    si trésorerie < 0 :  injection du mois = − trésorerie ; trésorerie ← 0
+    (la trésorerie démarre à 0 € ; un excédent reste dans le bien et sert les mois suivants)
+
+Argent personnel injecté = apport initial + Σ injections du mois
+```
+
+Propriétés : un mois bénéficiaire n'efface jamais une injection passée ; dans un même mois l'ordre de saisie n'a pas d'effet ; l'ordre de saisie des mois non plus (tri chronologique). Les paiements d'achat ne s'ajoutent pas à l'apport : ils sont déjà couverts par l'apport (part personnelle) et le prêt (part bancaire, remboursée via les mensualités) — **aucun double comptage**.
+
+| Cas (audit) | Injecté | Solde net |
+|---|---|---|
+| Apport 5 000 €, aucun mouvement | 5 000 € | −5 000 € |
+| Apport 5 000 €, déficit de 100 € | 5 100 € | −5 100 € |
+| Apport 5 000 €, mois 1 −100 €, mois 2 +150 € | **5 100 €** (pas 5 000 €) | −4 950 € (trésorerie restante 150 €) |
+
+### 10.5 Solde net du projet
+
+```
+Solde net = résultat d'exploitation cumulé − apport initial
+          = trésorerie restante du bien − argent personnel injecté
+```
+
+Positif : le bien a rapporté plus que ce que j'y ai mis ; négatif : ce qu'il m'a coûté jusqu'à aujourd'hui. C'est la version sans double comptage de « recettes encaissées − dépenses payées » : la partie de l'achat payée par la banque n'y figure qu'au travers des mensualités remboursées. Le capital remboursé y est compté comme une dépense (indicateur de trésorerie).
+
+### 10.6 Ce qu'il faut saisir
+
+Les mensualités de crédit et l'assurance emprunteur doivent être saisies comme mouvements pour être comptées (« Copier au mois suivant » accélère la saisie).
 
 ## 11. Cas limites (testés)
 
@@ -168,5 +233,7 @@ Sorti de ma poche     = apport réel (coût total réel − emprunt réel)
 | Loyer nul | rentabilités 0 %, cash-flow négatif, avertissement |
 | Coût nul | rentabilités « — », jamais NaN ni Infinity |
 | Emprunt sans durée ni mensualité | mensualité 0 + avertissement |
-| Mensualité saisie incohérente (trop basse) | intérêts plafonnés à 0, jamais négatifs |
+| Mensualité saisie incohérente (M × n < C) | avertissement ; intérêts, coût total et total remboursé « incohérent » (null), saisie conservée |
+| Un mouvement mais aucun montant réel | vue « Réel » non proposée, chiffres = prévu |
+| Charges récupérées enregistrées en recette | neutres : aucun effet sur les indicateurs |
 | Montant réel 0 € | pris en compte (ne retombe pas sur le prévu) |

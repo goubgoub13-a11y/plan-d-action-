@@ -39,15 +39,20 @@ export interface LoanSummary {
   insuranceMonthly: number;
   /** Mensualité avec assurance. */
   paymentWithInsurance: number;
-  /** Intérêts estimés sur toute la durée. */
-  interestCost: number;
+  /**
+   * Mensualité saisie impossible : mensualité × nombre de mensualités < capital emprunté
+   * (le prêt ne serait jamais remboursé). Les coûts dépendant des intérêts valent alors null.
+   */
+  paymentInconsistent: boolean;
+  /** Intérêts estimés sur toute la durée ; null si la mensualité saisie est incohérente. */
+  interestCost: number | null;
   /** Assurance cumulée sur toute la durée. */
   insuranceCost: number;
   financingFees: number;
-  /** Intérêts + assurance + frais de financement. */
-  totalFinancingCost: number;
-  /** Capital + intérêts + assurance : ce que la banque aura reçu au total. */
-  totalRepaid: number;
+  /** Intérêts + assurance + frais de financement ; null si incohérent. */
+  totalFinancingCost: number | null;
+  /** Capital + intérêts + assurance : ce que la banque aura reçu au total ; null si incohérent. */
+  totalRepaid: number | null;
 }
 
 export function summarizeLoan(input: LoanInput): LoanSummary {
@@ -58,9 +63,12 @@ export function summarizeLoan(input: LoanInput): LoanSummary {
     ? (input.manualPayment as number)
     : monthlyPayment(principal, input.annualRatePct, months);
   const insuranceMonthly = Math.max(0, input.insuranceMonthly);
+  const known = months > 0 && principal > 0;
+  // Total remboursé inférieur au capital (au centime près) : financement impossible.
+  const paymentInconsistent = known && paymentIsManual && payment * months < principal - 0.01;
   // Sans durée connue, on ne peut pas estimer les coûts cumulés.
-  const interestCost = months > 0 && principal > 0 ? Math.max(0, round2(payment * months - principal)) : 0;
-  const insuranceCost = months > 0 && principal > 0 ? round2(insuranceMonthly * months) : 0;
+  const interestCost = !known ? 0 : paymentInconsistent ? null : Math.max(0, round2(payment * months - principal));
+  const insuranceCost = known ? round2(insuranceMonthly * months) : 0;
   const financingFees = Math.max(0, input.financingFees);
   return {
     principal,
@@ -69,10 +77,11 @@ export function summarizeLoan(input: LoanInput): LoanSummary {
     paymentIsManual,
     insuranceMonthly,
     paymentWithInsurance: round2(payment + insuranceMonthly),
+    paymentInconsistent,
     interestCost,
     insuranceCost,
     financingFees,
-    totalFinancingCost: round2(interestCost + insuranceCost + financingFees),
-    totalRepaid: months > 0 && principal > 0 ? round2(principal + interestCost + insuranceCost) : 0,
+    totalFinancingCost: interestCost === null ? null : round2(interestCost + insuranceCost + financingFees),
+    totalRepaid: !known ? 0 : interestCost === null ? null : round2(principal + interestCost + insuranceCost),
   };
 }

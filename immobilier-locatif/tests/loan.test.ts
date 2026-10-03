@@ -53,8 +53,30 @@ describe('coût du crédit', () => {
     expect(s.insuranceCost).toBe(0);
   });
 
-  it('ne produit jamais d’intérêts négatifs si la mensualité saisie est incohérente', () => {
+  it('mensualité saisie incohérente : signalée, sans coût d’intérêts présenté comme nul', () => {
     const s = summarizeLoan({ ...base, manualPayment: 100 });
-    expect(s.interestCost).toBe(0);
+    expect(s.paymentInconsistent).toBe(true);
+    expect(s.interestCost).toBeNull(); // jamais 0 € « comme si de rien n’était »
+    expect(s.totalFinancingCost).toBeNull();
+    expect(s.totalRepaid).toBeNull();
+    expect(s.payment).toBe(100); // la saisie de l’utilisateur est conservée, pas bloquée
+  });
+
+  it('cas de l’audit : 50 000 € empruntés, 100 €/mois sur 120 mois (12 000 € remboursés) → incohérent', () => {
+    const s = summarizeLoan({ principal: 50000, annualRatePct: 0, months: 120, manualPayment: 100, insuranceMonthly: 0, financingFees: 0 });
+    expect(s.paymentInconsistent).toBe(true);
+    expect(s.interestCost).toBeNull();
+  });
+
+  it('mensualité manuelle cohérente (même à taux 0 %) : pas d’alerte', () => {
+    const ok = summarizeLoan({ principal: 12000, annualRatePct: 0, months: 120, manualPayment: 100, insuranceMonthly: 0, financingFees: 0 });
+    expect(ok.paymentInconsistent).toBe(false);
+    expect(ok.interestCost).toBe(0);
+    const bank = summarizeLoan({ ...base, manualPayment: 560 });
+    expect(bank.paymentInconsistent).toBe(false);
+  });
+
+  it('une mensualité calculée n’est jamais déclarée incohérente', () => {
+    expect(summarizeLoan(base).paymentInconsistent).toBe(false);
   });
 });

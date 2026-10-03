@@ -1,6 +1,6 @@
 import type { AppData, Property, Settings } from '../domain/types';
 import { emptySettings } from '../domain/factory';
-import type { DataStorage } from './types';
+import type { DataStorage, LoadReport, QuarantineEntry } from './types';
 
 /**
  * Stockage en mémoire : utilisé dans les tests et en dernier recours si
@@ -11,6 +11,13 @@ export class MemoryStorage implements DataStorage {
   private props = new Map<string, Property>();
   private settings: Settings = emptySettings();
 
+  async loadReport(): Promise<LoadReport> {
+    return { data: await this.loadAll(), issues: [] };
+  }
+  async getQuarantine(): Promise<QuarantineEntry[]> {
+    return [];
+  }
+  async clearQuarantine(): Promise<void> {}
   async loadAll(): Promise<AppData> {
     return {
       properties: [...this.props.values()].sort((a, b) => a.createdAt.localeCompare(b.createdAt)),

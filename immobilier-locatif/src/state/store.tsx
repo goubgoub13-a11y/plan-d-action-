@@ -4,7 +4,8 @@ import { emptyData, newProperty, sampleProperty } from '../domain/factory';
 import { newId } from '../lib/id';
 import { IndexedDbStorage } from '../storage/indexedDb';
 import { MemoryStorage } from '../storage/memory';
-import type { DataStorage } from '../storage/types';
+import type { DataStorage, QuarantineEntry } from '../storage/types';
+import { Persister, type SaveStatus } from './persister';
 
 type Status = 'loading' | 'ready';
 
@@ -12,7 +13,16 @@ export interface Store {
   status: Status;
   /** false si IndexedDB est indisponible : les données seraient perdues à la fermeture. */
   persistent: boolean;
-  saveError: string | null;
+  /** État de l'enregistrement local de la version affichée. */
+  saveStatus: SaveStatus;
+  /** Relance immédiatement l'enregistrement (après un échec). */
+  retrySave: () => Promise<void>;
+  /** Anomalies détectées dans les données locales au démarrage. */
+  storageIssues: string[];
+  /** Copies brutes des données locales endommagées (pour récupération manuelle). */
+  getQuarantine: () => Promise<QuarantineEntry[]>;
+  /** Supprime les copies en quarantaine (action explicite de l'utilisateur). */
+  clearQuarantine: () => Promise<void>;
   data: AppData;
   property: Property | null;
   /** Modifie un bien : `recipe` reçoit une copie qu'il peut muter. */
@@ -42,74 +52,43 @@ export function useProperty(): Property {
   return property;
 }
 
-async function openStorage(): Promise<{ storage: DataStorage; persistent: boolean; data: AppData }> {
+async function openStorage(): Promise<{ storage: DataStorage; persistent: boolean; data: AppData; issues: string[] }> {
   try {
     if (typeof indexedDB === 'undefined') throw new Error('IndexedDB indisponible');
     const storage = new IndexedDbStorage();
-    const data = await storage.loadAll();
-    return { storage, persistent: true, data };
+    const { data, issues } = await storage.loadReport();
+    return { storage, persistent: true, data, issues };
   } catch (e) {
     console.warn('Stockage local indisponible, repli en mémoire', e);
-    return { storage: new MemoryStorage(), persistent: false, data: emptyData() };
+    return { storage: new MemoryStorage(), persistent: false, data: emptyData(), issues: [] };
   }
 }
 
 export function StoreProvider({ children, storage: injected }: { children: ReactNode; storage?: DataStorage }) {
   const [status, setStatus] = useState<Status>('loading');
   const [persistent, setPersistent] = useState(true);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
+  const [storageIssues, setStorageIssues] = useState<string[]>([]);
   const [data, setDataState] = useState<AppData>(emptyData());
 
   const storageRef = useRef<DataStorage | null>(null);
+  const persisterRef = useRef<Persister | null>(null);
   const dataRef = useRef<AppData>(data);
-  const savedRef = useRef<AppData>(data);
-  const chain = useRef<Promise<void>>(Promise.resolve());
-  const timer = useRef<number | undefined>(undefined);
 
-  const enqueue = useCallback((job: () => Promise<void>) => {
-    chain.current = chain.current
-      .then(job)
-      .then(() => setSaveError(null))
-      .catch((e) => {
-        console.error(e);
-        setSaveError("L'enregistrement local a échoué. Exportez une sauvegarde dès que possible.");
-      });
+  /** Toute modification passe par ici : mémoire d'abord, puis écriture fiable (cf. persister.ts). */
+  const setData = useCallback((updater: (d: AppData) => AppData) => {
+    const next = updater(dataRef.current);
+    if (next === dataRef.current) return;
+    dataRef.current = next;
+    setDataState(next);
+    persisterRef.current?.update(next);
   }, []);
-
-  /** Écrit uniquement ce qui a changé depuis la dernière écriture. */
-  const flush = useCallback(() => {
-    window.clearTimeout(timer.current);
-    const storage = storageRef.current;
-    const cur = dataRef.current;
-    const prev = savedRef.current;
-    if (!storage || cur === prev) return;
-    savedRef.current = cur;
-    const prevById = new Map(prev.properties.map((p) => [p.id, p]));
-    const curIds = new Set(cur.properties.map((p) => p.id));
-    enqueue(async () => {
-      for (const p of cur.properties) if (prevById.get(p.id) !== p) await storage.putProperty(p);
-      for (const id of prevById.keys()) if (!curIds.has(id)) await storage.deleteProperty(id);
-      if (cur.settings !== prev.settings) await storage.putSettings(cur.settings);
-    });
-  }, [enqueue]);
-
-  const setData = useCallback(
-    (updater: (d: AppData) => AppData) => {
-      const next = updater(dataRef.current);
-      if (next === dataRef.current) return;
-      dataRef.current = next;
-      setDataState(next);
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(flush, 250);
-    },
-    [flush],
-  );
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const opened = injected
-        ? { storage: injected, persistent: true, data: await injected.loadAll() }
+        ? { storage: injected, persistent: true, ...(await injected.loadReport()) }
         : await openStorage();
       if (cancelled) return;
       storageRef.current = opened.storage;
@@ -118,8 +97,15 @@ export function StoreProvider({ children, storage: injected }: { children: React
         loaded.settings = { ...loaded.settings, activePropertyId: loaded.properties[0].id };
       }
       dataRef.current = loaded;
-      savedRef.current = loaded;
+      persisterRef.current?.dispose();
+      persisterRef.current = new Persister(opened.storage, loaded, {
+        onStatus: (st, err) => {
+          if (err && st === 'error') console.error('Enregistrement local en échec', err);
+          setSaveStatus(st);
+        },
+      });
       setDataState(loaded);
+      setStorageIssues(opened.issues);
       setPersistent(opened.persistent);
       setStatus('ready');
       // Demande au navigateur de ne pas purger la base en cas de manque d'espace.
@@ -127,21 +113,43 @@ export function StoreProvider({ children, storage: injected }: { children: React
     })();
     return () => {
       cancelled = true;
+      persisterRef.current?.dispose();
     };
   }, [injected]);
 
-  // Écriture immédiate quand l'application passe en arrière-plan ou se ferme.
+  // Écriture immédiate en arrière-plan / fermeture, et alerte si des modifications ne sont pas écrites.
   useEffect(() => {
+    const flush = () => void persisterRef.current?.flush();
     const onHide = () => {
       if (document.visibilityState === 'hidden') flush();
     };
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (persisterRef.current?.isDirty()) {
+        flush();
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
     document.addEventListener('visibilitychange', onHide);
     window.addEventListener('pagehide', flush);
+    window.addEventListener('beforeunload', onBeforeUnload);
     return () => {
       document.removeEventListener('visibilitychange', onHide);
       window.removeEventListener('pagehide', flush);
+      window.removeEventListener('beforeunload', onBeforeUnload);
     };
-  }, [flush]);
+  }, []);
+
+  const retrySave = useCallback(async () => {
+    await persisterRef.current?.flush();
+  }, []);
+
+  const getQuarantine = useCallback(async () => (storageRef.current ? storageRef.current.getQuarantine() : []), []);
+
+  const clearQuarantine = useCallback(async () => {
+    await storageRef.current?.clearQuarantine();
+    setStorageIssues([]);
+  }, []);
 
   const updateProperty = useCallback<Store['updateProperty']>(
     (id, recipe) =>
@@ -212,19 +220,13 @@ export function StoreProvider({ children, storage: injected }: { children: React
     [setData],
   );
 
-  const replaceAll = useCallback<Store['replaceAll']>(
-    async (next) => {
-      const storage = storageRef.current;
-      if (!storage) throw new Error('Stockage non initialisé');
-      window.clearTimeout(timer.current);
-      await chain.current;
-      await storage.replaceAll(next); // en cas d'échec : l'exception remonte, l'état reste inchangé
-      dataRef.current = next;
-      savedRef.current = next;
-      setDataState(next);
-    },
-    [],
-  );
+  const replaceAll = useCallback<Store['replaceAll']>(async (next) => {
+    const persister = persisterRef.current;
+    if (!persister) throw new Error('Stockage non initialisé');
+    await persister.replaceAll(next); // en cas d'échec : l'exception remonte, l'état reste inchangé
+    dataRef.current = next;
+    setDataState(next);
+  }, []);
 
   const wipe = useCallback(() => replaceAll(emptyData()), [replaceAll]);
 
@@ -237,7 +239,11 @@ export function StoreProvider({ children, storage: injected }: { children: React
     () => ({
       status,
       persistent,
-      saveError,
+      saveStatus,
+      retrySave,
+      storageIssues,
+      getQuarantine,
+      clearQuarantine,
       data,
       property,
       updateProperty,
@@ -250,7 +256,7 @@ export function StoreProvider({ children, storage: injected }: { children: React
       replaceAll,
       wipe,
     }),
-    [status, persistent, saveError, data, property, updateProperty, addProperty, addSample, deleteProperty, setActive, addCustomCategory, markBackupDone, replaceAll, wipe],
+    [status, persistent, saveStatus, retrySave, storageIssues, getQuarantine, clearQuarantine, data, property, updateProperty, addProperty, addSample, deleteProperty, setActive, addCustomCategory, markBackupDone, replaceAll, wipe],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

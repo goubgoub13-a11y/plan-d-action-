@@ -4,7 +4,7 @@ import { annualEquivalent, monthlyEquivalent, type Metrics } from '../calc/metri
 import { expensesInCategory, resolveInputs } from '../calc/resolve';
 import { ACQUISITION_LABELS } from '../domain/categories';
 import type { AcquisitionKey, Amount, Frequency, Property, Scenario } from '../domain/types';
-import { durationLabel, eur, eur2, eurSigned, pctFmt, plain, todayIso } from '../lib/format';
+import { durationLabel, eur, eur2, eurOrDash, eurSigned, pctFmt, plain, todayIso } from '../lib/format';
 import { newId } from '../lib/id';
 import { useProperty, useStore } from '../state/store';
 import { usePropertyMetrics, type PropertyMetrics } from '../state/useMetrics';
@@ -202,6 +202,7 @@ function Purchase({ p, pm, update }: { p: Property; pm: PropertyMetrics; update:
             const a = p.acquisition[k];
             const mv = expensesInCategory(p, k);
             const paidDiffers = showReal && mv.count > 0 && a.actual !== mv.total;
+            const exceeds = pm.discrepancies.some((d) => d.key === k);
             const price = p.acquisition.price.planned;
             return (
               <DualRow
@@ -212,7 +213,17 @@ function Purchase({ p, pm, update }: { p: Property; pm: PropertyMetrics; update:
                 onPlanned={setAcq(k, 'planned')}
                 onActual={setAcq(k, 'actual')}
                 showReal={showReal}
-                actualHint={paidDiffers ? `Payé à ce jour : ${eur(mv.total)}` : undefined}
+                actualHint={
+                  paidDiffers ? (
+                    exceeds ? (
+                      <span className="field-hint warn">
+                        Payé : {eur(mv.total)}, plus que le montant utilisé ({eur(a.actual ?? a.planned ?? 0)})
+                      </span>
+                    ) : (
+                      `Payé à ce jour : ${eur(mv.total)}`
+                    )
+                  ) : undefined
+                }
                 extra={
                   paidDiffers ? (
                     <button className="link-btn" onClick={() => setAcq(k, 'actual')(Math.round(mv.total * 100) / 100)}>
@@ -337,11 +348,21 @@ function Financing({ p, pm, update }: { p: Property; pm: PropertyMetrics; update
           actualPlaceholder={plain(actual.loan.payment)}
           actualHint={showReal && l.monthlyPayment.actual === null ? 'Saisissez le montant exact de votre banque' : undefined}
           extra={
-            l.monthlyPayment.planned !== null ? (
-              <button className="link-btn" onClick={() => set('monthlyPayment', 'planned')(null)}>
-                Revenir au calcul automatique ({eur2(autoPayment(p, 'planned'))})
-              </button>
-            ) : undefined
+            <>
+              {(planned.loan.paymentInconsistent || (showReal && actual.loan.paymentInconsistent)) && (
+                <p className="field-hint warn">
+                  Incohérent : {eur2((planned.loan.paymentInconsistent ? planned : actual).loan.payment)} ×{' '}
+                  {(planned.loan.paymentInconsistent ? planned : actual).loan.months} mois ne rembourse pas les{' '}
+                  {eur((planned.loan.paymentInconsistent ? planned : actual).loan.principal)} empruntés. Vérifiez la mensualité,
+                  le montant ou la durée.
+                </p>
+              )}
+              {l.monthlyPayment.planned !== null && (
+                <button className="link-btn" onClick={() => set('monthlyPayment', 'planned')(null)}>
+                  Revenir au calcul automatique ({eur2(autoPayment(p, 'planned'))})
+                </button>
+              )}
+            </>
           }
         />
         <DualRow
@@ -366,11 +387,11 @@ function LoanCost({ planned, actual, showReal }: { planned: Metrics; actual: Met
     ['Durée', (m) => durationLabel(m.loan.months)],
     ['Mensualité hors assurance', (m) => eur2(m.loan.payment)],
     ['Mensualité avec assurance', (m) => eur2(m.loan.paymentWithInsurance)],
-    ['Coût des intérêts', (m) => eur(m.loan.interestCost)],
+    ['Coût des intérêts', (m) => eurOrDash(m.loan.interestCost, 'incohérent')],
     ["Coût de l'assurance", (m) => eur(m.loan.insuranceCost)],
     ['Frais de dossier, garantie, courtier', (m) => eur(m.loan.financingFees)],
-    ['Coût total du financement', (m) => eur(m.loan.totalFinancingCost)],
-    ['Total remboursé à la banque', (m) => eur(m.loan.totalRepaid)],
+    ['Coût total du financement', (m) => eurOrDash(m.loan.totalFinancingCost, 'incohérent')],
+    ['Total remboursé à la banque', (m) => eurOrDash(m.loan.totalRepaid, 'incohérent')],
   ];
   return (
     <section className="card">

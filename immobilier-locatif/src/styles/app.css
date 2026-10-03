@@ -567,6 +567,9 @@ input[type='date'].text-input { display: block; line-height: 46px; }
 .tabbar button.on { color: var(--accent); }
 .top-alert {
   display: flex;
+  width: 100%;
+  border: none;
+  text-align: left;
   gap: 8px;
   align-items: center;
   padding: calc(10px + var(--safe-t)) 16px 10px;
@@ -575,6 +578,24 @@ input[type='date'].text-input { display: block; line-height: 46px; }
   font-size: 0.88rem;
   font-weight: 600;
 }
+.top-alert span { flex: 1; }
+.top-alert svg { flex: none; }
+.top-alert.info { background: var(--warn-soft); color: var(--text); }
+.alert-btn { flex: none; border: none; border-radius: 99px; padding: 8px 14px; min-height: 36px; font-weight: 700; background: var(--neg); color: #fff; }
+.estimated-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--text-3); margin-left: 6px; vertical-align: 1px; }
+.hero .estimated-dot.light { border-color: rgba(255, 255, 255, 0.8); }
+.kpi-label .estimated-dot { margin-left: 5px; }
+.coverage { display: flex; align-items: center; gap: 6px; font-size: 0.84rem; color: var(--text-2); padding: 0 2px; margin-top: -4px; background: none; border: none; text-align: left; }
+.estimated-list { background: var(--warn-soft); border-radius: var(--radius-s); padding: 10px 14px; font-size: 0.9rem; color: var(--text); }
+.realized-figs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.realized-figs > div { background: var(--surface-2); border-radius: var(--radius-s); padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.realized-figs > div.main { background: var(--accent-soft); }
+.realized-figs span { font-size: 0.8rem; color: var(--text-2); font-weight: 560; }
+.realized-figs strong { font-size: 1.3rem; font-weight: 740; }
+.realized-figs .main strong { color: var(--accent); }
+.realized-figs small { font-size: 0.76rem; color: var(--text-3); }
+.field-hint { font-size: 0.82rem; color: var(--text-2); }
+.field-hint.warn { color: var(--neg); font-weight: 600; }
 
 /* ───────────── Panneaux et dialogues ───────────── */
 .sheet-root, .dialog-root { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }

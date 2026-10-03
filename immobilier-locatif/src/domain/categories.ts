@@ -1,6 +1,12 @@
 import type { AcquisitionKey, CustomCategory, MovementType } from './types';
 
-export type CategoryGroup = 'acquisition' | 'operating' | 'financing' | 'income' | 'custom';
+/**
+ * Groupes de catégories :
+ *  - acquisition : coût d'achat (financé par l'apport et le prêt, cf. calc/journal.ts) ;
+ *  - operating / financing / income / custom : exploitation du bien ;
+ *  - recoverable : charges récupérables (débours) — NEUTRES dans tous les indicateurs.
+ */
+export type CategoryGroup = 'acquisition' | 'operating' | 'financing' | 'income' | 'recoverable' | 'custom';
 
 export interface Category {
   id: string;
@@ -50,8 +56,9 @@ export const BUILTIN_CATEGORIES: Category[] = [
   })),
   { id: 'loanPayment', label: 'Mensualité de crédit', kind: 'expense', group: 'financing' },
   { id: 'loanInsurance', label: 'Assurance emprunteur', kind: 'expense', group: 'financing' },
+  { id: 'recoverableChargesPaid', label: 'Charges récupérables payées', kind: 'expense', group: 'recoverable' },
   { id: 'rent', label: 'Loyer (hors charges)', kind: 'income', group: 'income' },
-  { id: 'recoveredCharges', label: 'Charges récupérées', kind: 'income', group: 'income' },
+  { id: 'recoveredCharges', label: 'Charges récupérées (locataire)', kind: 'income', group: 'recoverable' },
   { id: 'otherIncome', label: 'Autre recette', kind: 'income', group: 'income' },
 ];
 
@@ -71,6 +78,11 @@ export function getCategory(id: string, custom: CustomCategory[]): Category {
   const c = custom.find((x) => x.id === id);
   if (c) return { id: c.id, label: c.label, kind: c.kind, group: 'custom' };
   return { id, label: 'Autre', kind: 'expense', group: 'custom' };
+}
+
+/** Charges récupérables (versées par le locataire ou payées pour son compte) : neutres. */
+export function isRecoverableCategory(id: string): boolean {
+  return BY_ID.get(id)?.group === 'recoverable';
 }
 
 export function isAcquisitionCategory(id: string): id is AcquisitionKey {

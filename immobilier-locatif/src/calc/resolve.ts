@@ -15,6 +15,7 @@
  * partiel (un acompte de travaux, par exemple) ferait croire à un coût final plus bas.
  * L'interface affiche « payé à ce jour » et propose de le reprendre comme montant réel.
  */
+import { ACQUISITION_LABELS } from '../domain/categories';
 import {
   ACQUISITION_KEYS,
   type AcquisitionKey,
@@ -132,9 +133,12 @@ export function resolveInputs(property: Property, scenario: Scenario): ResolvedI
   };
 }
 
-/** Vrai si au moins une donnée réelle (montant ou mouvement) existe. */
+/**
+ * Vrai si au moins un montant RÉEL de référence (champ `actual`) est saisi.
+ * Les mouvements (le « réalisé ») n'entrent volontairement pas en compte : une simple dépense
+ * enregistrée ne fait pas d'un projet simulé un projet « réel ».
+ */
 export function hasActualData(property: Property): boolean {
-  if (property.movements.length > 0) return true;
   const amounts: Amount[] = [
     ...Object.values(property.acquisition),
     ...Object.values(property.loan),
@@ -143,4 +147,63 @@ export function hasActualData(property: Property): boolean {
     ...property.charges.map((c) => c.amount),
   ];
   return amounts.some((a) => a.actual !== null);
+}
+
+/* ───────── Couverture du réel : quels montants sont confirmés, lesquels sont encore prévus ───────── */
+
+export type ReferenceGroup = 'acquisition' | 'loan' | 'rental' | 'charges';
+
+export interface ReferenceField {
+  group: ReferenceGroup;
+  label: string;
+  /** true : montant réel saisi ; false : le scénario « Réel » utilise encore le montant prévu. */
+  confirmed: boolean;
+}
+
+const isSet = (a: Amount) => a.actual !== null || (a.planned !== null && a.planned > 0);
+
+/**
+ * Liste des montants qui comptent dans les calculs (renseignés en prévu ou en réel),
+ * avec leur statut. Sert à signaler, en mode « Réel », ce qui repose encore sur le prévu.
+ */
+export function referenceFields(p: Property): ReferenceField[] {
+  const out: ReferenceField[] = [];
+  const add = (group: ReferenceGroup, label: string, a: Amount) => {
+    if (isSet(a)) out.push({ group, label, confirmed: a.actual !== null });
+  };
+  for (const k of ACQUISITION_KEYS) add('acquisition', ACQUISITION_LABELS[k], p.acquisition[k]);
+  const l = p.loan;
+  add('loan', 'Montant emprunté', l.borrowed);
+  const hasLoan = isSet(l.borrowed);
+  if (hasLoan) {
+    // La mensualité est confirmée si la banque l'a donnée, ou si capital, taux et durée réels sont saisis.
+    const derived = l.borrowed.actual !== null && l.ratePct.actual !== null && l.durationMonths.actual !== null;
+    out.push({ group: 'loan', label: 'Mensualité du crédit', confirmed: l.monthlyPayment.actual !== null || derived });
+  }
+  add('loan', 'Assurance emprunteur', l.insuranceMonthly);
+  add('rental', 'Loyer', p.rental.rent);
+  for (const c of p.charges) add('charges', c.label, c.amount);
+  return out;
+}
+
+/** Groupes de données utilisés par chaque indicateur du tableau de bord. */
+export const KPI_INPUTS = {
+  totalCost: ['acquisition'],
+  personalInvested: ['acquisition', 'loan', 'charges'],
+  rent: ['rental'],
+  payment: ['loan'],
+  charges: ['charges'],
+  grossYield: ['acquisition', 'rental'],
+  netYield: ['acquisition', 'rental', 'charges'],
+  cashflow: ['rental', 'loan', 'charges'],
+  savingsEffort: ['rental', 'loan', 'charges'],
+  cashOnCash: ['acquisition', 'rental', 'loan', 'charges'],
+} as const satisfies Record<string, readonly ReferenceGroup[]>;
+
+export type KpiKey = keyof typeof KPI_INPUTS;
+
+/** Libellés des montants encore prévisionnels utilisés par un indicateur en mode « Réel ». */
+export function estimatedInputs(fields: ReferenceField[], kpi: KpiKey): string[] {
+  const groups: readonly ReferenceGroup[] = KPI_INPUTS[kpi];
+  return fields.filter((f) => !f.confirmed && groups.includes(f.group)).map((f) => f.label);
 }

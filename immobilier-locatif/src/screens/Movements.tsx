@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { allCategories, getCategory, type Category, type CategoryGroup } from '../domain/categories';
+import { allCategories, getCategory, isRecoverableCategory, type Category, type CategoryGroup } from '../domain/categories';
 import type { Movement, MovementType, Property } from '../domain/types';
 import { addOneMonth, dateFr, eur, eur2, eurSigned, monthFr, todayIso } from '../lib/format';
 import { newId } from '../lib/id';
@@ -15,6 +15,7 @@ const GROUP_ICON: Record<CategoryGroup, IconName> = {
   operating: 'receipt',
   financing: 'bank',
   income: 'wallet',
+  recoverable: 'receipt',
   custom: 'tag',
 };
 
@@ -23,6 +24,7 @@ const GROUP_LABEL: Record<CategoryGroup, string> = {
   operating: 'Charges',
   financing: 'Crédit',
   income: 'Recettes',
+  recoverable: 'Charges récupérables (neutres)',
   custom: 'Mes catégories',
 };
 
@@ -54,7 +56,7 @@ export function Movements() {
     <div className="screen">
       <header className="screen-head">
         <h1>Mouvements</h1>
-        <p className="muted">Ce que vous avez réellement payé et encaissé.</p>
+        <p className="muted">Le réalisé : ce que vous avez réellement payé et encaissé.</p>
       </header>
 
       <section className="card totals">
@@ -67,8 +69,8 @@ export function Movements() {
           <strong>{eur(journal.received)}</strong>
         </div>
         <div>
-          <span className="kpi-label">Hors achat</span>
-          <strong className={journal.operatingBalance >= 0 ? 'pos' : 'neg'}>{eurSigned(journal.operatingBalance)}</strong>
+          <span className="kpi-label">Exploitation</span>
+          <strong className={journal.operatingResult >= 0 ? 'pos' : 'neg'}>{eurSigned(journal.operatingResult)}</strong>
         </div>
       </section>
 
@@ -131,7 +133,8 @@ export function Movements() {
       )}
 
       <p className="muted small center fab-spacer">
-        « Hors achat » : loyers encaissés − dépenses courantes (crédit, charges, taxes…).
+        « Exploitation » : recettes − dépenses courantes (crédit, charges, taxes…), hors achat. Les charges récupérables
+        sont exclues des totaux : elles sont neutres.
       </p>
 
       <button className="fab" aria-label="Ajouter un mouvement" onClick={() => setEditing('new')}>
@@ -271,6 +274,12 @@ function MovementSheet({ property, movement, onClose }: { property: Property; mo
           <option value={NEW_CATEGORY}>+ Nouvelle catégorie…</option>
         </select>
       </label>
+      {isRecoverableCategory(categoryId) && (
+        <p className="field-hint">
+          Neutre : les charges récupérables transitent pour le compte du locataire. Elles n'augmentent ni votre résultat ni
+          votre rentabilité.
+        </p>
+      )}
       {categoryId === NEW_CATEGORY && (
         <label className="field">
           <span>Nom de la nouvelle catégorie</span>

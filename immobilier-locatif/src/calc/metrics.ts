@@ -10,7 +10,8 @@ export type Warning =
   | 'noPrice' //            pas de prix d'achat renseigné
   | 'noRent' //             pas de loyer renseigné
   | 'loanDurationMissing' // un emprunt est saisi sans durée ni mensualité
-  | 'loanExceedsCost'; //    l'emprunt dépasse le coût du projet
+  | 'loanExceedsCost' //     l'emprunt dépasse le coût du projet
+  | 'loanPaymentInconsistent'; // mensualité saisie × durée < capital : financement impossible
 
 export interface Metrics {
   scenario: Scenario;
@@ -121,6 +122,7 @@ export function computeMetricsFromInputs(i: ResolvedInputs): Metrics {
   if (i.rental.rentMonthly <= 0) warnings.push('noRent');
   if (borrowed > 0 && loan.months === 0 && !loan.paymentIsManual) warnings.push('loanDurationMissing');
   if (borrowed > totalCost && totalCost > 0) warnings.push('loanExceedsCost');
+  if (loan.paymentInconsistent) warnings.push('loanPaymentInconsistent');
 
   return {
     scenario: i.scenario,

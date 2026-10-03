@@ -10,6 +10,11 @@ export function eur(n: number): string {
   return eurFmt0.format(clean(Math.round(n)));
 }
 
+/** Montant arrondi, ou un texte de remplacement quand il n'est pas calculable (null). */
+export function eurOrDash(n: number | null, dash = '—'): string {
+  return n === null ? dash : eur(n);
+}
+
 /** 346,10 € — avec les centimes (mensualités). */
 export function eur2(n: number): string {
   return eurFmt2.format(clean(n));

@@ -3,6 +3,17 @@
  * Rien n'est supposé : tout fichier peut être corrompu, tronqué ou modifié à la main.
  * Les erreurs sont accumulées avec leur chemin (« biens[0].mouvements[3].montant »)
  * pour pouvoir afficher un message compréhensible.
+ *
+ * Règles (v1.0.1) :
+ *  - aucun montant du modèle n'a de sens négatif : tout montant < 0 est refusé ;
+ *  - un mouvement a un montant strictement positif (le sens est donné par son type) ;
+ *  - taux 0–100 %, durée 0–1 200 mois, vacance 0–12 mois, impayés 0–100 % ;
+ *  - identifiants uniques dans tout le fichier (biens, mouvements, charges, catégories).
+ *
+ * Deux modes de lecture :
+ *  - strict (import d'une sauvegarde) : la moindre anomalie refuse le fichier ;
+ *  - récupération (données relues en base) : on garde tout ce qui est sain et on signale
+ *    le reste ; l'enregistrement d'origine est conservé à part (voir storage/indexedDb.ts).
  */
 import {
   ACQUISITION_KEYS,
@@ -16,8 +27,11 @@ import {
   type Settings,
 } from '../domain/types';
 import { emptyAmount, emptySettings, newProperty } from '../domain/factory';
+import { BUILTIN_CATEGORIES } from '../domain/categories';
 
 const MAX_ABS = 1e9;
+const MAX_RATE_PCT = 100;
+const MAX_DURATION_MONTHS = 1200;
 const MAX_TEXT = 500;
 
 type Errors = string[];
@@ -47,13 +61,18 @@ function str(o: Obj, key: string, path: string, errors: Errors, opts: { required
   return v;
 }
 
-function numOrNull(v: unknown, path: string, errors: Errors): number | null {
+/** Montant positif ou nul, ou null (non renseigné). */
+function numOrNull(v: unknown, path: string, errors: Errors, max = MAX_ABS): number | null {
   if (v === null || v === undefined) return null;
   if (typeof v !== 'number' || !Number.isFinite(v)) {
     errors.push(`${path} : nombre attendu`);
     return null;
   }
-  if (Math.abs(v) > MAX_ABS) {
+  if (v < 0) {
+    errors.push(`${path} : valeur négative refusée`);
+    return null;
+  }
+  if (v > max) {
     errors.push(`${path} : valeur hors limites`);
     return null;
   }
@@ -94,15 +113,15 @@ function isoDate(o: Obj, key: string, path: string, errors: Errors, fallback: st
   return v;
 }
 
-function amount(v: unknown, path: string, errors: Errors): Amount {
+function amount(v: unknown, path: string, errors: Errors, max = MAX_ABS): Amount {
   if (v === undefined || v === null) return emptyAmount();
   if (!isObj(v)) {
     errors.push(`${path} : montant prévu/réel attendu`);
     return emptyAmount();
   }
   return {
-    planned: numOrNull(v.planned, `${path}.planned`, errors),
-    actual: numOrNull(v.actual, `${path}.actual`, errors),
+    planned: numOrNull(v.planned, `${path}.planned`, errors, max),
+    actual: numOrNull(v.actual, `${path}.actual`, errors, max),
   };
 }
 
@@ -119,6 +138,7 @@ function readMovement(raw: unknown, path: string, errors: Errors): Movement | nu
   if (type !== 'expense' && type !== 'income') errors.push(`${path}.type : « expense » ou « income » attendu`);
   const amountVal = num(raw, 'amount', path, errors, 0, 0, MAX_ABS);
   if (typeof raw.amount !== 'number') errors.push(`${path}.amount : montant manquant`);
+  else if (raw.amount === 0) errors.push(`${path}.amount : montant nul refusé`);
   const categoryId = str(raw, 'categoryId', path, errors, { required: true, max: 100 });
   const note = str(raw, 'note', path, errors);
   if (errors.length > before) return null;
@@ -145,7 +165,12 @@ function readCharge(raw: unknown, path: string, errors: Errors): ChargeItem | nu
   return item;
 }
 
-export function readProperty(raw: unknown, path: string, errors: Errors): Property | null {
+/**
+ * Lit un bien. En mode strict, `null` à la moindre anomalie. En mode récupération,
+ * renvoie le bien dès que son identifiant est lisible : champs invalides remis à vide,
+ * charges et mouvements invalides écartés (toutes les anomalies sont listées dans `errors`).
+ */
+export function readProperty(raw: unknown, path: string, errors: Errors, recover = false): Property | null {
   if (!isObj(raw)) {
     errors.push(`${path} : bien invalide`);
     return null;
@@ -153,7 +178,8 @@ export function readProperty(raw: unknown, path: string, errors: Errors): Proper
   const before = errors.length;
   const base = newProperty('', new Date(0));
   const id = str(raw, 'id', path, errors, { required: true, max: 100 });
-  const name = str(raw, 'name', path, errors, { required: true, max: 120 });
+  const rawName = str(raw, 'name', path, errors, { required: true, max: 120 });
+  const name = rawName.trim() ? rawName : 'Bien récupéré';
   const address = str(raw, 'address', path, errors);
   const phase = raw.phase === 'owned' ? 'owned' : raw.phase === 'project' || raw.phase === undefined ? 'project' : null;
   if (phase === null) errors.push(`${path}.phase : « project » ou « owned » attendu`);
@@ -172,8 +198,8 @@ export function readProperty(raw: unknown, path: string, errors: Errors): Proper
   if (raw.loan !== undefined && !isObj(raw.loan)) errors.push(`${path}.loan : objet attendu`);
   const loan = {
     borrowed: amount(l.borrowed, `${path}.loan.borrowed`, errors),
-    ratePct: amount(l.ratePct, `${path}.loan.ratePct`, errors),
-    durationMonths: amount(l.durationMonths, `${path}.loan.durationMonths`, errors),
+    ratePct: amount(l.ratePct, `${path}.loan.ratePct`, errors, MAX_RATE_PCT),
+    durationMonths: amount(l.durationMonths, `${path}.loan.durationMonths`, errors, MAX_DURATION_MONTHS),
     monthlyPayment: amount(l.monthlyPayment, `${path}.loan.monthlyPayment`, errors),
     insuranceMonthly: amount(l.insuranceMonthly, `${path}.loan.insuranceMonthly`, errors),
   };
@@ -202,12 +228,13 @@ export function readProperty(raw: unknown, path: string, errors: Errors): Proper
     if (mv) movements.push(mv);
   });
 
-  if (errors.length > before || phase === null) return null;
+  const valid = errors.length === before;
+  if (!valid && !(recover && id.trim())) return null;
   return {
     id,
     name,
     address,
-    phase,
+    phase: phase ?? 'project',
     purchaseDate,
     createdAt,
     updatedAt,
@@ -249,16 +276,46 @@ export function readSettings(raw: unknown, path: string, errors: Errors): Settin
   return { activePropertyId: active, customCategories, lastBackupAt };
 }
 
-/** Lecture tolérante pour les données déjà en base : `null` si le bien est inutilisable. */
-export function normalizeProperty(raw: unknown): Property | null {
-  const errors: Errors = [];
-  const p = readProperty(raw, 'bien', errors);
-  if (!p && typeof console !== 'undefined') console.warn('Bien ignoré (données invalides)', errors);
-  return p;
+/** Résultat d'une lecture en mode récupération (données relues en base). */
+export interface RecoveredProperty {
+  /** Bien utilisable (éventuellement partiellement récupéré), ou null si illisible. */
+  property: Property | null;
+  /** Anomalies détectées (vide = enregistrement sain). */
+  errors: string[];
 }
 
-export function normalizeSettings(raw: unknown): Settings {
-  return readSettings(raw, 'réglages', []);
+export function recoverProperty(raw: unknown): RecoveredProperty {
+  const errors: Errors = [];
+  const property = readProperty(raw, 'bien', errors, true);
+  return { property, errors };
+}
+
+export function recoverSettings(raw: unknown): { settings: Settings; errors: string[] } {
+  const errors: Errors = [];
+  const settings = readSettings(raw, 'réglages', errors);
+  return { settings, errors };
+}
+
+/** Vérifie l'unicité des identifiants dans tout le jeu de données (biens, mouvements, charges, catégories). */
+export function checkUniqueIds(properties: Property[], settings: Settings, errors: Errors): void {
+  const once = (seen: Set<string>, id: string, where: string) => {
+    if (seen.has(id)) errors.push(`${where} : identifiant en double (« ${id} »)`);
+    seen.add(id);
+  };
+  const propIds = new Set<string>();
+  const movementIds = new Set<string>();
+  const chargeIds = new Set<string>();
+  properties.forEach((p, i) => {
+    once(propIds, p.id, `biens[${i}].id`);
+    p.movements.forEach((m, j) => once(movementIds, m.id, `biens[${i}].movements[${j}].id`));
+    p.charges.forEach((c, j) => once(chargeIds, c.id, `biens[${i}].charges[${j}].id`));
+  });
+  const catIds = new Set<string>(BUILTIN_CATEGORIES.map((c) => c.id));
+  settings.customCategories.forEach((c, i) => {
+    if (BUILTIN_CATEGORIES.some((b) => b.id === c.id)) {
+      errors.push(`réglages.customCategories[${i}].id : identifiant réservé (« ${c.id} »)`);
+    } else once(catIds, c.id, `réglages.customCategories[${i}].id`);
+  });
 }
 
 export function readAppData(raw: unknown, errors: Errors): AppData | null {
@@ -271,19 +328,58 @@ export function readAppData(raw: unknown, errors: Errors): AppData | null {
     return null;
   }
   const properties: Property[] = [];
-  const seen = new Set<string>();
   raw.properties.forEach((p, i) => {
     const prop = readProperty(p, `biens[${i}]`, errors);
-    if (!prop) return;
-    if (seen.has(prop.id)) errors.push(`biens[${i}].id : identifiant en double`);
-    seen.add(prop.id);
-    properties.push(prop);
+    if (prop) properties.push(prop);
   });
-  properties.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const settings = readSettings(raw.settings, 'réglages', errors);
+  checkUniqueIds(properties, settings, errors);
+  properties.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const seen = new Set(properties.map((p) => p.id));
   if (settings.activePropertyId && !seen.has(settings.activePropertyId)) {
     settings.activePropertyId = properties[0]?.id ?? null;
   }
   if (!settings.activePropertyId) settings.activePropertyId = properties[0]?.id ?? null;
   return errors.length ? null : { properties, settings };
+}
+
+/**
+ * Récupération (données locales uniquement) : rend les identifiants uniques sans rien supprimer.
+ * Un mouvement ou une charge en double reçoit un nouvel identifiant ; une catégorie personnalisée
+ * en double est écartée (les mouvements qui l'utilisent gardent la première du même identifiant).
+ * Renvoie la liste des corrections effectuées.
+ */
+export function repairDuplicateIds(properties: Property[], settings: Settings, makeId: (prefix: string) => string): string[] {
+  const fixes: string[] = [];
+  const movementIds = new Set<string>();
+  const chargeIds = new Set<string>();
+  for (const p of properties) {
+    for (const m of p.movements) {
+      if (movementIds.has(m.id)) {
+        const old = m.id;
+        m.id = makeId('mv');
+        fixes.push(`${p.name} : mouvement « ${old} » en double, renuméroté`);
+      }
+      movementIds.add(m.id);
+    }
+    for (const c of p.charges) {
+      if (chargeIds.has(c.id)) {
+        const old = c.id;
+        c.id = makeId('ch');
+        fixes.push(`${p.name} : charge « ${old} » en double, renumérotée`);
+      }
+      chargeIds.add(c.id);
+    }
+  }
+  const catIds = new Set<string>(BUILTIN_CATEGORIES.map((c) => c.id));
+  const kept: CustomCategory[] = [];
+  for (const c of settings.customCategories) {
+    if (catIds.has(c.id)) fixes.push(`Catégorie « ${c.label} » en double, écartée`);
+    else {
+      catIds.add(c.id);
+      kept.push(c);
+    }
+  }
+  settings.customCategories = kept;
+  return fixes;
 }

@@ -1,8 +1,10 @@
-# Mon bien locatif — v1.0.0
+# Mon bien locatif — v1.0.1
+
+> **v1.0.1** : correctif ciblé issu d'un audit indépendant (fiabilité de l'enregistrement local, distinction Prévu / Réel / Réalisé, charges récupérables neutres, argent personnel injecté, validation des imports, données locales endommagées, mensualité incohérente). Détail : [CHANGELOG.md](CHANGELOG.md). Migration : [docs/MIGRATION.md](docs/MIGRATION.md).
 
 Application mobile personnelle pour suivre un investissement immobilier locatif, **du projet avant achat jusqu'au suivi réel**.
 
-Elle répond en quelques secondes à ces questions : combien coûte l'appartement, combien j'ai sorti de ma poche, combien coûte le crédit, combien rapporte le locataire, quel est mon cash-flow et mon effort d'épargne, quelles sont mes rentabilités brute et nette (avant impôts), quel rendement pour mon apport, et comment le réel se compare au prévu.
+Elle répond en quelques secondes à ces questions : combien coûte l'appartement, combien j'ai personnellement injecté, combien coûte le crédit, combien rapporte le locataire, quel est mon cash-flow et mon effort d'épargne, quelles sont mes rentabilités brute et nette (avant impôts), quel rendement pour mon apport, et comment le réel se compare au prévu.
 
 - **PWA** installable sur téléphone, fonctionne **hors connexion**
 - **100 % locale** : pas de compte, pas de serveur, pas d'API, pas de statistiques, aucune donnée transmise
@@ -36,7 +38,7 @@ Prérequis : **Node.js 22.12 ou plus récent** (voir `.nvmrc`) et npm.
 ```bash
 npm install          # installe les dépendances
 npm run dev          # serveur de développement : http://localhost:5173
-npm test             # lance les 82 tests
+npm test             # lance les 154 tests
 npm run typecheck    # vérification TypeScript
 npm run build        # build de production dans dist/
 npm run preview      # sert le build : http://localhost:4173
@@ -68,7 +70,17 @@ Une application **personnelle**, pas un logiciel de gestion locative. Une seule 
 
 1. **Avant l'achat**, je simule le projet : prix, frais, travaux, crédit, loyer, charges. J'obtiens immédiatement le coût total, l'apport, la mensualité, le cash-flow, l'effort d'épargne et les rentabilités.
 2. **Après l'achat**, je ne change pas d'outil. Chaque montant a une case *Prévu* et une case *Réel*. Le *Réel* remplace progressivement le *Prévu* au fur et à mesure que les chiffres définitifs sont connus (acte notarié, offre de prêt, bail, avis de taxe foncière…).
-3. **Au quotidien**, j'enregistre des **mouvements** : ce que j'ai réellement payé et encaissé (date, dépense ou recette, montant, catégorie, note). Ils répondent à « combien m'a-t-il vraiment coûté, combien m'a-t-il rapporté, combien ai-je sorti de ma poche ».
+3. **Au quotidien**, j'enregistre des **mouvements** : le **réalisé**, ce que j'ai réellement payé et encaissé (date, dépense ou recette, montant, catégorie, note). Ils répondent à « combien ai-je personnellement injecté » et « combien le bien m'a-t-il rapporté ou coûté jusqu'à aujourd'hui ».
+
+Trois notions distinctes (v1.0.1) :
+
+| Notion | Ce que c'est | Où |
+|---|---|---|
+| **Prévu** | mon estimation avant l'achat | colonne *Prévu* du Projet |
+| **Réel** | les caractéristiques définitives du projet (prix signé, prêt, mensualité bancaire, loyer du bail, taxe foncière connue…) | colonne *Réel* du Projet |
+| **Réalisé** | les flux effectivement payés / encaissés, dans le temps | Mouvements, carte « Réalisé » de l'accueil |
+
+Un mouvement ne modifie jamais automatiquement le réel, et ne suffit pas à faire passer le tableau de bord en vue « Réel ».
 4. Le tableau de bord compare **Prévu / Réel / Écart**.
 
 Tous les indicateurs sont **avant fiscalité**.
@@ -79,7 +91,7 @@ Quatre onglets, en bas de l'écran :
 
 | Onglet | Contenu |
 |---|---|
-| **Accueil** | Nom du bien ; bascule *Prévu / Réel* (dès qu'une donnée réelle existe) ; grande carte **cash-flow** (avec l'effort d'épargne s'il est négatif) ; 8 cartes : coût du projet, investi personnellement, loyer, mensualité, rentabilité brute, rentabilité nette, charges, rendement de l'apport ; **un seul graphique** (revenus vs dépenses mensuels) ; tableau *Prévu / Réel / Écart* ; synthèse des mouvements (« sorti de ma poche ») ; détail du crédit replié. Chaque carte s'ouvre sur sa formule et son calcul détaillé. |
+| **Accueil** | Nom du bien ; bascule *Prévu / Réel* (dès qu'un montant **réel de référence** existe — un mouvement ne suffit pas) ; en vue *Réel*, une ligne « N montants encore prévus » et un petit rond creux ◦ sur les indicateurs qui utilisent encore du prévu (détail en touchant la carte) ; grande carte **cash-flow** (avec l'effort d'épargne s'il est négatif) ; 8 cartes : coût du projet, investi personnellement, loyer, mensualité, rentabilité brute, rentabilité nette, charges, rendement de l'apport ; **un seul graphique** (revenus vs dépenses mensuels) ; tableau *Prévu / Réel / Écart* ; carte **Réalisé** (argent personnel injecté, solde net du projet, résultat d'exploitation) ; alertes (mensualité incohérente, paiement d'achat supérieur au montant utilisé) ; détail du crédit replié. Chaque carte s'ouvre sur sa formule et son calcul détaillé. |
 | **Projet** | Quatre rubriques : **Achat** (bien, phase « acheté », 9 postes de coût), **Financement** (apport, emprunt, taux, durée en années ou mois, mensualité auto ou saisie, assurance, coût du crédit), **Location** (loyer HC, charges récupérables, date de début, vacance, impayés), **Charges** (mensuelles, annuelles ou ponctuelles, avec équivalents mensuel et annuel). Chaque montant : colonnes *Prévu* et *Réel*. Les colonnes *Réel* n'apparaissent qu'une fois le bien marqué « acheté » (ou dès qu'un montant réel existe). |
 | **Mouvements** | Journal par mois, filtre dépenses / recettes, totaux. Ajout en un écran : type, montant, catégorie (préremplie ou nouvelle), date, note. Montant suggéré pour le loyer, la mensualité et l'assurance. « Copier au mois suivant » pour les mouvements récurrents. |
 | **Réglages** | Mes biens (ajouter, renommer, choisir, supprimer), **sauvegarde** (exporter, partager, restaurer, date de la dernière sauvegarde), confidentialité, toutes les formules, bien d'exemple, effacement complet. |
@@ -90,7 +102,7 @@ Au premier lancement, un écran d'accueil propose de créer son projet, de déco
 
 ## 5. Modèle de données
 
-Défini dans `src/domain/types.ts`. Schéma **version 1**.
+Défini dans `src/domain/types.ts`. Schéma de sauvegarde **version 1** (inchangé en v1.0.1 : les sauvegardes v1.0.0 restent importables telles quelles, voir [docs/MIGRATION.md](docs/MIGRATION.md)).
 
 ```ts
 Amount   = { planned: number | null; actual: number | null }   // la brique Prévu / Réel
@@ -131,9 +143,10 @@ Les formules sont centralisées dans `src/calc/` (fonctions pures, testées) et 
 | Cash-flow mensuel | loyer conservé − mensualité − assurance − charges mensuelles (charges annuelles / 12) |
 | Effort d'épargne | max(0, − cash-flow) |
 | Rendement de mon apport | cash-flow annuel / investi personnellement × 100 |
-| Sorti de ma poche (réel) | apport réel + déficit cumulé des mouvements hors achat |
+| Argent personnel injecté (réalisé) | apport initial + déficits mensuels couverts de ma poche (ne diminue jamais) |
+| Solde net du projet (réalisé) | résultat d'exploitation cumulé − apport initial |
 
-*Loyer conservé* = loyer HC × (12 − mois de vacance) / 12 × (1 − % impayés). Les charges récupérables sont neutres et exclues des rentabilités.
+*Loyer conservé* = loyer HC × (12 − mois de vacance) / 12 × (1 − % impayés). Les charges récupérables sont neutres : exclues des rentabilités, du cash-flow, du résultat, du solde net et de l'argent injecté (catégories « Charges récupérées » et « Charges récupérables payées »).
 
 ## 7. Complexités évitées : décisions prises
 
@@ -165,12 +178,12 @@ src/
     metrics.ts     indicateurs (coût, rentabilités, cash-flow…)
     journal.ts     synthèse des mouvements réels
   storage/       persistance derrière une interface DataStorage
-    indexedDb.ts   implémentation IndexedDB (2 tables : biens, réglages)
+    indexedDb.ts   implémentation IndexedDB (3 tables : biens, réglages, quarantaine)
     memory.ts      implémentation mémoire (tests, repli si IndexedDB indisponible)
   backup/        format de sauvegarde
     backup.ts      export, import, versions, migrations
     schema.ts      validation stricte de toutes les données lues
-  state/         store React (contexte) : état, écriture différée et incrémentale
+  state/         store React (contexte) + persister.ts (écriture fiable, testée sans React)
   ui/            composants génériques (champs, panneaux, dialogues, icônes)
   screens/       les écrans (Accueil, Projet, Mouvements, Réglages, Bienvenue)
   styles/        une feuille de style (thème clair/sombre)
@@ -182,7 +195,9 @@ vite.config.ts   build + service worker hors connexion + politique de sécurité
 
 Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Property → resolveInputs(scénario) → computeMetrics → affichage` pour la lecture. Les écrans n'implémentent aucune formule.
 
-**Persistance** : chaque modification est enregistrée automatiquement environ 250 ms après la saisie. Seuls les biens modifiés sont réécrits, et l'enregistrement est immédiat quand l'application passe en arrière-plan. L'application demande au navigateur un stockage persistant (`navigator.storage.persist()`). Si IndexedDB est indisponible (certaines navigations privées), l'application fonctionne en mémoire et affiche un avertissement permanent.
+**Persistance** (`src/state/persister.ts`, v1.0.1) : chaque modification est d'abord marquée **non enregistrée**, puis écrite environ 250 ms après la saisie. Elle n'est marquée enregistrée **qu'après le succès** de l'écriture IndexedDB. En cas d'échec, la version reste non enregistrée, reste en mémoire et est réécrite automatiquement (1 s, 3 s, 10 s puis toutes les 30 s) ; un bandeau l'indique avec un bouton « Réessayer ». Les écritures sont strictement séquentielles : une ancienne écriture qui se termine après une nouvelle modification ne marque comme enregistrée que la version qu'elle a écrite. Seuls les biens modifiés sont réécrits, l'enregistrement est immédiat quand l'application passe en arrière-plan, et le navigateur avertit si l'on ferme la page avec des modifications non écrites.
+
+**Données locales endommagées** (v1.0.1) : à la lecture, ce qui est sain est conservé (un bien partiellement corrompu est récupéré), une copie brute de l'enregistrement d'origine est placée dans une table de quarantaine (jamais effacée automatiquement), et l'utilisateur est prévenu (bandeau + carte dans Réglages, avec téléchargement de la copie). L'application demande au navigateur un stockage persistant (`navigator.storage.persist()`). Si IndexedDB est indisponible (certaines navigations privées), l'application fonctionne en mémoire et affiche un avertissement permanent.
 
 **Ajouter un module fiscal plus tard** : créer `src/calc/tax/` qui consomme `ResolvedInputs` et `Metrics` (déjà calculés et testés) et produit des indicateurs « après impôts ». Il faudrait aussi ajouter au modèle un champ optionnel `tax` dans `Property` (avec une migration de schéma 1 → 2 dans `backup.ts`), puis une rubrique *Fiscalité* dans l'écran Projet. Les calculs existants ne changent pas.
 
@@ -209,6 +224,8 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 - fichier vide, trop gros (> 25 Mo), JSON invalide ou tronqué ;
 - fichier d'une autre application ;
 - version de schéma absente, invalide ou **plus récente** que l'application (message invitant à mettre à jour) ;
+- **montants négatifs refusés** partout (aucun champ du modèle n'a de sens négatif) ; mouvement à 0 € refusé ; taux 0–100 %, durée 0–1 200 mois ;
+- **identifiants uniques** dans tout le fichier : biens, mouvements, charges, catégories personnalisées (et pas de catégorie reprenant un identifiant réservé) ;
 - validation champ par champ : types, nombres finis et bornés, dates réelles (`2026-02-31` refusé), énumérations, identifiants en double. Les erreurs sont affichées avec leur emplacement (5 au maximum) ;
 - **confirmation** avec un résumé (date, nombre de biens et de mouvements, noms), et avertissement explicite si des données existantes vont être remplacées ;
 - remplacement **atomique** (une seule transaction IndexedDB) : en cas d'échec, les données actuelles restent intactes.
@@ -219,7 +236,7 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 - Une **Content-Security-Policy** stricte est ajoutée au build (`connect-src 'self'`, `script-src 'self'`) : le navigateur empêcherait toute connexion vers un autre domaine, même par erreur.
 - Le service worker ne met en cache que les fichiers de l'application et ignore toute requête vers un autre domaine.
 - Les données financières ne quittent l'appareil que si **vous** exportez un fichier.
-- `npm audit` : 0 vulnérabilité connue (dépendances de production et de développement) à la date de la v1.0.0.
+- `npm audit` : 0 vulnérabilité connue (dépendances de production et de développement) à la date de la v1.0.1.
 
 ## 11. Tests
 
@@ -227,15 +244,18 @@ Flux : `Écran → store (updateProperty) → IndexedDB` pour l'écriture ; `Pro
 npm test
 ```
 
-82 tests (Vitest) dans `tests/` :
+**154 tests** (Vitest, 8 fichiers) dans `tests/` :
 
 | Fichier | Couverture |
 |---|---|
-| `loan.test.ts` | mensualité (cas de référence 100 000 € / 3 % / 20 ans = 554,60 €), taux 0 %, sans crédit, durée inconnue, mensualité manuelle, coût total du crédit |
-| `metrics.test.ts` | coût total, travaux importants, rentabilités brute et nette, charges récupérables neutres, vacance et impayés, loyer nul, coût nul, conversion des charges mensuelles/annuelles/ponctuelles, cash-flow, effort d'épargne, aucun apport, aucun crédit, emprunt > coût, rendement de l'apport, données incomplètes (bien vierge sans NaN), distinction prévu/réel, réel à 0 €, mensualité réelle vs prévue, mouvements et paiements partiels |
-| `journal.test.ts` | totaux payés/encaissés, déficit cumulé, sorti de ma poche, catégories personnalisées, arrondis |
-| `backup.test.ts` | export versionné, nom du fichier, aller-retour exact, indicateurs identiques après restauration, rejets (vide, tronqué, étranger, version future, montant texte, date impossible, valeurs hors bornes, doublons), migrations, stockage IndexedDB (simulé par `fake-indexeddb`) et mémoire, **restauration remplaçant des données existantes**, persistance entre deux ouvertures |
-| `format.test.ts` | formats français (€, %, dates), lecture des saisies (« 1 200,50 »), ajout d'un mois |
+| `loan.test.ts` | mensualité (cas de référence 100 000 € / 3 % / 20 ans = 554,60 €), taux 0 %, sans crédit, durée inconnue, mensualité manuelle, coût total du crédit, **mensualité manuelle incohérente** (cas de l'audit 50 000 € / 100 € / 120 mois) |
+| `metrics.test.ts` | coût total, travaux importants, rentabilités brute et nette, charges récupérables neutres, vacance et impayés, loyer nul, coût nul, conversion des charges, cash-flow, effort d'épargne, aucun apport, aucun crédit, emprunt > coût, rendement de l'apport, données incomplètes, distinction prévu/réel, réel à 0 €, mensualité réelle vs prévue, mouvements et paiements partiels |
+| `reference.test.ts` | **Prévu / Réel / Réalisé** : projet avec un mouvement mais sans réel de référence, montants confirmés / encore prévus par indicateur, mensualité confirmée |
+| `journal.test.ts` | **argent personnel injecté** (cas 1, 2, 3 de l'audit), **solde net**, alternance de mois déficitaires et bénéficiaires, identité solde net = trésorerie − injecté, absence de double comptage, **charges récupérées neutres**, écart réel / réalisé (notaire 5 000 € prévu, 5 400 € payés) |
+| `persister.test.ts` | **échec d'écriture IndexedDB**, nouvelle tentative automatique et manuelle, échec partiel rejoué, **sauvegardes successives** et écritures concurrentes, ancienne écriture terminant après une nouvelle modification, remplacement complet |
+| `robustness.test.ts` | **compatibilité avec une sauvegarde v1.0.0** réelle (`tests/fixtures/backup-v1.0.0.json`), **montants négatifs** à l'import (15 champs), **identifiants dupliqués** (mouvements, charges, biens, catégories), **données locales corrompues** (récupération partielle, quarantaine, rien d'effacé), migration de la base IndexedDB v1 → v2 |
+| `backup.test.ts` | export versionné, nom du fichier, aller-retour exact, indicateurs identiques après restauration, rejets (vide, tronqué, étranger, version future…), migrations, stockage IndexedDB et mémoire, restauration remplaçant des données existantes |
+| `format.test.ts` | formats français (€, %, dates), lecture des saisies, ajout d'un mois |
 
 L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, clair et sombre) : création d'un projet de zéro, exemple, ajout de mouvement, persistance après rechargement, fonctionnement hors connexion, export → effacement → import d'un fichier corrompu (refusé) puis valide (chiffres identiques), aucune erreur console. Ces scénarios navigateur ne sont pas inclus comme tests automatisés dans le projet.
 
@@ -246,7 +266,7 @@ L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, 
 - Projet complet Prévu / Réel : achat (9 postes), financement (calcul ou saisie de la mensualité, durée en années ou mois), location (loyer HC, charges récupérables, vacance, impayés), charges (mensuelles, annuelles, ponctuelles, rubriques personnalisées)
 - Tableau de bord : cash-flow, effort d'épargne, 8 indicateurs, graphique revenus/dépenses, Prévu / Réel / Écart, détail du crédit, formule de chaque indicateur
 - Journal des mouvements avec catégories préremplies et personnalisées, filtres, copie au mois suivant
-- « Sorti de ma poche » réel à partir des mouvements
+- Réalisé : argent personnel injecté et solde net du projet à partir des mouvements (v1.0.1)
 - Plusieurs biens (modèle complet, interface légère)
 - Sauvegarde JSON versionnée : export, partage, import validé avec confirmation, rappel de sauvegarde
 - PWA installable, hors connexion, mode sombre, 100 % locale
@@ -268,11 +288,12 @@ L'interface a en outre été vérifiée manuellement dans Chromium (390 × 844, 
 
 - **Stockage navigateur** : les données vivent dans le navigateur où l'application est ouverte. Effacer les données du site, désinstaller la PWA ou (sur iOS) une longue inutilisation peut les supprimer : **exportez des sauvegardes régulières**. Une PWA installée et une ouverture dans le navigateur ne partagent pas forcément le même stockage sur iOS.
 - Le crédit est modélisé à taux fixe et mensualités constantes, sans différé ni remboursement anticipé.
-- Le « Sorti de ma poche » réel ne compte que ce qui est saisi en mouvements (notamment les mensualités).
+- L'argent injecté et le solde net ne comptent que ce qui est saisi en mouvements (notamment les mensualités) ; l'apport initial utilise le coût d'acquisition de référence (réel, sinon prévu — signalé par ◦).
+- Les déficits sont calculés par mois civil : à l'intérieur d'un mois, l'ordre des recettes et des dépenses n'a pas d'effet.
 - Le rendement de l'apport est un indicateur de trésorerie : il compte le remboursement du capital comme une dépense.
 - Interface en français uniquement, montants en euros.
 - Plusieurs onglets ouverts simultanément sur l'application peuvent s'écraser mutuellement (dernière écriture gagnante).
 
 ---
 
-Version **1.0.0** — voir [CHANGELOG.md](CHANGELOG.md).
+Version **1.0.1** — voir [CHANGELOG.md](CHANGELOG.md).

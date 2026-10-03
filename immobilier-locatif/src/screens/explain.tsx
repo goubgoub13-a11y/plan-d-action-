@@ -16,7 +16,8 @@ export type ExplainKey =
   | 'grossYield'
   | 'netYield'
   | 'cashOnCash'
-  | 'personalOut'
+  | 'personalInjected'
+  | 'netBalance'
   | 'prevuReel';
 
 export const EXPLAIN: Record<ExplainKey, { title: string; body: ReactNode }> = {
@@ -145,42 +146,62 @@ export const EXPLAIN: Record<ExplainKey, { title: string; body: ReactNode }> = {
       </>
     ),
   },
-  personalOut: {
-    title: 'Sorti de ma poche',
+  personalInjected: {
+    title: 'Argent personnel injecté',
     body: (
       <>
-        <p>Calculé à partir de ce que vous avez réellement payé et encaissé (mouvements).</p>
-        <Formula>
-          (Coût réel de l'achat − montant réellement emprunté) + déficit cumulé des mouvements d'exploitation
-        </Formula>
+        <p>Tout l'argent que vous avez mis de votre poche dans le bien depuis le début. Ce montant ne diminue jamais.</p>
+        <Formula>Apport initial + déficits mensuels couverts de votre poche</Formula>
         <p>
-          Déficit cumulé = dépenses enregistrées hors achat (mensualités, assurance, charges, taxes…) − recettes
-          enregistrées, s'il est positif. Pensez à saisir vos mensualités de crédit comme mouvements pour qu'elles
-          soient comptées.
+          <b>Apport initial</b> = coût d'acquisition − montant emprunté (montants réels, sinon prévus), compté dès que le
+          bien est marqué « acheté ».
         </p>
-        <p>Un excédent n'est pas déduit de votre apport : il apparaît dans « Résultat hors achat ».</p>
+        <p>
+          <b>Déficits couverts</b> : mois par mois, le bien a sa propre trésorerie (loyers − dépenses courantes :
+          mensualités, charges, taxes…). Quand elle ne suffit pas, le manque vient de votre poche. Un excédent reste dans
+          le bien et sert les mois suivants : il n'efface pas une injection passée.
+        </p>
+        <p>Les paiements d'achat (prix, notaire, travaux…) ne s'y ajoutent pas : ils sont déjà couverts par l'apport et le prêt.</p>
+        <p>Pensez à saisir vos mensualités de crédit comme mouvements pour qu'elles soient comptées.</p>
+      </>
+    ),
+  },
+  netBalance: {
+    title: 'Solde net du projet',
+    body: (
+      <>
+        <p>Ce que le bien vous a rapporté (positif) ou coûté (négatif) jusqu'à aujourd'hui, en trésorerie.</p>
+        <Formula>Recettes encaissées − dépenses courantes payées − apport initial</Formula>
+        <p>
+          La part de l'achat payée par la banque n'est comptée qu'à travers les mensualités remboursées : rien n'est compté
+          deux fois. Le capital remboursé est compté comme une dépense, même s'il vous enrichit.
+        </p>
+        <p>
+          Les charges récupérables (versées par le locataire puis reversées) sont neutres : elles n'augmentent ni ce
+          solde, ni le résultat, ni la rentabilité.
+        </p>
       </>
     ),
   },
   prevuReel: {
-    title: 'Prévu, réel, écart',
+    title: 'Prévu, réel, réalisé',
     body: (
       <>
         <p>
-          <b>Prévu</b> : votre simulation, avant l'achat.
+          <b>Prévu</b> : votre estimation avant l'achat.
         </p>
         <p>
-          <b>Réel</b> : chaque montant réel connu remplace le montant prévu. Tant qu'un montant réel n'est pas
-          saisi, le prévu est utilisé.
+          <b>Réel</b> : les caractéristiques définitives du projet (prix signé, prêt accordé, mensualité de la banque,
+          loyer du bail, taxe foncière connue…), saisies dans « Projet ». Tant qu'un montant réel manque, le prévu est
+          utilisé à sa place : les indicateurs concernés sont marqués d'un petit rond creux.
         </p>
         <p>
-          Les mouvements ne remplacent pas automatiquement un montant prévu (un acompte de travaux n'est pas le coût
-          final). Dans « Projet › Achat », le montant déjà payé est affiché et peut être repris comme réel en un
-          geste.
+          <b>Réalisé</b> : ce qui a effectivement été payé et encaissé, au fil du temps (mouvements). Un mouvement ne
+          modifie jamais automatiquement le réel : un acompte de travaux n'est pas le coût final. Si un paiement dépasse
+          le montant utilisé par les calculs, l'application vous le signale.
         </p>
         <p>
-          <b>Écart</b> = réel − prévu. En vert quand c'est favorable (coût plus bas, loyer plus haut), en rouge
-          sinon.
+          <b>Écart</b> = réel − prévu. En vert quand c'est favorable (coût plus bas, loyer plus haut), en rouge sinon.
         </p>
       </>
     ),

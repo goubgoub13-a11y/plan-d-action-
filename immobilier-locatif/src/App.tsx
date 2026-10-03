@@ -16,7 +16,7 @@ const TABS: { id: Tab; label: string; icon: IconName }[] = [
 ];
 
 export function App() {
-  const { status, property, saveError, persistent } = useStore();
+  const { status, property, saveStatus, retrySave, persistent, storageIssues } = useStore();
   const [tab, setTab] = useState<Tab>('home');
   const [section, setSection] = useState<ProjectSection>('purchase');
 
@@ -46,11 +46,27 @@ export function App() {
 
   return (
     <div className="app">
-      {(saveError || !persistent) && (
+      {saveStatus === 'error' && (
         <div className="top-alert" role="alert">
           <Icon name="alert" size={18} />
-          {saveError ?? 'Stockage local indisponible : vos saisies ne seront pas conservées. Exportez une sauvegarde.'}
+          <span>Vos dernières modifications ne sont pas encore enregistrées sur l'appareil. Nouvelle tentative automatique…</span>
+          <button className="alert-btn" onClick={() => void retrySave()}>
+            Réessayer
+          </button>
         </div>
+      )}
+      {!persistent && (
+        <div className="top-alert" role="alert">
+          <Icon name="alert" size={18} />
+          <span>Stockage local indisponible : vos saisies ne seront pas conservées. Exportez une sauvegarde.</span>
+        </div>
+      )}
+      {storageIssues.length > 0 && tab !== 'settings' && (
+        <button className="top-alert info" onClick={() => setTab('settings')}>
+          <Icon name="shield" size={18} />
+          <span>Des données locales semblent endommagées. Rien n'a été effacé : voir les détails.</span>
+          <Icon name="chevron" size={16} />
+        </button>
       )}
       <main>
         {tab === 'home' && <Home go={go} />}

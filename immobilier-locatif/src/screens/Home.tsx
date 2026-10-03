@@ -1,7 +1,9 @@
 import { useState, type ReactNode } from 'react';
+import type { JournalSummary } from '../calc/journal';
 import type { Metrics } from '../calc/metrics';
+import { estimatedInputs, type KpiKey } from '../calc/resolve';
 import type { Scenario } from '../domain/types';
-import { daysSince, durationLabel, eur, eur2, eurSigned, pctFmt } from '../lib/format';
+import { daysSince, durationLabel, eur, eur2, eurOrDash, eurSigned, pctFmt } from '../lib/format';
 import { useProperty, useStore } from '../state/store';
 import { usePropertyMetrics } from '../state/useMetrics';
 import { Info, Segmented } from '../ui/Fields';
@@ -15,16 +17,24 @@ const WARNING_TEXT: Record<string, string> = {
   noRent: "Le loyer n'est pas encore renseigné.",
   loanDurationMissing: 'Un emprunt est saisi sans durée ni mensualité.',
   loanExceedsCost: "Le montant emprunté dépasse le coût du projet.",
+  loanPaymentInconsistent:
+    'La mensualité saisie ne permet pas de rembourser le capital sur la durée indiquée : vérifiez la mensualité, le montant emprunté et la durée.',
 };
 
 export function Home({ go }: { go: Go }) {
   const p = useProperty();
   const { data, setActive } = useStore();
-  const { planned, actual, journal, hasActual } = usePropertyMetrics(p);
+  const { planned, actual, journal, hasActual, fields, discrepancies } = usePropertyMetrics(p);
   const [choice, setChoice] = useState<Scenario | null>(null);
-  const scenario: Scenario = choice ?? (p.phase === 'owned' || hasActual ? 'actual' : 'planned');
+  // « Réel » seulement si des montants réels de référence existent : un mouvement seul ne suffit pas.
+  const scenario: Scenario = hasActual ? (choice ?? 'actual') : 'planned';
   const m = scenario === 'planned' ? planned : actual;
   const [detail, setDetail] = useState<ExplainKey | null>(null);
+  const [showCoverage, setShowCoverage] = useState(false);
+  const isReal = scenario === 'actual';
+  /** Montants encore prévisionnels derrière un indicateur (mode Réel uniquement). */
+  const est = (k: KpiKey) => (isReal ? estimatedInputs(fields, k) : []);
+  const pendingFields = fields.filter((f) => !f.confirmed);
 
   const isEmpty = m.warnings.includes('noPrice') && m.warnings.includes('noRent');
   const cfTone = m.cashflowMonthly >= 0.5 ? 'pos' : m.cashflowMonthly <= -0.5 ? 'neg' : '';
@@ -70,7 +80,23 @@ export function Home({ go }: { go: Go }) {
           <Info title={EXPLAIN.prevuReel.title}>{EXPLAIN.prevuReel.body}</Info>
         </div>
       ) : (
-        <p className="scenario-note">Simulation avant achat</p>
+        <p className="scenario-note">{p.phase === 'owned' ? 'Chiffres prévus — saisissez les montants réels dans « Projet »' : 'Simulation avant achat'}</p>
+      )}
+
+      {isReal && (
+        <button className="coverage" onClick={() => setShowCoverage(true)}>
+          {pendingFields.length === 0 ? (
+            <>
+              <Icon name="check" size={16} /> Tous les montants utilisés sont réels
+            </>
+          ) : (
+            <>
+              <i className="estimated-dot" aria-hidden="true" /> {pendingFields.length} montant{pendingFields.length > 1 ? 's' : ''} encore
+              prévu{pendingFields.length > 1 ? 's' : ''} sur {fields.length}
+              <Icon name="chevron" size={14} />
+            </>
+          )}
+        </button>
       )}
 
       {showBackupHint && (
@@ -92,7 +118,10 @@ export function Home({ go }: { go: Go }) {
       ) : (
         <>
           <button className={`card hero ${cfTone}`} onClick={() => setDetail('cashflow')}>
-            <span className="hero-label">Cash-flow</span>
+            <span className="hero-label">
+              Cash-flow{isReal ? ' réel' : ' prévu'}
+              {est('cashflow').length > 0 && <i className="estimated-dot light" aria-label="en partie prévu" />}
+            </span>
             <span className="hero-value">
               {eurSigned(m.cashflowMonthly)}
               <small> / mois</small>
@@ -105,63 +134,57 @@ export function Home({ go }: { go: Go }) {
           </button>
 
           <div className="kpi-grid">
-            <Kpi label="Coût du projet" value={eur(m.totalCost)} onClick={() => setDetail('totalCost')} />
-            <Kpi label="Investi personnellement" value={eur(m.personalInvested)} onClick={() => setDetail('personalInvested')} />
-            <Kpi label="Loyer" value={eur(m.rentAnnualNominal / 12)} unit="/mois" sub="hors charges" onClick={() => setDetail('rent')} />
+            <Kpi label="Coût du projet" value={eur(m.totalCost)} estimated={est('totalCost')} onClick={() => setDetail('totalCost')} />
+            <Kpi label="Investi personnellement" value={eur(m.personalInvested)} estimated={est('personalInvested')} onClick={() => setDetail('personalInvested')} />
+            <Kpi label="Loyer" value={eur(m.rentAnnualNominal / 12)} unit="/mois" sub="hors charges" estimated={est('rent')} onClick={() => setDetail('rent')} />
             <Kpi
+              estimated={est('payment')}
               label="Mensualité"
               value={eur(m.loan.paymentWithInsurance)}
               unit="/mois"
               sub={m.loan.insuranceMonthly > 0 ? `dont assurance ${eur(m.loan.insuranceMonthly)}` : 'crédit'}
               onClick={() => setDetail('payment')}
             />
-            <Kpi label="Rentabilité brute" value={pctFmt(m.grossYield)} onClick={() => setDetail('grossYield')} />
-            <Kpi label="Rentabilité nette" value={pctFmt(m.netYield)} sub="avant impôts" accent onClick={() => setDetail('netYield')} />
-            <Kpi label="Charges" value={eur(m.chargesMonthly)} unit="/mois" sub="propriétaire" onClick={() => setDetail('charges')} />
-            <Kpi label="Rendement de mon apport" value={pctFmt(m.cashOnCash)} sub="par an" onClick={() => setDetail('cashOnCash')} />
+            <Kpi label="Rentabilité brute" value={pctFmt(m.grossYield)} estimated={est('grossYield')} onClick={() => setDetail('grossYield')} />
+            <Kpi label="Rentabilité nette" value={pctFmt(m.netYield)} sub="avant impôts" accent estimated={est('netYield')} onClick={() => setDetail('netYield')} />
+            <Kpi label="Charges" value={eur(m.chargesMonthly)} unit="/mois" sub="propriétaire" estimated={est('charges')} onClick={() => setDetail('charges')} />
+            <Kpi label="Rendement de mon apport" value={pctFmt(m.cashOnCash)} sub="par an" estimated={est('cashOnCash')} onClick={() => setDetail('cashOnCash')} />
           </div>
 
           <MonthlyChart m={m} />
 
-          {m.warnings.length > 0 && (
+          {(m.warnings.length > 0 || discrepancies.length > 0) && (
             <section className="card warn-card">
               {m.warnings.map((w) => (
                 <p key={w}>
                   <Icon name="alert" size={18} /> {WARNING_TEXT[w]}
                 </p>
               ))}
+              {discrepancies.map((d) => (
+                <p key={d.key}>
+                  <Icon name="alert" size={18} />
+                  <span>
+                    {d.label} : {eur(d.paid)} payés, les calculs utilisent {eur(d.reference)} ({d.referenceIsActual ? 'réel saisi' : 'prévu'}).
+                    Confirmez le montant réel.
+                  </span>
+                </p>
+              ))}
+              {discrepancies.length > 0 && (
+                <button className="link-btn" onClick={() => go('project', 'purchase')}>
+                  Mettre à jour l'achat <Icon name="chevron" size={16} />
+                </button>
+              )}
             </section>
           )}
 
           {hasActual && <Comparison planned={planned} actual={actual} />}
 
-          {journal.count > 0 ? (
-            <section className="card">
-              <div className="card-title">
-                <h2>Depuis le début</h2>
-                <Info title={EXPLAIN.personalOut.title}>{EXPLAIN.personalOut.body}</Info>
-              </div>
-              <p className="muted small">D'après vos {journal.count} mouvement{journal.count > 1 ? 's' : ''} enregistré{journal.count > 1 ? 's' : ''}.</p>
-              <div className="stat-big">
-                <span>Sorti de ma poche</span>
-                <strong>{eur(journal.personalOut)}</strong>
-              </div>
-              <Row label="Total payé" value={eur(journal.spent)} />
-              <Row label="Total encaissé" value={eur(journal.received)} />
-              <Row label="dont loyers" value={eur(journal.rentReceived)} sub />
-              <Row
-                label="Résultat hors achat"
-                value={eurSigned(journal.operatingBalance)}
-                tone={journal.operatingBalance >= 0 ? 'pos' : 'neg'}
-              />
-              <button className="link-btn" onClick={() => go('movements')}>
-                Voir les mouvements <Icon name="chevron" size={16} />
-              </button>
-            </section>
+          {journal.count > 0 || p.phase === 'owned' ? (
+            <Realized j={journal} apportEstimated={estimatedInputs(fields, 'personalInvested')} go={go} />
           ) : (
             <section className="card cta-card">
-              <h2>Suivre le réel</h2>
-              <p className="muted">Une fois le bien acheté, enregistrez ce que vous payez et encaissez : l'application calcule ce que l'appartement vous coûte vraiment.</p>
+              <h2>Suivre le réalisé</h2>
+              <p className="muted">Une fois le bien acheté, enregistrez ce que vous payez et encaissez : l'application calcule l'argent que vous injectez et ce que le bien vous rapporte vraiment.</p>
               <button className="btn btn-ghost" onClick={() => go('movements')}>
                 <Icon name="plus" size={18} /> Ajouter un mouvement
               </button>
@@ -178,18 +201,44 @@ export function Home({ go }: { go: Go }) {
               <Row label="Durée" value={durationLabel(m.loan.months)} />
               <Row label="Mensualité hors assurance" value={eur2(m.loan.payment)} />
               <Row label="Assurance emprunteur" value={`${eur2(m.loan.insuranceMonthly)} /mois`} />
-              <Row label="Coût des intérêts" value={eur(m.loan.interestCost)} />
+              <Row label="Coût des intérêts" value={eurOrDash(m.loan.interestCost, 'incohérent')} />
               <Row label="Coût de l'assurance" value={eur(m.loan.insuranceCost)} />
               <Row label="Frais de dossier, garantie, courtier" value={eur(m.loan.financingFees)} />
-              <Row label="Coût total du financement" value={eur(m.loan.totalFinancingCost)} strong />
-              <Row label="Total remboursé à la banque" value={eur(m.loan.totalRepaid)} />
+              <Row label="Coût total du financement" value={eurOrDash(m.loan.totalFinancingCost, 'incohérent')} strong />
+              <Row label="Total remboursé à la banque" value={eurOrDash(m.loan.totalRepaid, 'incohérent')} />
             </details>
           )}
         </>
       )}
 
       <Sheet open={detail !== null} title={detail ? EXPLAIN[detail].title : ''} onClose={() => setDetail(null)}>
-        {detail && <KpiDetail k={detail} m={m} />}
+        {detail && <KpiDetail k={detail} m={m} estimated={isReal && detail in KPI_OF ? est(KPI_OF[detail]!) : []} />}
+      </Sheet>
+
+      <Sheet open={showCoverage} title="Réel : ce qui reste prévu" onClose={() => setShowCoverage(false)}>
+        <div className="prose">
+          {pendingFields.length > 0 ? (
+            <>
+              <p>
+                Ces montants n'ont pas encore de valeur réelle : le mode « Réel » utilise le montant prévu à la place. Les
+                indicateurs concernés sont marqués d'un <i className="estimated-dot" aria-hidden="true" />.
+              </p>
+              <div className="estimated-list">{pendingFields.map((f) => f.label).join(' · ')}</div>
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setShowCoverage(false);
+                  go('project', 'purchase');
+                }}
+              >
+                Compléter dans « Projet »
+              </button>
+            </>
+          ) : (
+            <p>Tous les montants utilisés par les calculs ont une valeur réelle.</p>
+          )}
+          {EXPLAIN.prevuReel.body}
+        </div>
       </Sheet>
     </div>
   );
@@ -208,6 +257,7 @@ function Kpi({
   unit,
   sub,
   accent,
+  estimated = [],
   onClick,
 }: {
   label: string;
@@ -215,11 +265,16 @@ function Kpi({
   unit?: string;
   sub?: string;
   accent?: boolean;
+  /** Montants encore prévus utilisés (mode Réel) : affiche un discret rond creux. */
+  estimated?: string[];
   onClick: () => void;
 }) {
   return (
     <button className={`card kpi${accent ? ' accent' : ''}`} onClick={onClick}>
-      <span className="kpi-label">{label}</span>
+      <span className="kpi-label">
+        {label}
+        {estimated.length > 0 && <i className="estimated-dot" aria-label="en partie prévu" title="Contient des montants encore prévus" />}
+      </span>
       <span className="kpi-value">
         {value}
         {unit && <small>{unit}</small>}
@@ -337,7 +392,21 @@ function Comparison({ planned, actual }: { planned: Metrics; actual: Metrics }) 
   );
 }
 
-function KpiDetail({ k, m }: { k: ExplainKey; m: Metrics }) {
+/** Indicateur de projet correspondant à chaque fiche d'explication. */
+const KPI_OF: Partial<Record<ExplainKey, KpiKey>> = {
+  totalCost: 'totalCost',
+  personalInvested: 'personalInvested',
+  rent: 'rent',
+  payment: 'payment',
+  charges: 'charges',
+  cashflow: 'cashflow',
+  savingsEffort: 'savingsEffort',
+  grossYield: 'grossYield',
+  netYield: 'netYield',
+  cashOnCash: 'cashOnCash',
+};
+
+function KpiDetail({ k, m, estimated }: { k: ExplainKey; m: Metrics; estimated: string[] }) {
   const lines: Record<string, [string, string][]> = {
     totalCost: [
       ['Coût total', eur(m.totalCost)],
@@ -356,7 +425,7 @@ function KpiDetail({ k, m }: { k: ExplainKey; m: Metrics }) {
       ['Loyer annuel conservé', eur(m.rentAnnualEffective)],
     ],
     payment: [
-      ['Hors assurance', eur2(m.loan.payment) + (m.loan.paymentIsManual ? ' (saisie)' : ' (calculée)')],
+      ['Hors assurance', eur2(m.loan.payment) + (m.loan.paymentIsManual ? (m.loan.paymentInconsistent ? ' (saisie, incohérente)' : ' (saisie)') : ' (calculée)')],
       ['Assurance', eur2(m.loan.insuranceMonthly)],
       ['Total', eur2(m.loan.paymentWithInsurance)],
     ],
@@ -401,7 +470,62 @@ function KpiDetail({ k, m }: { k: ExplainKey; m: Metrics }) {
           ))}
         </div>
       )}
+      {estimated.length > 0 && (
+        <div className="estimated-list">
+          <i className="estimated-dot" aria-hidden="true" /> Encore calculé avec des montants prévus : {estimated.join(', ')}.
+        </div>
+      )}
       {EXPLAIN[k].body}
     </div>
+  );
+}
+
+/**
+ * RÉALISÉ : ce qui a vraiment été payé et encaissé (mouvements).
+ * Deux chiffres de confiance : l'argent personnel injecté et le solde net du projet.
+ */
+function Realized({ j, apportEstimated, go }: { j: JournalSummary; apportEstimated: string[]; go: Go }) {
+  const hasRecoverable = j.recoverableReceived > 0 || j.recoverablePaid > 0;
+  return (
+    <section className="card">
+      <div className="card-title">
+        <h2>Réalisé</h2>
+        <Info title={EXPLAIN.personalInjected.title}>
+          {EXPLAIN.personalInjected.body}
+          <h3>Solde net du projet</h3>
+          {EXPLAIN.netBalance.body}
+        </Info>
+      </div>
+      <p className="muted small">
+        Ce qui a réellement été payé et encaissé{j.count > 0 ? ` (${j.count} mouvement${j.count > 1 ? 's' : ''})` : ''}.
+      </p>
+      <div className="realized-figs">
+        <div className="main">
+          <span>Argent personnel injecté</span>
+          <strong>{eur(j.personalInjected)}</strong>
+          <small>depuis le début</small>
+        </div>
+        <div>
+          <span>Solde net du projet</span>
+          <strong className={j.netBalance >= 0 ? 'pos' : 'neg'}>{eurSigned(j.netBalance)}</strong>
+          <small>{j.netBalance >= 0 ? 'rapporté' : 'coûté'} à ce jour</small>
+        </div>
+      </div>
+      <Row label="Apport initial" value={eur(j.initialContribution)} />
+      <Row label="Déficits couverts de ma poche" value={eur(j.operatingInjections)} />
+      <Row label="Résultat d'exploitation cumulé" value={eurSigned(j.operatingResult)} tone={j.operatingResult >= 0 ? 'pos' : 'neg'} />
+      <Row label="dont loyers encaissés" value={eur(j.rentReceived)} sub />
+      {hasRecoverable && (
+        <Row label="Charges récupérables (neutres)" value={`${eur(j.recoverableReceived)} reçus · ${eur(j.recoverablePaid)} payés`} sub />
+      )}
+      {j.initialContribution > 0 && apportEstimated.length > 0 && (
+        <p className="field-hint">
+          <i className="estimated-dot" aria-hidden="true" /> Apport calculé en partie avec des montants prévus ({apportEstimated.join(', ')}).
+        </p>
+      )}
+      <button className="link-btn" onClick={() => go('movements')}>
+        Voir les mouvements <Icon name="chevron" size={16} />
+      </button>
+    </section>
   );
 }

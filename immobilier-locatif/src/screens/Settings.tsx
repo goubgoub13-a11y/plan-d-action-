@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { QuarantineEntry } from '../storage/types';
+import { todayIso } from '../lib/format';
 import { daysSince, dateFr } from '../lib/format';
 import { useStore } from '../state/store';
 import { useDialogs } from '../ui/Dialogs';
@@ -9,7 +11,12 @@ import { canShareFiles, ImportButton, useExport } from './BackupActions';
 import { EXPLAIN } from './explain';
 
 export function Settings() {
-  const { data, persistent, setActive, addProperty, deleteProperty, updateProperty, addSample, wipe } = useStore();
+  const { data, persistent, setActive, addProperty, deleteProperty, updateProperty, addSample, wipe, storageIssues, getQuarantine, clearQuarantine } =
+    useStore();
+  const [quarantine, setQuarantine] = useState<QuarantineEntry[]>([]);
+  useEffect(() => {
+    getQuarantine().then(setQuarantine).catch(() => setQuarantine([]));
+  }, [getQuarantine, storageIssues]);
   const { confirm, toast } = useDialogs();
   const { download, share } = useExport();
   const [naming, setNaming] = useState<{ id: string | null; name: string } | null>(null);
@@ -21,6 +28,62 @@ export function Settings() {
       <header className="screen-head">
         <h1>Réglages</h1>
       </header>
+
+      {(storageIssues.length > 0 || quarantine.length > 0) && (
+        <section className="card warn-card">
+          <h2 className="card-h">Données locales endommagées</h2>
+          <p className="small">
+            Certaines données enregistrées sur cet appareil n'ont pas pu être lues correctement. Ce qui était lisible a été
+            conservé. Rien n'a été effacé : une copie brute des éléments concernés est gardée à part.
+          </p>
+          {storageIssues.length > 0 && (
+            <ul className="error-list">
+              {storageIssues.map((i, n) => (
+                <li key={n}>{i}</li>
+              ))}
+            </ul>
+          )}
+          <div className="stack">
+            <button
+              className="btn btn-ghost"
+              disabled={quarantine.length === 0}
+              onClick={() => {
+                const blob = new Blob([JSON.stringify({ app: 'immobilier-locatif', kind: 'quarantine', entries: quarantine }, null, 2)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `immobilier-donnees-endommagees-${todayIso()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+              }}
+            >
+              <Icon name="download" size={18} /> Télécharger la copie ({quarantine.length})
+            </button>
+            <button
+              className="btn btn-ghost"
+              onClick={async () => {
+                const ok = await confirm({
+                  title: 'Supprimer la copie des données endommagées ?',
+                  message: "Faites-le seulement après l'avoir téléchargée ou si vos biens s'affichent correctement.",
+                  confirmLabel: 'Supprimer la copie',
+                  danger: true,
+                });
+                if (ok) {
+                  await clearQuarantine();
+                  setQuarantine([]);
+                  toast('Copie supprimée');
+                }
+              }}
+            >
+              Masquer cet avertissement
+            </button>
+          </div>
+        </section>
+      )}
 
       <section className="card">
         <h2 className="card-h">Mes biens</h2>
