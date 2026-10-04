@@ -1,3 +1,20 @@
+# Complément v1.3 — Minéral
+
+Le système historique ci-dessous est conservé comme base. Ses finitions visuelles sont regroupées dans `src/styles/refinement.css`. Les couleurs personnalisables sont générées dans `src/ui/palette.ts` ; `Appearance.tsx` applique le thème résolu avant le premier rendu.
+
+- Surfaces : minéral clair / graphite sombre. Rayons principaux 24 et 28 px, échelle d’espacement existante de 4 px conservée.
+- Typographie : polices natives locales, montants tabulaires, poids ajustés et unités plus discrètes. Aucune police distante.
+- Une signature parmi Jade, Cobalt, Iris, Cuivre, Rose, Graphite, ou libre. Les couleurs positives/négatives restent indépendantes de la marque.
+- Contraste cible des textes de marque : 4,8:1 minimum sur leurs surfaces et boutons, vérifié par tests y compris pour blanc, noir et couleurs vives.
+- Thème sombre complet et explicite : aucune dépendance exclusive aux media queries système. Auto écoute les changements du système.
+- Fin de l’empilement des cartes de KPI : surface partagée et séparateurs fins. Graphique avant les détails du solde.
+- Verre réservé à la navigation flottante et au fond des panneaux ; SVG architectural discret sur le cash-flow et l’aperçu de thème. Aucun mouvement décoratif permanent.
+- Préférences locales sous `immo-appearance-v1`, indépendantes des sauvegardes métier.
+
+Voir [l’audit v1.3](AUDIT-VISUEL-V1.3.md), [la livraison](LIVRAISON-V1.3.md) et [les validations](VALIDATION-V1.3.md).
+
+---
+
 # Design — v1.2.0
 
 ## v1.2.0 — ce qui change

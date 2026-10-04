@@ -4,7 +4,7 @@
  * anciens formulaires (mêmes règles : apport déduit, durée en années ou mois,
  * mensualité calculée ou saisie, reprise du payé, etc.).
  */
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { monthlyPayment } from '../calc/loan';
 import { annualEquivalent, monthlyEquivalent } from '../calc/metrics';
 import { expensesInCategory, resolveInputs } from '../calc/resolve';
@@ -68,6 +68,8 @@ const ESSENTIAL_CHARGES = ['propertyTax', 'pno', 'coproNonRecoverable'];
 
 /* ───────────── Grand champ Prévu / Réel ───────────── */
 
+const OwnedContext = createContext(false);
+
 export function BigDual({
   name,
   planned,
@@ -79,6 +81,7 @@ export function BigDual({
   plannedPlaceholder,
   actualPlaceholder,
   higherIsBetter = false,
+  neutral = false,
   realNote,
 }: {
   name: string;
@@ -91,21 +94,24 @@ export function BigDual({
   plannedPlaceholder?: string;
   actualPlaceholder?: string;
   higherIsBetter?: boolean;
+  neutral?: boolean;
   realNote?: ReactNode;
 }) {
+  const owned = useContext(OwnedContext);
+  const focusReal = showReal && (actual !== null || owned);
   const d = planned !== null && actual !== null ? actual - planned : null;
   const significant = d !== null && Math.abs(d) >= 0.005;
-  const tone = !significant ? '' : (d! > 0) === higherIsBetter ? 'tone-pos' : 'tone-neg';
+  const tone = !significant || neutral ? '' : (d! > 0) === higherIsBetter ? 'tone-pos' : 'tone-neg';
   return (
     <div className="bigdual">
       <div className="bigfield">
         <span className="bigfield-tag">{showReal ? 'Prévu' : 'Montant'}</span>
-        <NumberInput field label={`${name} — prévu`} value={planned} onChange={onPlanned} suffix={unit} placeholder={plannedPlaceholder ?? '0'} autoFocus />
+        <NumberInput field label={`${name} — prévu`} value={planned} onChange={onPlanned} suffix={unit} placeholder={plannedPlaceholder ?? '0'} autoFocus={!focusReal} />
       </div>
       {showReal && (
         <div className="bigfield is-real">
           <span className="bigfield-tag real">Réel</span>
-          <NumberInput field label={`${name} — réel`} value={actual} onChange={onActual} suffix={unit} placeholder={actualPlaceholder ?? 'à venir'} />
+          <NumberInput field label={`${name} — réel`} value={actual} onChange={onActual} suffix={unit} placeholder={actualPlaceholder ?? 'à venir'} autoFocus={focusReal} />
           <span className="bigfield-note">
             {realNote ?? (actual === null ? 'Pas encore connu : le montant prévu est utilisé.' : 'Montant définitif, utilisé par les calculs.')}
           </span>
@@ -343,7 +349,7 @@ function rentalFields(): FieldDef[] {
         <BigDual
           name="Charges récupérables"
           unit="€/mois"
-          higherIsBetter
+          neutral
           planned={p.rental.recoverableCharges.planned}
           actual={p.rental.recoverableCharges.actual}
           onPlanned={(v) => update((d) => void (d.rental.recoverableCharges.planned = v))}
@@ -544,13 +550,14 @@ export function FieldFlow({
       }
     >
       <div className="flow-top">
-        <div className="flow-progress" role="progressbar" aria-valuemin={1} aria-valuemax={fields.length} aria-valuenow={i + 1} aria-label="Progression">
+        <div className="flow-progress" role="group" aria-label="Étapes de saisie">
           {fields.map((f, n) => (
             <button
               key={f.id}
               type="button"
               className={`flow-dot${n === i ? ' is-current' : n < i ? ' is-done' : ''}`}
               aria-label={`Aller à : ${f.title}`}
+              aria-current={n === i ? 'step' : undefined}
               onClick={() => setIndex(n)}
             />
           ))}
@@ -586,7 +593,7 @@ export function FieldFlow({
       >
         <h3 className="flow-title">{field.title}</h3>
         {field.hint && <p className="flow-hint">{field.hint}</p>}
-        {field.render({ p, pm, update, unit, setUnit })}
+        <OwnedContext.Provider value={p.phase === 'owned'}>{field.render({ p, pm, update, unit, setUnit })}</OwnedContext.Provider>
       </div>
 
       <div className="flow-total">

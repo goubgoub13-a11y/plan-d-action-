@@ -4,14 +4,20 @@ import { App } from './App';
 import { StoreProvider } from './state/store';
 import { DialogProvider } from './ui/Dialogs';
 import './styles/app.css';
+import './styles/refinement.css';
+import { AppearanceProvider, initializeAppearance } from './ui/Appearance';
+
+initializeAppearance();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <AppearanceProvider>
     <StoreProvider>
       <DialogProvider>
         <App />
       </DialogProvider>
     </StoreProvider>
+    </AppearanceProvider>
   </StrictMode>,
 );
 

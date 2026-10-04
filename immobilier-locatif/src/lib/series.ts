@@ -27,12 +27,16 @@ const nextMonth = (ym: string): string => {
  * @param months mois avec mouvements (ordre chronologique), issus de summarizeJournal
  * @param until  dernier mois à afficher (AAAA-MM), en général le mois courant
  */
-export function monthSeries(months: MonthFlow[], until?: string): MonthPoint[] {
-  if (months.length === 0) return [];
+export function monthSeries(months: MonthFlow[], until?: string, since?: string): MonthPoint[] {
+  const validMonth = (s?: string): s is string => !!s && /^\d{4}-(0[1-9]|1[0-2])$/.test(s);
+  const start = validMonth(since) ? since : undefined;
+  if (months.length === 0 && !start) return [];
   const byMonth = new Map(months.map((m) => [m.month, m]));
-  const first = months[0].month;
-  const lastData = months[months.length - 1].month;
-  const end = until && until > lastData ? until : lastData;
+  // Conserve aussi les mouvements antérieurs à l'achat s'il y en a : aucun total perdu.
+  const firstData = months[0]?.month;
+  const first = start && (!firstData || start < firstData) ? start : firstData!;
+  const lastData = months[months.length - 1]?.month ?? first;
+  const end = validMonth(until) && until > lastData ? until : lastData;
   const out: MonthPoint[] = [];
   let cumulative = 0;
   // Garde-fou : au plus 30 ans de mois.

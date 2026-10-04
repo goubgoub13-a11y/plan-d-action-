@@ -36,3 +36,26 @@ describe('série mensuelle pour le graphique (v1.2.0)', () => {
     expect(s[s.length - 1].cumulative).toBeCloseTo(12.1 - 3.4 + 7.25, 6);
   });
 });
+
+describe('chronologie depuis l’achat (v1.3.0)', () => {
+  it('commence à l’achat avant le premier mouvement et garde le cumul exact', () => {
+    const s = monthSeries([mf('2026-11', 15), mf('2027-01', -5)], '2027-02', '2026-09');
+    expect(s.map(m => m.month)).toEqual(['2026-09', '2026-10', '2026-11', '2026-12', '2027-01', '2027-02']);
+    expect(s.map(m => m.net)).toEqual([0, 0, 15, 0, -5, 0]);
+    expect(s.at(-1)?.cumulative).toBe(10);
+  });
+  it('montre les mois vides depuis l’achat sans mouvement', () => {
+    const s = monthSeries([], '2026-11', '2026-09');
+    expect(s).toHaveLength(3);
+    expect(s.every(m => m.empty && m.net === 0)).toBe(true);
+  });
+  it('ne perd aucun mouvement antérieur à l’acquisition', () => {
+    const s = monthSeries([mf('2026-08', -10), mf('2026-11', 30)], '2026-11', '2026-09');
+    expect(s[0].month).toBe('2026-08');
+    expect(s.at(-1)?.cumulative).toBe(20);
+  });
+  it('ignore une date d’achat invalide', () => {
+    expect(monthSeries([mf('2026-11', 10)], '2026-11', 'bad')).toHaveLength(1);
+    expect(monthSeries([], '2026-11', '2026-99')).toEqual([]);
+  });
+});

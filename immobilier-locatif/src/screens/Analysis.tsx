@@ -35,7 +35,7 @@ export function Analysis({ go, choice, setChoice }: { go: Go; choice: Scenario |
     { label: 'Travaux, mobilier', value: acq.works + acq.furniture, tone: 'd' as const },
   ];
 
-  const series = monthSeries(j.months, todayIso().slice(0, 7));
+  const series = monthSeries(j.months, todayIso().slice(0, 7), p.purchaseDate?.slice(0, 7));
 
   return (
     <div className="screen">
@@ -74,6 +74,9 @@ export function Analysis({ go, choice, setChoice }: { go: Go; choice: Scenario |
               <Amount value={j.netBalance} size="display" signed tone={j.netBalance >= 0 ? 'pos' : undefined} />
               <span className="mini-note">{j.netBalance >= 0 ? 'Le bien vous a rapporté' : 'Le bien vous a coûté'} ce montant à ce jour, apport compris.</span>
             </div>
+            {series.length > 0 && <MonthlyChart series={series} />}
+            <details className="analysis-details">
+              <summary>Comprendre ce solde <Icon name="chevron" size={16} /></summary>
             <div className="lines">
               <Line label="Recettes encaissées" value={eur(j.received)} />
               <Line label="Dépenses courantes" hint="crédit, charges, taxes…" value={eur(j.operatingExpenses)} />
@@ -84,8 +87,8 @@ export function Analysis({ go, choice, setChoice }: { go: Go; choice: Scenario |
                 <Line label="Charges récupérables" hint="reçues / payées · neutres" value={`${eur(j.recoverableReceived)} / ${eur(j.recoverablePaid)}`} />
               )}
             </div>
+            </details>
 
-            {series.length > 0 && <MonthlyChart series={series} />}
           </>
         )}
       </Section>
