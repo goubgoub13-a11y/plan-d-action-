@@ -4,7 +4,9 @@ name: Publier l'application
 
 on:
   push:
-    branches: [claude/zealous-einstein-6u50ue, claude/tender-tesla-8afx7g]
+    branches: [claude/zealous-einstein-6u50ue]
+    paths: ['immobilier-locatif/**', '.github/workflows/pages.yml']
+  pull_request:
     paths: ['immobilier-locatif/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 
@@ -14,7 +16,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && github.ref || 'pages' }}
   cancel-in-progress: true
 
 jobs:
@@ -33,11 +35,14 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: immobilier-locatif/dist
 
+  # Seule la branche principale peut publier (règle de l'environnement github-pages).
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
