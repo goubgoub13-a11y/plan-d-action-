@@ -1,5 +1,10 @@
 # Historique des versions
 
+## 1.3.1 — 2026-10-04
+
+- Mise à jour automatique : quand une nouvelle version est publiée, l'application se recharge d'elle-même une fois à l'ouverture pour l'afficher. Auparavant, l'ancienne version gardée pour le hors connexion restait affichée jusqu'à un deuxième redémarrage. Si des modifications ne sont pas encore enregistrées, le navigateur demande confirmation avant de recharger.
+- Aucun changement des calculs, des données ou des sauvegardes.
+
 ## 1.3.0 — 2026-10-04
 
 **Personnalisation et finition de l’interface**, à partir de la v1.2.0.
