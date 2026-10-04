@@ -100,6 +100,9 @@ function contentSecurityPolicy(): Plugin {
 
 export default defineConfig({
   base: './',
+  // Prévisualisation locale : évite Vary: Origin, qui empêche de retrouver les
+  // ressources précachées sans en-tête Origin lors d'un rechargement hors ligne.
+  preview: { cors: false },
   // JSX compilé nativement par Vite (runtime automatique, cf. tsconfig) : pas de plugin React nécessaire.
   plugins: [offlineServiceWorker(), contentSecurityPolicy()],
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },

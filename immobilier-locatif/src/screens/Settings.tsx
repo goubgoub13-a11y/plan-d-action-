@@ -9,6 +9,7 @@ import { Icon } from '../ui/Icon';
 import { Sheet } from '../ui/Sheet';
 import { canShareFiles, ImportButton, useExport } from './BackupActions';
 import { EXPLAIN } from './explain';
+import { AppearanceSettings } from '../ui/Appearance';
 
 export function Settings() {
   const { data, persistent, setActive, addProperty, deleteProperty, updateProperty, addSample, wipe, storageIssues, getQuarantine, clearQuarantine } =
@@ -88,6 +89,8 @@ export function Settings() {
           </div>
         </section>
       )}
+
+      <AppearanceSettings />
 
       <Section title="Sauvegarde" icon="shieldCheck">
         <p className={`backup-status${!last || daysSince(last) > 30 ? ' is-warn' : ''}`}>

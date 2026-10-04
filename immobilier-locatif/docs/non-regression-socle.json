@@ -1,0 +1,62 @@
+[
+  {
+    "file": "src/backup/backup.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/backup/schema.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/calc/journal.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/calc/loan.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/calc/metrics.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/calc/resolve.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/domain/categories.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/domain/factory.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/domain/types.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/state/persister.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/state/store.tsx",
+    "unchanged": true
+  },
+  {
+    "file": "src/state/useMetrics.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/storage/indexedDb.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/storage/memory.ts",
+    "unchanged": true
+  },
+  {
+    "file": "src/storage/types.ts",
+    "unchanged": true
+  }
+]

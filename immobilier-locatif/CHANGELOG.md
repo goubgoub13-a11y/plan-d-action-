@@ -1,5 +1,21 @@
 # Historique des versions
 
+## 1.3.0 — 2026-10-04
+
+**Personnalisation et finition de l’interface**, à partir de la v1.2.0.
+
+- Réglages → Apparence : six palettes, couleur libre (sélecteur et hexadécimal), clair/sombre/auto, aperçu immédiat et réinitialisation. Persistance locale distincte du modèle financier ; adaptation du contraste des nuances.
+- Accueil : en-tête compact avec accès à l’apparence, cash-flow dominant sur une surface graphite teintée, motif architectural SVG, indicateurs regroupés avec séparateurs.
+- Projet et mouvements : surfaces plus légères, espacements et chiffres harmonisés, dates et montants mieux différenciés.
+- Analyse : graphique remontant à l’acquisition avec mois vides à zéro ; détail du solde dépliable ; gamme des graphiques adaptée à la couleur choisie.
+- Focus sur Réel lorsqu’il existe ou que le bien est acquis ; sinon Prévu. Écart des charges récupérables neutre.
+- Panneaux rendus hors des conteneurs animés ; gestion commune du focus, Escape, arrière-plan inerte et fenêtres imbriquées. Annuler reçoit le focus initial dans les confirmations.
+- Serveur de prévisualisation : CORS désactivé pour éviter un échec de correspondance du cache hors ligne lié à `Vary: Origin`. Service worker inchangé.
+- Navigation flottante, états de focus/pression/survol et prise en compte de reduced-motion.
+- Aucun changement des modules `calc`, `domain`, `backup`, `storage`, ni du persister. Aucune dépendance de production ou de développement ajoutée au manifeste du projet.
+- 223 tests unitaires, dont les 185 existants conservés. Validation navigateur et captures : voir `docs/VALIDATION-V1.3.md`.
+
+
 ## 1.2.0 — 2026-10-03
 
 Finitions visuelles et deux évolutions d'expérience. **Aucun changement du moteur métier** : calculs, modèle de données, stockage, persister, import/export et PWA sont inchangés. Les 178 tests de la 1.1.0 passent sans modification ; 7 tests ajoutés (185).

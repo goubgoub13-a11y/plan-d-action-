@@ -1,4 +1,16 @@
-# Mon bien locatif — v1.2.0
+# Mon bien locatif — v1.3.0
+
+**Nouvelle apparence personnalisable** : dans Réglages → Apparence, choisissez Clair, Sombre ou Auto, une des six palettes ou votre propre couleur. Les réglages visuels restent sur cet appareil et ne sont pas inclus dans les sauvegardes financières. Réinitialiser restaure Jade + Auto, sans modifier vos biens.
+
+La v1.3 conserve les calculs, IndexedDB et les formats de sauvegarde. Elle améliore la hiérarchie des écrans, le focus Prévu/Réel, les fenêtres et la chronologie du graphique. Aucun ajout de dépendance dans l’application.
+
+- [Audit visuel et références Internet](docs/AUDIT-VISUEL-V1.3.md)
+- [Livraison, modifications et limites de validation](docs/LIVRAISON-V1.3.md)
+- [Validation reproductible](docs/VALIDATION-V1.3.md)
+- [Captures finales](docs/screenshots/)
+
+Le dossier `dist/` contient également la version compilée, à servir avec un serveur HTTP(S) (ne pas ouvrir `index.html` en `file://`). Pour une installation sur téléphone, utilisez une URL HTTPS. L’apparence ne nécessite aucune ressource distante.
+
 
 > **v1.2.0** : saisie champ par champ, graphique mois par mois (par mois / cumulé), finitions visuelles. Moteur métier inchangé depuis la v1.0.2.
 > - nouvelle identité « patrimonial calme » et design system à base de tokens ;

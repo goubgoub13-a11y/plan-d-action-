@@ -1,0 +1,212 @@
+{
+  "browser": "154.0.8037.97",
+  "url": "http://127.0.0.1:4176",
+  "checks": [
+    "Service worker actif et page contrôlée",
+    "Cash-flow de référence conservé",
+    "Mode sombre conservé après rechargement",
+    "Cobalt conservé après rechargement",
+    "Personnalisation sans changement du cash-flow",
+    "Couleur libre appliquée",
+    "Code incomplet signalé sans perdre le thème",
+    "Auto suit une modification du thème système",
+    "Clair explicite prioritaire sur système sombre",
+    "Focus Réel sur une valeur réelle existante",
+    "Tab et Shift+Tab contenus dans le panneau",
+    "Modifier le réel ne modifie pas le prévu",
+    "Bien acquis : focus réel même encore vide",
+    "Escape ferme le panneau",
+    "Focus rendu à la ligne d’origine",
+    "Écart récupérable neutre",
+    "Ajout de mouvement fonctionnel",
+    "Mouvement conservé après rechargement",
+    "Escape ne ferme que la confirmation imbriquée",
+    "Focus revient dans le panneau sous-jacent",
+    "Suppression confirmée fonctionnelle",
+    "Graphique commence à l’acquisition",
+    "Mois sans mouvement affiché à zéro",
+    "Décomposition du solde accessible",
+    "Aucun débordement horizontal : Accueil à 320px",
+    "Aucun débordement horizontal : Projet à 320px",
+    "Aucun débordement horizontal : Mouvements à 320px",
+    "Aucun débordement horizontal : Analyse à 320px",
+    "Aucun débordement horizontal : Réglages à 320px",
+    "Aucun débordement horizontal : Accueil à 375px",
+    "Aucun débordement horizontal : Projet à 375px",
+    "Aucun débordement horizontal : Mouvements à 375px",
+    "Aucun débordement horizontal : Analyse à 375px",
+    "Aucun débordement horizontal : Réglages à 375px",
+    "Aucun débordement horizontal : Accueil à 390px",
+    "Aucun débordement horizontal : Projet à 390px",
+    "Aucun débordement horizontal : Mouvements à 390px",
+    "Aucun débordement horizontal : Analyse à 390px",
+    "Aucun débordement horizontal : Réglages à 390px",
+    "Aucun débordement horizontal : Accueil à 430px",
+    "Aucun débordement horizontal : Projet à 430px",
+    "Aucun débordement horizontal : Mouvements à 430px",
+    "Aucun débordement horizontal : Analyse à 430px",
+    "Aucun débordement horizontal : Réglages à 430px",
+    "Aucun débordement horizontal : Accueil à 768px",
+    "Aucun débordement horizontal : Projet à 768px",
+    "Aucun débordement horizontal : Mouvements à 768px",
+    "Aucun débordement horizontal : Analyse à 768px",
+    "Aucun débordement horizontal : Réglages à 768px",
+    "Aucun débordement horizontal : Accueil à 1280px",
+    "Aucun débordement horizontal : Projet à 1280px",
+    "Aucun débordement horizontal : Mouvements à 1280px",
+    "Aucun débordement horizontal : Analyse à 1280px",
+    "Aucun débordement horizontal : Réglages à 1280px",
+    "Saisie 320px sans débordement",
+    "Animations désactivées avec reduced-motion",
+    "Export JSON version 1.3.0",
+    "Import/export conserve les indicateurs",
+    "Rechargement complet hors ligne",
+    "Personnalisation conservée hors ligne",
+    "Manifeste PWA et icônes présents",
+    "Icône disponible : icons/icon-192.png",
+    "Icône disponible : icons/icon-512.png",
+    "Icône disponible : icons/icon-maskable-512.png",
+    "Projet neuf : focus prévu",
+    "Aucune erreur JavaScript pendant les parcours",
+    "Aucun appel réseau externe de l’application",
+    "Aucun échec axe WCAG A/AA sur les vues contrôlées"
+  ],
+  "screenshots": [
+    "accueil-clair.png",
+    "accueil-clair-complet.png",
+    "projet.png",
+    "mouvements.png",
+    "analyse.png",
+    "reglages.png",
+    "reglages-complet.png",
+    "accueil-sombre.png",
+    "accueil-sombre-complet.png",
+    "reglages-sombre.png",
+    "edition-donnee.png",
+    "ajout-mouvement.png",
+    "analyse-cumul.png",
+    "320-accueil.png",
+    "320-projet.png",
+    "320-mouvements.png",
+    "320-analyse.png",
+    "320-reglages.png",
+    "1280-accueil.png",
+    "1280-projet.png",
+    "1280-mouvements.png",
+    "1280-analyse.png",
+    "1280-reglages.png",
+    "320-ajout-mouvement.png",
+    "premier-lancement.png",
+    "accueil-vide.png",
+    "mouvements-vides.png",
+    "analyse-vide.png"
+  ],
+  "accessibility": [
+    {
+      "label": "Accueil Clair",
+      "violations": []
+    },
+    {
+      "label": "Projet Clair",
+      "violations": []
+    },
+    {
+      "label": "Mouvements Clair",
+      "violations": []
+    },
+    {
+      "label": "Analyse Clair",
+      "violations": []
+    },
+    {
+      "label": "Réglages Clair",
+      "violations": []
+    },
+    {
+      "label": "Palette Jade Clair",
+      "violations": []
+    },
+    {
+      "label": "Palette Cobalt Clair",
+      "violations": []
+    },
+    {
+      "label": "Palette Iris Clair",
+      "violations": []
+    },
+    {
+      "label": "Palette Cuivre Clair",
+      "violations": []
+    },
+    {
+      "label": "Palette Rose Clair",
+      "violations": []
+    },
+    {
+      "label": "Palette Graphite Clair",
+      "violations": []
+    },
+    {
+      "label": "Édition Clair",
+      "violations": []
+    },
+    {
+      "label": "Ajout Clair",
+      "violations": []
+    },
+    {
+      "label": "Accueil Sombre",
+      "violations": []
+    },
+    {
+      "label": "Projet Sombre",
+      "violations": []
+    },
+    {
+      "label": "Mouvements Sombre",
+      "violations": []
+    },
+    {
+      "label": "Analyse Sombre",
+      "violations": []
+    },
+    {
+      "label": "Réglages Sombre",
+      "violations": []
+    },
+    {
+      "label": "Palette Jade Sombre",
+      "violations": []
+    },
+    {
+      "label": "Palette Cobalt Sombre",
+      "violations": []
+    },
+    {
+      "label": "Palette Iris Sombre",
+      "violations": []
+    },
+    {
+      "label": "Palette Cuivre Sombre",
+      "violations": []
+    },
+    {
+      "label": "Palette Rose Sombre",
+      "violations": []
+    },
+    {
+      "label": "Palette Graphite Sombre",
+      "violations": []
+    },
+    {
+      "label": "Édition Sombre",
+      "violations": []
+    },
+    {
+      "label": "Ajout Sombre",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}

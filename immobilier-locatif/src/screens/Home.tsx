@@ -43,6 +43,7 @@ export function Home({ go, choice, setChoice }: { go: Go; choice: Scenario | nul
 
   return (
     <div className="screen screen-home">
+      <div className="home-masthead"><span className="wordmark"><Icon name="building" size={19} /> MON BIEN LOCATIF</span><button className="appearance-shortcut icon-btn" aria-label="Personnaliser l’apparence" onClick={() => go('settings')}><Icon name="sparkles" size={20} /></button></div>
       <header className="page-head">
         <p className="eyebrow">{context}</p>
         <h1>{p.name}</h1>
@@ -102,10 +103,12 @@ export function Home({ go, choice, setChoice }: { go: Go; choice: Scenario | nul
           )}
 
           <button key={scenario} className={`hero${cf <= -0.5 ? ' is-neg' : ''}`} onClick={() => setDetail('cashflow')}>
+            <span className="hero-topline"><span className="hero-overline">ÉQUILIBRE MENSUEL</span><Icon name="chevron" size={18} /></span>
             <span className="hero-label">
               Cash-flow {hasActual ? (isReal ? 'réel' : 'prévu') : 'mensuel'}
               {est('cashflow').length > 0 && <i className="estimated-dot" aria-label="en partie prévu" />}
             </span>
+            <svg className="hero-architecture" viewBox="0 0 120 120" fill="none" aria-hidden="true"><path d="m20 92 40 20 40-20V40L60 18 20 40v52Zm0-52 40 22 40-22M60 62v50M32 48v50M46 55v51M74 55v51M88 48v50M20 66l40 22 40-22M20 80l40 22 40-22" stroke="currentColor" strokeWidth=".8" /></svg>
             <Amount value={cf} size="display" signed label="Cash-flow" />
             <span className="hero-unit">par mois{!hasActual && p.phase === 'project' ? ' · simulation' : ''}</span>
             {m.savingsEffort > 0.5 && <span className="hero-note">Effort d'épargne : {eur(m.savingsEffort)} à ajouter chaque mois</span>}
@@ -172,7 +175,7 @@ export function Home({ go, choice, setChoice }: { go: Go; choice: Scenario | nul
                   <span className="mini-note">{journal.netBalance >= 0 ? 'rapporté' : 'coûté'} à ce jour</span>
                 </span>
               </span>
-              <Sparkline series={monthSeries(journal.months, todayIso().slice(0, 7))} label="Évolution du résultat cumulé" />
+              <Sparkline series={monthSeries(journal.months, todayIso().slice(0, 7), p.purchaseDate?.slice(0, 7))} label="Évolution du résultat cumulé" />
             </button>
           ) : (
             <div className="card">

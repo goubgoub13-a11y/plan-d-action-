@@ -89,3 +89,25 @@ describe('composants v1.2.0', () => {
     expect(fieldsFor('charges', p)[0].title).toMatch(/foncière/i);
   });
 });
+
+describe('saisie prévu / réel (v1.3.0)', () => {
+  it('focalise le réel existant et conserve la valeur prévue', async () => {
+    const { BigDual } = await import('../src/screens/FieldFlow');
+    const out = html(<BigDual name="Notaire" planned={4600} actual={4780} showReal onPlanned={() => {}} onActual={() => {}} />);
+    expect(out).toMatch(/aria-label="Notaire — réel"[^>]*autofocus/);
+    expect(out).not.toMatch(/aria-label="Notaire — prévu"[^>]*autofocus/);
+    expect(out).toContain('value="4 600"');
+  });
+  it('garde le prévu au premier plan sans montant réel ni bien acquis', async () => {
+    const { BigDual } = await import('../src/screens/FieldFlow');
+    const out = html(<BigDual name="Notaire" planned={4600} actual={null} showReal onPlanned={() => {}} onActual={() => {}} />);
+    expect(out).toMatch(/aria-label="Notaire — prévu"[^>]*autofocus/);
+  });
+  it('présente les écarts récupérables sans jugement positif ou négatif', async () => {
+    const { BigDual } = await import('../src/screens/FieldFlow');
+    const out = html(<BigDual name="Charges" planned={40} actual={60} showReal neutral onPlanned={() => {}} onActual={() => {}} />);
+    expect(out).toContain('Écart');
+    expect(out).not.toContain('tone-pos');
+    expect(out).not.toContain('tone-neg');
+  });
+});

@@ -121,7 +121,7 @@ export function Movements() {
                             <span className="mv-label">{cat.label}</span>
                             {(m.note || neutral) && <span className="mv-note">{m.note || 'neutre'}</span>}
                           </span>
-                          <span className={`mv-amount ${m.type === 'income' ? 'is-in' : 'is-out'}`}>
+                          <span className={`mv-amount ${m.type === 'income' && !neutral ? 'is-in' : 'is-out'}`}>
                             {m.type === 'income' ? '+' : '−'}
                             {eur2(m.amount).replace('-', '')}
                           </span>
