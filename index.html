@@ -911,27 +911,20 @@ body:has(.bulkbar) #view{padding-bottom:96px}
 @media (max-width:640px){.toolbar .tsearch{flex:1 1 100%}.toolbar>.select{flex:1 1 calc(50% - 5px);min-width:0;max-width:none!important}.toolbar>.spacer{display:none}.hero-head{flex-direction:column-reverse;gap:12px}.hero-head .hero-side{width:100%;justify-content:space-between}.hero-logos .nt{height:30px}.hs .sit{font-size:12.5px;padding:6px 10px;height:auto;min-height:30px;white-space:normal;line-height:1.2;border-radius:12px}.hs .sit small{display:none}.onb-grid{grid-template-columns:minmax(0,1fr)}.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.hs .big{font-size:28px}.hero-head .hero-logos .tile{display:none}.hero.mini .hm-n{display:none}.rp-row{grid-template-columns:auto minmax(0,1fr)}.rp-d{grid-column:2}}
 @media print{.bulkbar,.onb,.hbtn,.fchips{display:none!important}}
 
-/* ---------- Ton projet (sélecteur) ---------- */
-.ppick{display:flex;align-items:center;gap:12px;margin-bottom:12px;min-width:0}
+/* ---------- Projet affiché (liste déroulante) ---------- */
+.ppick{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--c);box-shadow:var(--shadow-sm)}
 .pp-l{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.pp-list{display:flex;gap:8px;overflow-x:auto;padding:2px;min-width:0;scrollbar-width:thin}
-.pp{display:inline-flex;align-items:center;gap:8px;flex:none;height:40px;max-width:360px;padding:0 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-weight:600;font-size:13px;white-space:nowrap;cursor:pointer;box-shadow:var(--shadow-sm)}
-.pp:hover{border-color:var(--border-strong);color:var(--text)}
-.pp .pp-n{overflow:hidden;text-overflow:ellipsis;min-width:0}
-.pp b{font-size:12px;letter-spacing:.02em}
-.pp .cnt{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--surface-3);color:var(--text-2)}
-.pp.on{background:var(--ink);border-color:var(--ink);color:#fff}
-.pp.on b{color:var(--y)}
-.pp.on .cnt{background:rgba(255,255,255,.16);color:#fff}
-:root[data-theme="dark"] .pp.on{background:var(--y);border-color:var(--y);color:var(--on-y)}
-:root[data-theme="dark"] .pp.on b,:root[data-theme="dark"] .pp.on .cnt{color:var(--on-y)}
-@media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])) .pp.on{background:var(--y);border-color:var(--y);color:var(--on-y)}:root:where(:not([data-theme="light"])) .pp.on b,:root:where(:not([data-theme="light"])) .pp.on .cnt{color:var(--on-y)}}
-.pp-sum{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px 12px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--c);box-shadow:var(--shadow-sm)}
-.pp-sum-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 240px}
-.pp-sum-t b{font-family:var(--font-d);font-size:15px}
-.pp-sum-t span{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
-.pp-sum-p{display:flex;align-items:center;gap:10px}
-.pp-sum-p .pbar{width:160px}
+.pp-dd{display:inline-flex;align-items:center;gap:8px;min-width:260px;max-width:min(460px,100%);height:40px;padding:0 10px 0 12px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);font:600 13.5px var(--font);cursor:pointer}
+.pp-dd:hover{background:var(--surface-2)}
+.pp-dd .pp-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.pp-dd b{font-size:12.5px}
+.pp-dd>.ic:last-child{color:var(--muted)}
+.ppick .cnt,.pm .cnt{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--surface-3);color:var(--text-2);flex:none}
+.pp-info{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-left:auto}
+.pp-info .pbar{width:150px}
+.pm{width:min(420px,calc(100vw - 32px));max-height:min(420px,70vh);overflow:auto}
+.pm .opt{padding:9px 8px}
+.pm .pm-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ---------- Fiche action : récap + suivi daté ---------- */
 .arecap{border-radius:14px;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-top:4px solid var(--c);display:grid;gap:12px}
@@ -967,7 +960,44 @@ body:has(.bulkbar) #view{padding-bottom:96px}
 .je-suivi:hover{border-color:var(--border-strong)}
 .je-suivi .je-t{font-size:13.5px}
 .keytag.kt-suivi{background:var(--y);color:var(--on-y)}
-@media (max-width:640px){body:has(.modal-bd.is-drawer) #toasts{left:12px;right:12px;bottom:84px}.pp-list{flex-wrap:wrap;overflow:visible}.pp{max-width:100%;min-width:0}.ppick{flex-direction:column;align-items:stretch;gap:8px}.pp-sum-p .pbar{width:110px}.ar-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:640px){.sk-row .sk-n{display:none}body:has(.modal-bd.is-drawer) #toasts{left:12px;right:12px;bottom:84px}.pp-dd{min-width:0;width:100%;max-width:none}.pp-info{margin-left:0}.pp-info .pbar{width:110px}.ar-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+/* ---------- Grille de compétences ISTP ---------- */
+.sk-code{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:22px;min-width:44px;padding:0 7px;border-radius:6px;background:var(--school-soft);color:var(--school-text);font:800 11.5px/1 var(--font);letter-spacing:.02em;flex:none}
+.sk-i{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;border:0;background:transparent;color:var(--school-text);cursor:pointer;flex:none}
+.sk-i:hover{background:var(--school-soft)}
+.sk-i:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.sk-bloc{margin-top:22px}
+.sk-bh{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-bottom:12px}
+.sk-bh h3{font-family:var(--font-d);font-size:16px;font-weight:700;text-wrap:balance;min-width:0;flex:1 1 320px}
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.sk-card{display:flex;flex-direction:column;gap:10px;padding:14px 16px}
+.sk-card.is-empty{background:var(--surface-2);box-shadow:none}
+.sk-top{display:flex;align-items:center;gap:8px;margin:-4px -6px -4px 0}
+.sk-top .n{font-size:12px;font-weight:700;color:var(--muted);background:var(--surface-3);border-radius:99px;padding:1px 8px}
+.sk-name{font-size:14px;font-weight:700;line-height:1.35;text-wrap:balance}
+.ski{width:min(380px,calc(100vw - 40px));max-height:min(480px,70vh);overflow:auto;padding:6px 8px;display:grid;gap:10px;font-size:13px;line-height:1.5}
+.ski-h{display:flex;align-items:flex-start;gap:8px}
+.ski-h b{font-family:var(--font-d);font-size:15px;line-height:1.3}
+.ski-ctx{font-size:11.5px;color:var(--muted);line-height:1.4}
+.ski-s h5{margin:0 0 3px;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.ski-s p{margin:0;color:var(--text-2)}
+.ski-s ul{margin:0;padding-left:18px;color:var(--text-2)}
+.ski-q{font-style:italic}
+.ski-f{font-size:12px;font-weight:600;color:var(--school-text);border-top:1px solid var(--border);padding-top:8px}
+.skpick-g{display:grid;gap:6px}
+.skp-b{border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+.skp-b>summary{cursor:pointer;padding:9px 12px;font-size:12.5px;font-weight:700;color:var(--text-2);list-style-position:inside}
+.skp-b>summary .cnt{font-size:11px;padding:1px 7px;border-radius:99px;background:var(--y);color:var(--on-y)}
+.skp-b .skpick{padding:0 10px 10px}
+.skc-w{display:inline-flex;align-items:center;gap:0;max-width:100%}
+.skc-w .skc{min-width:0;max-width:100%}
+.ic-in{display:inline-flex;vertical-align:-2px}
+.skc-w .skc span{gap:6px;max-width:100%;height:auto;min-height:30px;padding:5px 11px;line-height:1.3;white-space:normal}
+.skc-w .sk-i{width:26px;height:26px}
+.sk-row{display:flex;align-items:center;gap:8px}
+.sk-row .input{flex:1;min-width:0;width:auto}
+.sk-row .sk-n{width:70px;text-align:right}
 
 /* =====================================================================
    Adaptatif
@@ -1182,6 +1212,7 @@ const ICONS = {
   send:'<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>',
   bell:'<path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.5 20a1.6 1.6 0 0 0 3 0"/>',
   award:'<circle cx="12" cy="9" r="6"/><path d="m8.5 14 -1.5 7.5 5-3 5 3-1.5-7.5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/>',
   select:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><path d="m5.5 7 1.2 1.2 2.3-2.4"/><path d="M14 7h7M14 17h7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/>',
   shift:'<path d="M4 12h14M14 7l5 5-5 5"/><path d="M4 5v14"/>',
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
@@ -1308,7 +1339,152 @@ const SEED_PERIODS = [
   ['school', 'P17', '2027-04-12', '2027-04-23'],
   ['exam', 'Épreuves finales', '2027-09-06', '2027-09-24']
 ];
-const DEFAULT_SKILLS = ['Gestion de projet', 'Analyse et fiabilisation de données', 'Amélioration continue / Lean', 'Communication et animation de réunions', 'Conduite du changement', 'Maintenance et fiabilité', 'Outils numériques (Excel, SharePoint, Power Apps)', 'Qualité, sécurité, environnement'];
+/* ---------- Référentiel de compétences ISTP — Ingénieur Génie industriel (grille d'évaluation en entreprise, version du 16/10/2024) ---------- */
+const GRID_V = 'istp-gi-2024';
+const SKILL_BLOCS = {
+  B1: 'Bloc 1 — Manager une activité industrielle ou de service dans le respect des indicateurs de performance',
+  B2: 'Bloc 2 — Manager un projet en environnement industriel, dans un contexte interculturel et changeant',
+  B3: "Bloc 3 — Développer la compétitivité de l'entreprise en intégrant les enjeux sociétaux et environnementaux",
+  B4: "Bloc 4 — Maintenir et développer le capital humain de l'entreprise",
+  X: 'Autres compétences'
+};
+const SKILL_ACTS = {
+  A1: ['B1', "Organisation et management d'une activité opérationnelle, en respectant des impératifs de sécurité, de qualité, de délais, de coûts et d'environnement"],
+  A2: ['B1', "Optimisation de la performance d'un processus en construisant et en mettant en œuvre des solutions adaptées"],
+  A3: ['B1', "Animation d'équipe multiculturelle dans une culture de performance"],
+  A4: ['B2', "Lancement et planification d'un projet en environnement industriel"],
+  A5: ['B2', "Exécution, suivi et contrôle d'un projet en environnement industriel"],
+  A6: ['B2', "Clôture d'un projet en environnement industriel"],
+  A8: ['B3', 'Proposition de solutions de développement et de pérennisation intégrant les enjeux sociétaux et environnementaux'],
+  A10: ['B4', "Contribution à la mise en place d'une organisation apprenante"],
+  A11: ['B4', "Identification et capitalisation des savoirs, savoir-faire différenciants pour permettre l'accroissement des compétences individuelles et collectives"]
+};
+/* [code, intitulé court, libellé complet de la grille, explication, exemples de preuves] */
+const SKILL_GRID = [
+  ['A1C1', 'Modéliser le processus et identifier sa valeur ajoutée',
+    'Modéliser le processus et identifier sa valeur ajoutée afin de piloter sa performance en adaptant les moyens (humains, matériels et financiers) aux enjeux.',
+    "Représenter un processus de bout en bout (étapes, acteurs, flux d'information et de matière) pour voir où il crée de la valeur et où il en perd. C'est la base pour mesurer sa performance et ajuster les moyens : personnes, outils, budget.",
+    ['Cartographie SIPOC, SADT ou VSM', 'Logigramme du processus', 'Étapes sans valeur ajoutée repérées (attentes, doubles saisies)']],
+  ['A1C2', "Construire la feuille de route et organiser l'activité",
+    "Construire la feuille de route et organiser l'activité en déclinant les objectifs stratégiques pour respecter les impératifs sécurité, environnement, qualité, délais et coût.",
+    "Traduire les objectifs de l'entreprise en un plan concret pour ton activité : qui fait quoi, quand et avec quels moyens, en respectant la sécurité, la qualité, l'environnement, les délais et le budget.",
+    ["Feuille de route ou plan d'action daté", 'Planning des livrables et des jalons', 'Indicateurs sécurité, qualité, délai et coût suivis']],
+  ['A1C3', "Analyser l'impact environnemental du processus",
+    "Analyser l'impact environnemental du processus à travers des méthodes adaptées afin de limiter les ressources et tenir compte des limites planétaires.",
+    'Évaluer ce que le processus consomme et rejette (énergie, matières, déchets, déplacements, papier, stockage de données) avec une méthode adaptée, puis proposer des moyens de réduire cet impact.',
+    ['Bilan simplifié des consommations ou des déchets', 'Analyse de cycle de vie simplifiée', 'Action de réduction (dématérialisation, moins de déplacements, moins de rebuts)']],
+  ['A2C1', 'Identifier et définir les problématiques',
+    'Identifier et définir les problématiques techniques, économiques, humaines, organisationnelles et environnementales en analysant les indicateurs et en mettant en œuvre des observations terrain afin de poser un diagnostic.',
+    "Poser clairement le problème avant de chercher des solutions : partir des indicateurs et de ce que tu observes sur le terrain pour formuler un diagnostic factuel, sous tous ses aspects (technique, coût, humain, organisation, environnement).",
+    ['QQOQCCP ou fiche problème', 'Analyse des indicateurs (écarts, tendances)', 'Observations terrain, entretiens avec les sites']],
+  ['A2C2', 'Rechercher les causes racines',
+    "Rechercher les causes racines en utilisant une démarche structurée et en s'appuyant sur des connaissances scientifiques et techniques afin d'éradiquer les problèmes.",
+    "Remonter à l'origine réelle d'un problème plutôt que traiter ses symptômes, avec une méthode structurée, pour qu'il ne revienne pas.",
+    ["Diagramme d'Ishikawa (5M)", '5 Pourquoi', 'Pareto des causes, AMDEC']],
+  ['A2C3', 'Prioriser les actions et prendre des décisions',
+    "Prioriser les actions et prendre des décisions en s'appuyant sur des outils d'aide à la décision incluant une approche économique afin d'assurer l'atteinte des objectifs.",
+    'Choisir quoi faire en premier en comparant les options sur des critères objectifs, dont le coût et le gain attendu, puis faire valider la décision.',
+    ['Matrice effort / impact ou analyse multicritère', 'Estimation des coûts et des gains', 'Note de décision ou arbitrage validé']],
+  ['A2C4', 'Piloter et pérenniser les améliorations',
+    "Piloter et pérenniser les améliorations en validant l'efficacité des actions et en intégrant les améliorations aux standards du processus afin de maintenir le gain de performance.",
+    "Vérifier par la mesure que les actions ont vraiment amélioré la situation, puis inscrire la nouvelle façon de faire dans les standards (procédures, modes opératoires, formations) pour que le gain dure.",
+    ['Indicateur avant / après', 'Procédure ou mode opératoire mis à jour', 'Règle commune diffusée aux sites']],
+  ['A3C1', 'Communiquer de manière ascendante et descendante',
+    "Communiquer de manière ascendante et descendante en réalisant du reporting et en animant des réunions opérationnelles afin de maîtriser les flux d'informations et de responsabiliser les équipes.",
+    "Faire circuler l'information dans les deux sens : rendre compte à ta hiérarchie (reporting, alertes, décisions à prendre) et informer les équipes terrain, notamment en animant des réunions efficaces, pour que chacun sache quoi faire et se sente responsable.",
+    ['Tableau de bord ou compte rendu de reporting', 'Réunion animée avec ordre du jour et relevé de décisions', 'Point hebdo envoyé au manager']],
+  ['A4C1', 'Identifier les objectifs de performance du projet',
+    "Identifier les objectifs de performance du projet en lien avec les enjeux de compétitivité, pérennité et responsabilité sociétale de l'entreprise, en établissant le diagnostic de la situation initiale.",
+    "Partir d'un état des lieux de la situation actuelle pour fixer des objectifs de projet mesurables, alignés sur les enjeux de l'entreprise (performance, durabilité, responsabilité sociétale).",
+    ["Diagnostic de l'existant", 'Objectifs SMART du projet', "Lien avec la stratégie de l'entreprise"]],
+  ['A4C2', 'Établir le cadrage du projet',
+    'Établir le cadrage du projet en identifiant les parties prenantes, en établissant les limites du projet et en définissant la gouvernance du projet.',
+    "Définir le périmètre (ce qui est dans le projet et ce qui n'y est pas), qui est concerné et qui décide : sponsor, comité de pilotage, référents, rythme des points.",
+    ['Note de cadrage', 'Cartographie des parties prenantes', 'Gouvernance : comité de pilotage, revues, rôles (RACI)']],
+  ['A4C3', 'Définir le planning et les ressources économiques du projet',
+    "Définir le planning et les ressources économiques du projet en décomposant en organigramme des tâches et en identifiant les jalons et les livrables afin d'optimiser les coûts et le délai d'exécution du projet.",
+    'Découper le projet en tâches (organigramme des tâches), les placer dans le temps avec des jalons et des livrables, et estimer le budget et les ressources nécessaires.',
+    ['Organigramme des tâches (WBS)', 'Planning Gantt avec jalons', 'Budget ou estimation des charges']],
+  ['A4C4', "Constituer l'équipe projet",
+    "Constituer l'équipe projet dans un environnement multiculturel en mettant en adéquation les besoins en ressources avec les compétences disponibles en interne et en externe.",
+    'Identifier les compétences dont le projet a besoin et trouver les bonnes personnes, en interne ou en externe, en tenant compte des cultures et des façons de travailler de chacun.',
+    ['Matrice besoins / compétences', 'Liste des référents et de leur rôle', "Appel à un expert ou à un prestataire"]],
+  ['A5C1', "Piloter un projet de transformation d'un processus industriel",
+    "Piloter un projet de transformation d'un processus industriel en mettant en œuvre des connaissances techniques et technologiques complexes et variées de manière à atteindre les objectifs du projet.",
+    "Mener la transformation d'un processus jusqu'au résultat en mobilisant des connaissances techniques variées (outils numériques, données, méthodes industrielles) et en gardant le cap sur les objectifs.",
+    ['Prototype ou outil mis en place', 'Pilote sur un site', 'Choix technique argumenté']],
+  ['A5C2', 'Déployer un plan de conduite du changement',
+    "Déployer un plan de conduite du changement à travers des méthodes de communication, de reporting et d'animation d'équipes multiculturelles pour garantir la mobilisation des parties prenantes.",
+    "Préparer les personnes concernées au changement : expliquer pourquoi, communiquer régulièrement, former, écouter les résistances et y répondre, pour que la nouvelle façon de faire soit réellement adoptée.",
+    ['Plan de communication', 'Formation ou démonstration aux utilisateurs', "Cadran du changement, suivi de l'adoption"]],
+  ['A5C3', "Assurer l'atteinte des objectifs",
+    "Assurer l'atteinte des objectifs définis en pilotant leur suivi par la mise en place d'indicateurs et en identifiant les risques et les stratégies d'atténuation de ceux-ci, de manière à gagner la satisfaction du client.",
+    "Suivre l'avancement avec des indicateurs, repérer les risques tôt et prévoir comment les réduire, pour livrer ce qui a été promis au client du projet (interne ou externe).",
+    ['Tableau de bord du projet', 'Registre des risques avec actions', 'Revue de projet']],
+  ['A6C1', 'Gérer la clôture du projet',
+    "Gérer la clôture du projet en identifiant et s'assurant de la réalisation des livrables conformes aux exigences des parties prenantes afin de s'assurer de la pérennité de la transformation opérée.",
+    'Terminer proprement : vérifier que tous les livrables sont conformes à ce qui était attendu, les faire réceptionner par les parties prenantes et organiser la passation pour que le résultat tienne dans le temps.',
+    ['Validation ou procès-verbal de réception des livrables', 'Bilan de projet', 'Passation au responsable du processus']],
+  ['A6C2', "Réaliser un retour d'expérience du projet",
+    "Réaliser un retour d'expérience du projet en capitalisant les bonnes pratiques internes et externes afin de garantir la bonne adéquation des méthodes de développement de projet à la nécessaire agilité de l'entreprise.",
+    "Analyser ce qui a bien ou mal fonctionné dans le projet et en tirer des bonnes pratiques réutilisables, par toi et par l'entreprise.",
+    ["Retour d'expérience (REX) formalisé", 'Bonnes pratiques et points de vigilance', "Méthode ou modèle de projet mis à jour"]],
+  ['A8C1', 'Concevoir des réponses créatives',
+    "Concevoir des réponses créatives aux problématiques industrielles de l'entreprise en imaginant des solutions innovantes respectant les principes du développement durable, en vue d'éclairer la décision d'engagement stratégique, financier et opérationnel.",
+    "Imaginer des solutions nouvelles à un problème de l'entreprise, en intégrant le développement durable, et les présenter de façon à éclairer une décision (stratégique, financière, opérationnelle).",
+    ['Comparatif de solutions avec des critères durables', "Proposition d'innovation chiffrée", 'Atelier de créativité']],
+  ['A10C1', "Donner du sens à l'action",
+    "Développer des pratiques de management qui favorisent la compréhension de l'environnement global de l'entreprise par les collaborateurs, en donnant du sens à l'action, en partageant les enjeux et les objectifs pour permettre à chacun de s'engager.",
+    "Aider les personnes avec qui tu travailles à comprendre le contexte de l'entreprise et le pourquoi de leurs missions, en partageant les enjeux et les objectifs, pour qu'elles s'engagent.",
+    ['Présentation des enjeux du projet aux équipes', 'Partage des objectifs et des résultats', 'Échanges réguliers avec les sites']],
+  ['A10C2', 'Donner du feedback et valoriser les réalisations',
+    'Donner du feedback et valoriser les réalisations individuelles et collectives.',
+    "Faire des retours réguliers et constructifs aux personnes avec qui tu travailles, et mettre en avant ce qu'elles ont réussi, seules et en équipe.",
+    ['Retour formalisé après une action', "Réussite mise en avant dans un point d'équipe", 'Remerciements et partage des résultats']],
+  ['A10C3', "Développer l'intelligence collective",
+    "Développer l'intelligence collective en animant des ateliers et méthodes de travail collaboratifs et en favorisant une attitude réflexive pour stimuler la créativité, l'innovation et l'agilité.",
+    'Faire travailler les gens ensemble pour produire de meilleures idées : ateliers collaboratifs, méthodes d\'animation, prise de recul sur la façon de travailler.',
+    ['Atelier collaboratif animé', 'Brainstorming, ice breakers, rétrospective', 'Outil collaboratif mis en place (Teams, SharePoint)']],
+  ['A11C1', 'Poser un diagnostic de maturité des équipes',
+    "Poser un diagnostic de maturité des équipes en appliquant une analyse socio-dynamique pour identifier les besoins et les leviers d'action.",
+    'Évaluer où en est une équipe (compétences, motivation, fonctionnement, relations) avec une analyse socio-dynamique, pour identifier ses besoins et les leviers qui la feront progresser.',
+    ['Analyse socio-dynamique des acteurs (alliés, opposants, hésitants)', "Diagnostic des besoins d'une équipe", "Leviers d'action identifiés"]],
+  ['A11C2', 'Gérer ses compétences',
+    "Gérer ses compétences en appliquant la connaissance de soi et l'autoévaluation dans une perspective de formation tout au long de sa vie en vue d'opérer des choix professionnels.",
+    'Savoir où tu en es : repérer tes points forts et tes axes de progrès par l\'autoévaluation, puis construire ton plan de développement et tes choix professionnels.',
+    ['Autoévaluation sur cette grille', 'Plan de développement personnel', 'Formations suivies ou prévues']],
+  ['A11C3', 'Contribuer au plan de développement des compétences',
+    "Contribuer au plan de développement des compétences et plan de formation conformément à la Gestion des Emplois et Parcours Professionnel, pour conduire à la réalisation du potentiel de chacun et au recrutement de talents.",
+    "Participer à la montée en compétences des autres : repérer les besoins de formation, contribuer au plan de formation (gestion des emplois et des parcours professionnels) et aider au recrutement de talents.",
+    ['Besoins de formation identifiés', 'Support de formation créé', "Participation à un recrutement ou à l'intégration d'un nouveau"]]
+];
+const GRID = Object.fromEntries(SKILL_GRID.map(([code, name, full, info, ex]) => {
+  const act = code.replace(/C\d+$/, '');
+  return [code, { code, name, full, info, ex, act, bloc: SKILL_ACTS[act] ? SKILL_ACTS[act][0] : 'X' }];
+}));
+const gridSkills = () => SKILL_GRID.map(([code, name]) => ({ id: 'sk_' + code, code, name }));
+/* Fiche complète d'une compétence : la grille, plus ce que tu as modifié */
+function skillMeta(k) {
+  const g = (k && GRID[k.code]) || {};
+  return { id: k.id, code: k.code || '', name: k.name || g.name || '', full: k.full || g.full || '', info: k.info != null && k.info !== '' ? k.info : (g.info || ''), ex: g.ex || [], act: g.act || '', bloc: g.bloc || 'X' };
+}
+/* Ancienne liste par défaut (v3) → compétence de la grille la plus proche */
+const OLD_SKILL_MAP = { 'Gestion de projet': 'A5C3', 'Analyse et fiabilisation de données': 'A2C1', 'Amélioration continue / Lean': 'A2C4', 'Communication et animation de réunions': 'A3C1', 'Conduite du changement': 'A5C2', 'Maintenance et fiabilité': 'A2C2', 'Outils numériques (Excel, SharePoint, Power Apps)': 'A5C1', 'Qualité, sécurité, environnement': 'A1C2' };
+function migrateSkills(s) {
+  const grid = gridSkills(), map = {}, keep = [];
+  (Array.isArray(s.skills) ? s.skills : []).forEach(k => {
+    if (!k || !k.id) return;
+    const n = H(k.name), code = String(k.code || '').toUpperCase();
+    const g = grid.find(x => x.code === code)
+      || grid.find(x => new RegExp('(^|[^a-z0-9])' + x.code.toLowerCase() + '($|[^0-9])').test(n))
+      || grid.find(x => n && (n === H(x.name) || n.startsWith(H(x.name)) || H(GRID[x.code].full).startsWith(n)))
+      || (OLD_SKILL_MAP[k.name] && grid.find(x => x.code === OLD_SKILL_MAP[k.name]));
+    if (g) map[k.id] = g.id;
+    else if (!grid.some(x => x.id === k.id)) keep.push({ id: k.id, code: k.code || '', name: k.name || 'Compétence', info: k.info || '' });
+  });
+  s.skills = grid.concat(keep);
+  (s.actions || []).forEach(a => { a.skills = [...new Set((a.skills || []).map(id => map[id] || id).filter(id => s.skills.some(k => k.id === id)))]; });
+}
 const OLD_PROFILE = { startDate: '2025-09-01', goalDate: '2028-09-30', formation: 'Cycle ingénieur par apprentissage — ISTP' };
 function emptyState() {
   const now = new Date().toISOString();
@@ -1317,7 +1493,7 @@ function emptyState() {
     profile: { name: '', aliases: ['Pilote projet'], role: 'Apprenti ingénieur', company: 'NaTran', formation: 'Ingénieur Génie industriel (FA) — ISTP', startDate: '2024-09-30', goalDate: '2027-09-24', goalLabel: "Diplôme d'ingénieur" },
     settings: { theme: 'auto', logos: { natran: null, istp: null }, lastReview: null },
     calendar: { periods: SEED_PERIODS.map(([type, label, start, end], i) => ({ id: 'per_' + i, type, label, start, end })) },
-    skills: DEFAULT_SKILLS.map((name, i) => ({ id: 'sk_' + i, name })),
+    skills: gridSkills(),
     projects: [], actions: [], milestones: [], journal: [], progressLog: {}
   };
 }
@@ -1332,6 +1508,7 @@ function migrate(d) {
   if (!s.calendar || !Array.isArray(s.calendar.periods)) s.calendar = emptyState().calendar;
   s.calendar.periods = s.calendar.periods.filter(p => p && isDate(p.start) && isDate(p.end) && PTYPE[p.type]);
   if (!Array.isArray(s.skills)) s.skills = emptyState().skills;
+  if (s.settings.skillsGrid !== GRID_V) { migrateSkills(s); s.settings.skillsGrid = GRID_V; }
   ['projects', 'actions', 'milestones', 'journal'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
   if (!s.progressLog || typeof s.progressLog !== 'object') s.progressLog = {};
   s.projects.forEach((p, i) => {
@@ -1360,15 +1537,6 @@ function migrate(d) {
     if (m.ref == null) m.ref = '';
     if (m.description == null) m.description = '';
   });
-  // Planning de référence du projet Excel : dates d'origine du classeur
-  const p1 = s.projects.find(p => p.ref === 'PRJ-001' && !p.baseline);
-  if (p1) {
-    const byRef = Object.fromEntries(SEED_ACTIONS.map(r => [r[0], [r[8], r[9]]]));
-    const msRef = Object.fromEntries(SEED_MS.map(r => [r[0], r[2]]));
-    p1.baseline = { at: '2026-09-28', label: 'Classeur Excel v7', actions: {}, milestones: {} };
-    s.actions.forEach(a => { if (a.projectId === p1.id) p1.baseline.actions[a.id] = byRef[a.ref] || [a.start, a.due]; });
-    s.milestones.forEach(m => { if (m.projectId === p1.id) p1.baseline.milestones[m.id] = msRef[m.ref] || m.date; });
-  }
   s.version = APP_VERSION;
   return s;
 }
@@ -1389,20 +1557,17 @@ function loadState() {
     try {
       const d = JSON.parse(raw);
       if (isOldDemo(d)) {
-        S = seedState();
-        S.profile = Object.assign(S.profile, d.profile || {});
-        S.profile = migrate({ profile: S.profile, projects: [], actions: [] }).profile;
-        S.settings.theme = d.settings?.theme || 'auto';
-        bootNotice = "Ton plan d'action Excel (PRJ-001) a remplacé les données d'exemple.";
+        S = migrate({ profile: d.profile || {}, settings: { theme: d.settings?.theme || 'auto' }, projects: [], actions: [] });
+        bootNotice = "Les données d'exemple ont été retirées : ton plan est vierge.";
       } else S = migrate(d);
     } catch (e) {
       console.error(e);
-      loadIssue = "Les données locales étaient illisibles : une copie a été conservée et ton plan d'origine a été rechargé.";
+      loadIssue = "Les données locales étaient illisibles : une copie a été conservée et un plan vierge a été ouvert.";
       try { localStorage.setItem(KEY + ':corrompu-' + Date.now(), raw); } catch (_) {}
       S = null;
     }
   }
-  if (!S) S = seedState();
+  if (!S) S = migrate(emptyState());
 }
 
 /* ---------- Préférences d'affichage (par navigateur) ---------- */
@@ -2064,54 +2229,39 @@ function planChecks(pid) {
 
 /* ---------- Compétences : suggestions à partir des mots des actions ---------- */
 const SKILL_HINTS = {
-  'Gestion de projet': /planning|pilote|jalon|bilan|deploi|gouvernance|revue|indicateur|lancer|cadrage/,
-  'Analyse et fiabilisation de données': /donnee|doublon|referentiel|dictionnaire|correspondance|normalis|rapproch|valeurs|champ/,
-  'Amélioration continue / Lean': /processus|procedure|methode|statuts|gains|amelior|regle/,
-  'Communication et animation de réunions': /reunion|arbitr|relire|soumettre|present|recommandation|demo|former|utilisateurs|referents/,
-  'Conduite du changement': /deploy|generalis|arret|accompagnement|bascule|adoption|anciens fichiers/,
-  'Maintenance et fiabilité': /maintenance|installation|pdm|\bot\b|intervention|poste technique|sap/,
-  'Outils numériques (Excel, SharePoint, Power Apps)': /excel|sharepoint|power apps|lists|prototype|outil/,
-  'Qualité, sécurité, environnement': /qualite|securit|hse|environnement|controle/
+  A1C1: /processus|cartograph|sipoc|sadt|vsm|logigramme|valeur ajoutee|flux/g,
+  A1C2: /feuille de route|planning macro|organiser l.activite|objectifs strateg|securit|qualite|hse|qse/g,
+  A1C3: /environnement|carbone|energie|dechet|dematerialis|papier|impact/g,
+  A2C1: /diagnostic|problemat|indicateur|observ|etat des lieux|recenser|inventori|identifier/g,
+  A2C2: /cause|ishikawa|pourquoi|pareto|amdec|doublon|anomal|ecart/g,
+  A2C3: /priori|decision|arbitr|choix|choisir|decider|cout|gain|rentab/g,
+  A2C4: /standard|procedure|regle|perenn|generalis|methode commune|mode operatoire|normalis|statuts/g,
+  A3C1: /reunion|reporting|compte rendu|communiqu|point hebdo|presenter|relire|soumettre|informer/g,
+  A4C1: /objectif|enjeu|situation initiale|existant/g,
+  A4C2: /cadrage|perimetre|parties prenantes|gouvernance|sponsor|copil|limites/g,
+  A4C3: /planning|jalon|livrable|budget|charge|wbs|gantt/g,
+  A4C4: /equipe projet|referents|expert|prestataire|ressources/g,
+  A5C1: /pilote|prototype|outil|excel|sharepoint|power apps|lists|sap|dictionnaire|referentiel/g,
+  A5C2: /changement|former|formation|utilisateurs|accompagn|adoption|bascule|deploie|deploiement|demo/g,
+  A5C3: /suivi|tableau de bord|risque|kpi|avancement|revue/g,
+  A6C1: /cloture|reception|bilan|passation|validation finale/g,
+  A6C2: /retour d.experience|\brex\b|retex|bonnes pratiques|capitalis/g,
+  A8C1: /innov|creati|durable|recommandation|solution/g,
+  A10C1: /donner du sens|partager les enjeux|expliquer les enjeux/g,
+  A10C2: /feedback|valoris|remerci/g,
+  A10C3: /atelier|collabor|brainstorm|intelligence collective|ice breaker|retrospective/g,
+  A11C1: /maturite|socio.?dynamique/g,
+  A11C2: /autoevaluation|plan de developpement|livret|competences personnelles/g,
+  A11C3: /plan de formation|recrutement|integration|tutorat|gepp/g
 };
+/* Jusqu'à 3 compétences proposées par action, les plus évoquées par ses mots */
 function suggestSkills(a) {
-  const txt = norm(`${a.title} ${a.result} ${a.phase}`);
-  return S.skills.filter(k => SKILL_HINTS[k.name] && SKILL_HINTS[k.name].test(txt)).map(k => k.id);
+  const txt = norm(`${a.title} ${a.result} ${a.phase} ${a.next || ''}`);
+  return S.skills.map(k => { const r = SKILL_HINTS[k.code]; return [k.id, r ? (txt.match(r) || []).length : 0]; })
+    .filter(([, n]) => n > 0).sort((x, y) => y[1] - x[1]).slice(0, 3).map(([id]) => id);
 }
 
 /* ---------- Données d'origine : ton classeur « Plan_action_NaTran_v7_avec_Gantt » ---------- */
-const SEED_ACTIONS = [["PRJ-001-A01", "Phase 1 – Langage commun", "Classer les termes du glossaire par catégorie", "Glossaire structuré par types d’installations, actes, statuts, résultats, anomalies, gestion et sigles", "Pilote projet", "Haute", "En cours", 60, "2026-09-28", "2026-09-30", "Finaliser le classement des termes", "2026-09-29", "", "", "Point de départ : glossaire maintenance simplifié Validé / Non validé"], ["PRJ-001-A02", "Phase 1 – Langage commun", "Préparer la liste des termes non validés à soumettre aux référents", "Liste courte des termes à arbitrer", "Pilote projet", "Haute", "En cours", 40, "2026-09-28", "2026-10-02", "Consolider PIS, PRED/PDT, EF/EC, CS, VS, FNTR, HOT, EPC, RPE, IGP", "2026-09-30", "", "", "Ne pas faire relire l’ensemble du glossaire"], ["PRJ-001-A03", "Phase 1 – Langage commun", "Faire relire uniquement les termes non validés et les correspondances locales", "Retours consolidés des sites", "Référents de site", "Haute", "À lancer", 0, "2026-10-01", "2026-10-06", "Envoyer la liste ciblée aux référents", "2026-10-02", "", "", ""], ["PRJ-001-A04", "Phase 1 – Langage commun", "Organiser la réunion de validation du glossaire", "Arbitrages partagés et décisions tracées", "Pilote projet", "Haute", "À lancer", 0, "2026-10-05", "2026-10-08", "Planifier une réunion de 45 à 60 minutes", "2026-10-05", "", "", "Participants : représentants de sites, maintenance, exploitation, personne connaissant le PDM"], ["PRJ-001-A05", "Phase 1 – Langage commun", "Publier le glossaire maintenance commun V1", "Glossaire V1 daté, validé et versionné", "Responsable fonctionnel", "Haute", "À lancer", 0, "2026-10-08", "2026-10-09", "Intégrer les arbitrages et publier la V1", "2026-10-08", "", "", "Ajouter date, validation, responsable et historique des modifications"], ["PRJ-001-A06", "Phase 2 – Cartographie de l’existant", "Inventorier les fichiers utilisés par chaque site", "Inventaire avec une ligne par fichier", "Pilote projet", "Haute", "À lancer", 0, "2026-10-05", "2026-10-09", "Créer la trame d’inventaire", "2026-10-05", "", "", "Nom, site, responsable, usage, fréquence, source, utilisateurs, contenu local"], ["PRJ-001-A07", "Phase 2 – Cartographie de l’existant", "Documenter le PDM 2026-2032", "Sources et données du PDM clairement identifiées", "Référent maintenance", "Normale", "À lancer", 0, "2026-10-07", "2026-10-12", "Lister planification, actes, périodicités, groupes et installations", "2026-10-07", "", "", ""], ["PRJ-001-A08", "Phase 2 – Cartographie de l’existant", "Documenter le suivi mensuel d’avancement 2026", "Données déjà disponibles identifiées", "Pilote projet", "Haute", "À lancer", 0, "2026-10-07", "2026-10-13", "Recenser OT, statuts, dates, secteurs, typologies et indicateurs", "2026-10-08", "", "", ""], ["PRJ-001-A09", "Phase 2 – Cartographie de l’existant", "Documenter les fichiers locaux et les informations terrain", "Informations locales utiles distinguées du suivi global", "Référents de site", "Haute", "À lancer", 0, "2026-10-08", "2026-10-14", "Recenser observations, agents, anomalies, matériels et opérations complémentaires", "2026-10-09", "", "", ""], ["PRJ-001-A10", "Phase 2 – Cartographie de l’existant", "Cartographier les doublons et les données déjà présentes dans SAP ou le suivi mensuel", "Cartographie des fichiers et des informations", "Pilote projet", "Haute", "À lancer", 0, "2026-10-12", "2026-10-16", "Identifier les informations à ne plus ressaisir", "2026-10-12", "Disponibilité et qualité variables des fichiers locaux", "Valider la règle : une donnée existante dans le système ne doit pas être ressaisie", ""], ["PRJ-001-A11", "Phase 3 – Périmètre de l’outil", "Définir les données à récupérer automatiquement ou à importer", "Liste des données système à réutiliser", "Pilote projet", "Haute", "À lancer", 0, "2026-10-19", "2026-10-20", "Valider la liste issue des OT, SAP et du suivi mensuel", "2026-10-19", "", "", "OT, site, poste technique, désignation, groupe, secteur, dates, statuts, activité, typologie, coûts"], ["PRJ-001-A12", "Phase 3 – Périmètre de l’outil", "Définir les données terrain à saisir localement", "Liste des informations réellement manquantes", "Référents de site", "Haute", "À lancer", 0, "2026-10-19", "2026-10-21", "Valider avec les futurs utilisateurs", "2026-10-19", "", "", "Date réelle, agents, résultat, observation, anomalie, photo, matériel, correctif, responsable, échéance"], ["PRJ-001-A13", "Phase 3 – Périmètre de l’outil", "Classer les données : obligatoires, facultatives et calculées", "Règles de saisie lisibles", "Pilote projet", "Normale", "À lancer", 0, "2026-10-21", "2026-10-22", "Qualifier chaque champ", "2026-10-21", "", "", ""], ["PRJ-001-A14", "Phase 3 – Périmètre de l’outil", "Valider le périmètre fonctionnel et la règle anti-double saisie", "Périmètre V1 validé", "Responsable fonctionnel", "Haute", "À lancer", 0, "2026-10-22", "2026-10-23", "Arbitrer les champs à exclure de la V1", "2026-10-22", "Risque de vouloir reprendre toutes les colonnes existantes", "Limiter la V1 aux données utiles et démontrées", ""], ["PRJ-001-A15", "Phase 4 – Modèle commun de données", "Définir la structure commune minimale", "Structure identique pour tous les sites", "Pilote projet", "Haute", "À lancer", 0, "2026-10-26", "2026-10-29", "Structurer Identification / Maintenance / Réalisation / Correctif", "2026-10-26", "", "", ""], ["PRJ-001-A16", "Phase 4 – Modèle commun de données", "Rédiger le dictionnaire des données V1", "Dictionnaire des données V1", "Pilote projet", "Haute", "À lancer", 0, "2026-10-29", "2026-11-04", "Définir chaque champ et un exemple", "2026-10-29", "", "", ""], ["PRJ-001-A17", "Phase 4 – Modèle commun de données", "Attribuer la source et la responsabilité de saisie pour chaque champ", "Responsabilités de données explicites", "Responsable fonctionnel", "Normale", "À lancer", 0, "2026-11-03", "2026-11-06", "Compléter source, obligatoire/facultatif et responsable", "2026-11-03", "", "", ""], ["PRJ-001-A18", "Phase 5 – Qualité des données", "Rapprocher les installations à partir des codes et postes techniques", "Installations reliées à un identifiant commun", "Administrateur des données", "Haute", "À lancer", 0, "2026-11-02", "2026-11-10", "Utiliser code installation, poste technique, code site et désignation officielle", "2026-11-03", "", "", ""], ["PRJ-001-A19", "Phase 5 – Qualité des données", "Identifier les doublons de désignation", "Liste des doublons potentiels", "Administrateur des données", "Haute", "À lancer", 0, "2026-11-05", "2026-11-12", "Regrouper les variantes d’une même installation", "2026-11-05", "", "", ""], ["PRJ-001-A20", "Phase 5 – Qualité des données", "Normaliser les variantes validées", "Table de correspondance des anciennes valeurs", "Administrateur des données", "Normale", "À lancer", 0, "2026-11-09", "2026-11-16", "Appliquer uniquement les correspondances validées", "2026-11-09", "Risque de conversion erronée si la valeur est ambiguë", "", "Ex. SEC/SECT → SECTIONNEMENT ; COUP → COUPURE ; PIQ → PIQUAGE"], ["PRJ-001-A21", "Phase 5 – Qualité des données", "Contrôler manuellement les valeurs ambiguës", "Liste des valeurs non rapprochées et décisions associées", "Référent maintenance", "Haute", "À lancer", 0, "2026-11-12", "2026-11-18", "Examiner X, OK, C, vides, RAS, EF, EC amélioré", "2026-11-12", "Valeurs locales pouvant avoir plusieurs significations", "Ne pas convertir automatiquement", ""], ["PRJ-001-A22", "Phase 5 – Qualité des données", "Produire le référentiel unique et la table de correspondance", "Référentiel propre prêt pour le prototype", "Administrateur des données", "Haute", "À lancer", 0, "2026-11-16", "2026-11-20", "Consolider le référentiel et les éléments non rapprochés", "2026-11-16", "", "", ""], ["PRJ-001-A23", "Phase 6 – Méthode commune", "Formaliser le processus cible avant, pendant et après l’intervention", "Processus commun compris par tous les sites", "Pilote projet", "Haute", "À lancer", 0, "2026-11-23", "2026-11-24", "Décrire les étapes et responsabilités", "2026-11-23", "", "", ""], ["PRJ-001-A24", "Phase 6 – Méthode commune", "Définir les statuts opérationnels terrain", "Liste courte de statuts communs", "Responsable fonctionnel", "Haute", "À lancer", 0, "2026-11-23", "2026-11-25", "Valider À faire / Planifiée / Réalisée / Reportée / Non réalisable", "2026-11-23", "", "", ""], ["PRJ-001-A25", "Phase 6 – Méthode commune", "Distinguer le statut SAP de l’OT et le statut opérationnel terrain", "Règle de gestion explicite", "Référent maintenance", "Haute", "À lancer", 0, "2026-11-24", "2026-11-26", "Documenter ACTI/TERM séparément du statut terrain", "2026-11-24", "", "", ""], ["PRJ-001-A26", "Phase 6 – Méthode commune", "Rédiger la procédure commune de suivi maintenance", "Procédure de 1 à 2 pages", "Pilote projet", "Normale", "À lancer", 0, "2026-11-25", "2026-11-27", "Rédiger une procédure courte et opérationnelle", "2026-11-25", "", "", ""], ["PRJ-001-A27", "Phase 7 – Prototype et pilote", "Construire le prototype Excel commun V1", "Prototype commun V1", "Pilote projet", "Haute", "À lancer", 0, "2026-11-30", "2026-12-04", "Créer colonnes, listes déroulantes, glossaire, anomalies, correspondances et indicateurs", "2026-11-30", "", "", ""], ["PRJ-001-A28", "Phase 7 – Prototype et pilote", "Choisir le site ou groupe pilote et un périmètre de 20 à 50 installations", "Périmètre pilote défini", "Responsable fonctionnel", "Haute", "À lancer", 0, "2026-12-01", "2026-12-04", "Identifier un site avec un suivi déjà structuré", "2026-12-01", "", "", ""], ["PRJ-001-A29", "Phase 7 – Prototype et pilote", "Sélectionner 3 à 5 utilisateurs du pilote", "Groupe pilote constitué", "Référent de site", "Normale", "À lancer", 0, "2026-12-02", "2026-12-04", "Confirmer les utilisateurs et leurs rôles", "2026-12-02", "", "", ""], ["PRJ-001-A30", "Phase 7 – Prototype et pilote", "Lancer le pilote sur 4 à 6 semaines", "Utilisation réelle du prototype sur le terrain", "Équipe pilote", "Haute", "À lancer", 0, "2026-12-07", "2027-01-08", "Former rapidement les utilisateurs et démarrer le test", "2026-12-07", "Adoption et qualité de saisie pendant la période pilote", "Limiter le périmètre pour obtenir des retours exploitables", ""], ["PRJ-001-A31", "Phase 7 – Prototype et pilote", "Mesurer les gains et difficultés du pilote", "Mesures sur temps de saisie, doubles saisies, compréhension, données manquantes et satisfaction", "Pilote projet", "Haute", "À lancer", 0, "2026-12-14", "2027-01-08", "Collecter les retours chaque semaine", "2026-12-14", "", "", ""], ["PRJ-001-A32", "Phase 7 – Prototype et pilote", "Corriger le prototype et rédiger le bilan du pilote", "Prototype corrigé et rapport de retour", "Pilote projet", "Haute", "À lancer", 0, "2027-01-04", "2027-01-08", "Consolider les corrections et recommandations", "2027-01-04", "", "", ""], ["PRJ-001-A33", "Phase 8 – Choix de l’outil final", "Comparer Excel SharePoint, Microsoft Lists / SharePoint et Power Apps", "Comparatif des options selon usages, droits et terrain", "Pilote projet", "Haute", "À lancer", 0, "2027-01-11", "2027-01-13", "Évaluer les options à partir du retour pilote", "2027-01-11", "", "", ""], ["PRJ-001-A34", "Phase 8 – Choix de l’outil final", "Décider l’outil final après validation des besoins", "Décision formalisée sur la solution cible", "Responsable fonctionnel", "Haute", "À lancer", 0, "2027-01-13", "2027-01-15", "Présenter la recommandation et arbitrer", "2027-01-13", "Risque de construire une application avant stabilisation du langage et du processus", "Ne pas industrialiser avant validation du besoin", ""], ["PRJ-001-A35", "Phase 9 – Déploiement progressif", "Déployer sur un deuxième site utilisant une méthode différente", "Validation du modèle dans un contexte différent", "Pilote projet", "Haute", "À lancer", 0, "2027-01-18", "2027-01-20", "Préparer le deuxième site", "2027-01-18", "", "", ""], ["PRJ-001-A36", "Phase 9 – Déploiement progressif", "Corriger le modèle puis généraliser progressivement", "Modèle stabilisé et déploiement par vagues", "Responsable fonctionnel", "Haute", "À lancer", 0, "2027-01-20", "2027-01-26", "Intégrer les retours du deuxième site puis préparer le groupe complet", "2027-01-20", "", "", ""], ["PRJ-001-A37", "Phase 9 – Déploiement progressif", "Organiser l’arrêt progressif des anciens fichiers et l’accompagnement", "Plan de bascule et accompagnement des équipes", "Référents de site", "Normale", "À lancer", 0, "2027-01-22", "2027-01-27", "Préparer démo 30 min, procédure 1 page, référents, Teams et période de double fonctionnement", "2027-01-22", "Risque de maintien durable des anciens fichiers", "Limiter le double fonctionnement à 1 ou 2 mois maximum", ""], ["PRJ-001-A38", "Phase 10 – Gouvernance", "Nommer le responsable fonctionnel et l’administrateur des données", "Rôles centraux attribués", "Direction / Maintenance", "Haute", "À lancer", 0, "2027-01-18", "2027-01-22", "Formaliser les rôles et responsabilités", "2027-01-18", "", "", ""], ["PRJ-001-A39", "Phase 10 – Gouvernance", "Nommer les référents de site et formaliser la règle d’évolution", "Réseau de référents et règle de gouvernance définis", "Responsable fonctionnel", "Normale", "À lancer", 0, "2027-01-20", "2027-01-26", "Définir qu’aucun terme, statut ou champ commun n’est ajouté sans validation", "2027-01-20", "", "", ""], ["PRJ-001-A40", "Phase 10 – Gouvernance", "Mettre en place les revues, les indicateurs et l’historique des versions", "Gouvernance durable du système commun", "Responsable fonctionnel", "Normale", "À lancer", 0, "2027-01-25", "2027-01-29", "Préparer revue mensuelle pilote puis revue trimestrielle", "2027-01-25", "", "", "Historique des versions obligatoire"]];
-const SEED_MS = [
-    ['J1', 'Cadrage terminé', '2026-09-30', 'Finaliser le cadrage et le glossaire (S40).', 'milestone', true],
-    ['J2', 'Glossaire commun validé', '2026-10-09', 'Faire valider les termes « Non validé » (S41).', 'milestone'],
-    ['J3', 'Cartographie des fichiers terminée', '2026-10-16', 'Recenser les fichiers et leur utilisation (S42).', 'milestone'],
-    ['J4', 'Données communes définies', '2026-10-23', 'Définir les informations à centraliser (S43).', 'milestone'],
-    ['J5', 'Processus commun validé', '2026-10-30', 'Définir la méthode de travail commune (S44).', 'milestone'],
-    ['J6', 'Référentiel propre', '2026-11-13', 'Nettoyer les données et les installations (S45 à S46).', 'milestone'],
-    ['J7', 'Prototype disponible', '2026-11-27', 'Créer un modèle Excel commun (S47 à S48).', 'deliverable', true],
-    ['J8', 'Pilote prêt', '2026-12-04', 'Choisir un site et préparer le test (S49).', 'milestone'],
-    ['J9', 'Pilote terminé', '2026-12-18', 'Tester le prototype sur le terrain (S50 à S51).', 'milestone'],
-    ['J10', 'Décision Excel, Lists ou Power Apps', '2026-12-23', "Faire le bilan et choisir l'outil final (S52).", 'decision', true]
-  ];
-function seedState() {
-  const s = emptyState(), now = new Date().toISOString(), pid = uid('p');
-  s.projects.push({
-    id: pid, ref: 'PRJ-001', name: 'Harmonisation du suivi maintenance multi-sites', domain: 'Maintenance / Données / Outils', manager: 'Pilote projet', sponsor: 'À confirmer',
-    context: 'natran', status: 'active', priority: 'high', risk: 'moderate', color: 3, start: '2026-09-28', end: '2027-01-29',
-    description: "Mettre en place un système commun permettant à tous les sites d’utiliser les mêmes termes, de suivre les mêmes opérations de maintenance, d’éviter les doubles saisies, de centraliser les informations utiles et d’exploiter les données déjà présentes dans le suivi mensuel et les OT.",
-    objectives: "Glossaire maintenance commun validé et publié (V1)\nCartographie des fichiers et des données existantes\nDictionnaire des données et référentiel unique des installations\nProcédure commune de suivi maintenance\nPrototype Excel commun testé sur un site pilote\nDécision sur l’outil final : Excel SharePoint, Microsoft Lists ou Power Apps",
-    comment: "Planning macro S40 à S52 ajouté : 10 jalons, du cadrage à la décision sur l’outil final. Le plan d’action détaillé reste utilisé pour le suivi opérationnel.",
-    createdAt: now
-  });
-  const P = { Basse: 'low', Normale: 'normal', Haute: 'high', Critique: 'critical' };
-  const ST = { 'À lancer': 'todo', 'En cours': 'doing', 'En attente': 'waiting', 'Bloqué': 'blocked', 'Terminé': 'done', 'Annulé': 'cancelled' };
-  SEED_ACTIONS.forEach(r => s.actions.push({ id: uid('a'), projectId: pid, ref: r[0], phase: r[1], title: r[2], result: r[3] || '', owner: r[4] || '', priority: P[r[5]] || 'normal', status: ST[r[6]] || 'todo', progress: +r[7] || 0, start: r[8], due: r[9], next: r[10] || '', nextDate: r[11] || null, risk: r[12] || '', decision: r[13] || '', description: r[14] || '', effort: null, milestoneId: null, dependsOn: [], checklist: [], skills: [], log: [], link: '', recur: '', createdAt: now, doneAt: null }));
-  SEED_MS.forEach(([ref, title, date, description, type, key]) => s.milestones.push({ id: uid('m'), projectId: pid, ref, title, date, description, type, key: !!key, done: false }));
-  s.journal.push({ id: uid('j'), type: 'note', date: '2026-09-28', projectId: pid, text: "Plan d'action repris du classeur Excel (v7) : 40 actions réparties en 10 phases, planning macro S40 → S52 avec 10 jalons (J1 à J10).", createdAt: now });
-  s.progressLog[pid] = { '2026-09-28': 0 };
-  const p0 = s.projects[0];
-  p0.baseline = { at: '2026-09-28', label: 'Classeur Excel v7', actions: Object.fromEntries(s.actions.map(a => [a.id, [a.start, a.due]])), milestones: Object.fromEntries(s.milestones.map(m => [m.id, m.date])) };
-  return s;
-}
 
 /* =====================================================================
    4. Petits composants HTML
@@ -2519,10 +2669,9 @@ VIEWS.dashboard = () => {
   const msOpen = S.milestones.filter(m => !m.done).sort(byDate);
   const msUp = msOpen.filter(m => m.date >= t), msLate = msOpen.filter(m => m.date < t), ms30 = msUp.filter(m => m.date <= addDays(t, 30));
   const planned = plannedAt(all, t);
-  const seedOffer = !S.projects.some(p => p.ref === 'PRJ-001') && !S.settings.seedDismissed ? `<div class="banner info">${ic('sheet')}<div class="grow"><b>Ton projet Excel « Harmonisation du suivi maintenance multi-sites » (PRJ-001)</b> n'est pas dans ce plan. L'ajouter avec ses 40 actions et ses 10 jalons ?</div><button class="btn btn-sm btn-dark" data-act="add-seed">${ic('plus', 15)} Ajouter PRJ-001</button><button class="btn btn-sm btn-ghost" data-act="dismiss-seed">Non merci</button></div>` : '';
-  const top = seedOffer + sinceVisitBanner() + exportReminder();
+  const top = sinceVisitBanner() + exportReminder();
   if (!S.projects.length) {
-    return { title: 'Tableau de bord', sub: "Vue d'ensemble de ton plan d'action", html: `${top}${hero()}${onboardingCard()}<div class="card mt-l">${emptyBox('folder', 'Aucun projet pour le moment', 'Crée ton premier projet, importe ton fichier Excel ou pars du modèle « Parcours ISTP ».', `<div class="row" style="justify-content:center;margin-top:8px"><button class="btn btn-primary" data-act="new-project">${ic('plus', 16)} Créer un projet</button><button class="btn" data-act="tpl-istp">${ic('school', 16)} Parcours ISTP</button><button class="btn" data-act="import-xlsx">${ic('sheet', 16)} Importer un Excel</button></div>`)}</div>` };
+    return { title: 'Tableau de bord', sub: "Vue d'ensemble de ton plan d'action", html: `${top}${hero()}${onboardingCard()}<div class="card mt-l">${emptyBox('folder', 'Ton plan est vierge', 'Importe ta sauvegarde (.json) ou ton classeur Excel pour retrouver tes projets, ou crée ton premier projet.', `<div class="row" style="justify-content:center;margin-top:8px"><button class="btn btn-primary" data-act="import-json">${ic('upload', 16)} Importer ma sauvegarde (.json)</button><button class="btn" data-act="import-xlsx">${ic('sheet', 16)} Importer un Excel</button><button class="btn" data-act="new-project">${ic('plus', 16)} Créer un projet</button><button class="btn" data-act="tpl-istp">${ic('school', 16)} Parcours ISTP</button></div>`)}</div>` };
   }
   const myWeek = mine.filter(a => a.due && a.due <= addDays(t, 7)).length;
   const tiles = [
@@ -2765,25 +2914,28 @@ function filterChips(projectId) {
   if (!c.length) return '';
   return `<div class="fchips"><span class="muted small">${ic('search', 14)} Filtres actifs</span>${c.map(([k, l]) => `<button type="button" class="fchip-on" data-act="af-clear" data-k="${k}" title="Retirer ce filtre">${esc(l)} ${ic('x', 13, 2.4)}</button>`).join('')}<button type="button" class="btn btn-sm btn-ghost" data-act="af-reset">Tout effacer</button></div>`;
 }
-/* « Ton projet » : choisir le projet dont on veut voir les actions */
+/* Projet affiché dans le plan d'action : liste déroulante */
+const openCount = pid => S.actions.filter(a => !isClosed(a.status) && (!pid || a.projectId === pid)).length;
 function projectPicker() {
   const f = UI.afG, cur = f.project !== 'all' ? proj(f.project) : null;
-  const ps = sortedProjects().filter(p => !isClosed(p.status) || p === cur);
-  const n = pid => S.actions.filter(a => !isClosed(a.status) && (!pid || a.projectId === pid)).length;
   let sum = '';
   if (cur) {
     const as = actionsOf(cur.id), pr = projectProgress(cur), ex = isClosed(cur.status) ? null : expectedProgress(cur), late = as.filter(isOverdue).length, dn = as.filter(a => a.status === 'done').length;
-    sum = `<div class="pp-sum" style="--c:${colorOf(cur)}">
-      <div class="pp-sum-t"><b>${esc(cur.name)}</b><span class="muted small">${ic('user', 12)} ${esc(cur.manager || '—')}${cur.end ? ` · échéance ${fmtS(cur.end, true)}` : ''}</span></div>
-      <div class="pp-sum-p">${pbar(pr, colorOf(cur), ex)}<b class="tnum">${pr} %</b>${ex != null ? `<span class="muted small nowrap">prévu ${ex} %</span>` : ''}</div>
-      <span class="muted small nowrap">${dn}/${as.length} terminées${late ? ` · <b style="color:var(--critical-text)">${late} en retard</b>` : ''}</span>
-      <a class="btn btn-sm btn-ghost" href="#/projet/${cur.id}">Page projet ${ic('chevR', 14)}</a>
-    </div>`;
+    sum = `<div class="pp-info">${pbar(pr, colorOf(cur), ex)}<b class="tnum">${pr} %</b>${ex != null ? `<span class="muted small nowrap">prévu ${ex} %</span>` : ''}<span class="muted small nowrap">${dn}/${as.length} terminées${late ? ` · <b style="color:var(--critical-text)">${late} en retard</b>` : ''}</span><a class="btn btn-sm btn-ghost" href="#/projet/${cur.id}">Page projet ${ic('chevR', 14)}</a></div>`;
   }
-  return `<div class="ppick"><span class="pp-l">${ic('folder', 15)} Ton projet</span><div class="pp-list" role="tablist" aria-label="Ton projet">
-    <button type="button" role="tab" class="pp ${cur ? '' : 'on'}" aria-selected="${!cur}" data-act="af-proj" data-v="all">Tous les projets <span class="cnt">${n()}</span></button>
-    ${ps.map(p => `<button type="button" role="tab" class="pp ${cur === p ? 'on' : ''}" aria-selected="${cur === p}" data-act="af-proj" data-v="${p.id}" title="${esc(p.name)}"><span class="dot" style="--c:${colorOf(p)}"></span>${p.ref ? `<b>${esc(p.ref)}</b>` : ''}<span class="pp-n">${esc(p.name)}</span><span class="cnt">${n(p.id)}</span></button>`).join('')}
-  </div></div>${sum}`;
+  return `<div class="ppick" style="--c:${cur ? colorOf(cur) : 'var(--border-strong)'}"><label class="pp-l" for="pp-dd">${ic('folder', 15)} Projet</label>
+    <button type="button" class="pp-dd" id="pp-dd" data-act="pp-open" aria-haspopup="menu" title="Choisir le projet à afficher">${cur ? `<span class="dot" style="--c:${colorOf(cur)}"></span>${cur.ref ? `<b>${esc(cur.ref)}</b>` : ''}<span class="pp-n">${esc(cur.name)}</span>` : `${ic('layers', 15)}<span class="pp-n">Tous les projets</span>`}<span class="cnt">${openCount(cur ? cur.id : null)}</span>${ic('chevD', 16)}</button>${sum}</div>`;
+}
+function projectMenu(anchor) {
+  const cur = UI.afG.project;
+  const opt = p => `<button type="button" class="opt ${cur === p.id ? 'on' : ''}" data-pick="${p.id}"><span class="dot" style="--c:${colorOf(p)}"></span><span class="pm-t">${p.ref ? `<b>${esc(p.ref)}</b> ` : ''}${esc(p.name)}</span><span class="muted small tnum">${projectProgress(p)} %</span><span class="cnt">${openCount(p.id)}</span></button>`;
+  const ps = sortedProjects(), open = ps.filter(p => !isClosed(p.status)), closed = ps.filter(p => isClosed(p.status));
+  openPop(anchor, `<div class="pm">
+    <button type="button" class="opt ${cur === 'all' ? 'on' : ''}" data-pick="all">${ic('layers', 15)}<span class="pm-t">Tous les projets</span><span class="cnt">${openCount(null)}</span></button>
+    ${open.length ? `<div class="ph">Projets en cours</div>${open.map(opt).join('')}` : ''}
+    ${closed.length ? `<div class="ph">Terminés ou annulés</div>${closed.map(opt).join('')}` : ''}
+    ${ps.length ? '' : '<p class="muted small" style="padding:6px 8px">Aucun projet pour le moment.</p>'}
+  </div>`, v => { UI.afG.project = v; SEL.clear(); saveUI(); render(); });
 }
 function actionsBlock(projectId) {
   const f = AF(), view = UI.av === 'kanban' ? 'kanban' : 'list';
@@ -3365,8 +3517,8 @@ function calendarSettings() {
     ${hol.length ? `<p class="muted small mt">Jours fériés à venir (calculés automatiquement) : ${hol.join(' · ')}</p>` : ''}`;
 }
 function skillsSettings() {
-  return `<div class="sk-edit">${S.skills.map(k => { const n = S.actions.filter(a => (a.skills || []).includes(k.id)).length; return `<div class="row" style="flex-wrap:nowrap"><input class="input sm" style="flex:1;width:auto" value="${esc(k.name)}" data-change="skill-name" data-id="${k.id}" aria-label="Nom de la compétence"><span class="muted small nowrap" style="width:80px">${plural(n, 'action')}</span><button type="button" class="btn btn-ghost btn-icon btn-sm btn-danger" data-act="del-skill" data-id="${k.id}" aria-label="Supprimer">${ic('trash', 15)}</button></div>`; }).join('')}</div>
-    <div class="row mt"><button class="btn btn-sm" data-act="new-skill">${ic('plus', 15)} Ajouter une compétence</button><a class="btn btn-sm btn-ghost" href="#/competences">Voir mon portfolio ${ic('chevR', 14)}</a></div>`;
+  return `<div class="sk-edit">${skillsByBloc().map(([b, ks]) => `<div class="list-sep" style="padding-left:0">${esc(SKILL_BLOCS[b])}</div>${ks.map(k => { const m = skillMeta(k), n = skillActs(k).length; return `<div class="sk-row">${m.code ? `<span class="sk-code">${esc(m.code)}</span>` : '<span class="sk-code muted">—</span>'}<input class="input sm" value="${esc(k.name)}" data-change="skill-name" data-id="${k.id}" aria-label="Intitulé de la compétence ${esc(m.code)}">${infoBtn(k)}<span class="muted small nowrap sk-n">${plural(n, 'action')}</span><button type="button" class="btn btn-ghost btn-icon btn-sm" data-act="sk-edit" data-id="${k.id}" aria-label="Modifier l'explication" title="Modifier l'intitulé et l'explication">${ic('edit', 15)}</button><button type="button" class="btn btn-ghost btn-icon btn-sm btn-danger" data-act="del-skill" data-id="${k.id}" aria-label="Supprimer" title="Supprimer">${ic('trash', 15)}</button></div>`; }).join('')}`).join('')}</div>
+    <div class="row mt"><button class="btn btn-sm" data-act="new-skill">${ic('plus', 15)} Ajouter une compétence</button><button class="btn btn-sm btn-ghost" data-act="skills-grid">${ic('refresh', 15)} Remettre la grille ISTP</button><a class="btn btn-sm btn-ghost" href="#/competences">Voir mon portfolio ${ic('chevR', 14)}</a></div>`;
 }
 VIEWS.parametres = () => {
   const P = S.profile, snaps = readSnaps();
@@ -3420,7 +3572,7 @@ VIEWS.parametres = () => {
           <div class="seg">${[['auto', 'Automatique', 'auto'], ['light', 'Clair', 'sun'], ['dark', 'Sombre', 'moon']].map(([k, l, i]) => `<button type="button" class="${(S.settings.theme || 'auto') === k ? 'on' : ''}" data-act="theme" data-v="${k}">${ic(i, 15)} ${l}</button>`).join('')}</div></section>
 
         <section class="card ssec" id="donnees"><h3>Données</h3><p class="muted">Actuellement : ${plural(S.projects.length, 'projet')}, ${plural(S.actions.length, 'action')}, ${plural(S.milestones.length, 'jalon')}, ${plural(S.journal.length, 'entrée')} de journal.</p>
-          <div class="row"><button class="btn" data-act="reload-seed">${ic('sheet', 16)} Revenir à mon plan Excel d'origine</button><button class="btn btn-danger" data-act="reset-all">${ic('trash', 16)} Tout effacer et repartir de zéro</button></div></section>
+          <div class="row"><button class="btn" data-act="import-json">${ic('upload', 16)} Importer une sauvegarde (.json)</button><button class="btn btn-danger" data-act="reset-all">${ic('trash', 16)} Tout effacer et repartir de zéro</button></div></section>
 
         <section class="card ssec" id="aide"><h3>Raccourcis clavier</h3>
           <div class="grid g-2 small" style="margin-top:10px">${[['/', 'Rechercher'], ['N', 'Nouvelle action'], ['Ctrl + Z', 'Annuler la dernière modification'], ['Ctrl + S', 'Forcer la sauvegarde'], ['Échap', 'Fermer une fenêtre']].map(([k, l]) => `<div class="row"><kbd style="font:600 12px var(--font);padding:3px 8px;border-radius:6px;background:var(--surface-3);border:1px solid var(--border)">${k}</kbd><span>${l}</span></div>`).join('')}</div></section>
@@ -3596,37 +3748,85 @@ function createIstpTemplate() {
 
 /* ---------- Compétences (portfolio pour le rapport et la soutenance) ---------- */
 const skill = id => S.skills.find(k => k.id === id);
+/* Compétences rangées par bloc de la grille (les compétences ajoutées à la main vont dans « Autres ») */
+function skillsByBloc() {
+  const out = [];
+  Object.keys(SKILL_BLOCS).forEach(b => { const ks = S.skills.filter(k => skillMeta(k).bloc === b); if (ks.length) out.push([b, ks]); });
+  return out;
+}
+const skillActs = k => S.actions.filter(a => (a.skills || []).includes(k.id));
+const infoBtn = k => `<button type="button" class="sk-i" data-act="sk-info" data-id="${k.id}" aria-label="À quoi correspond « ${esc(k.name)} » ?" title="À quoi correspond cette compétence ?">${ic('info', 16)}</button>`;
+function skillInfoHtml(k) {
+  const m = skillMeta(k), n = skillActs(k).length, act = SKILL_ACTS[m.act];
+  return `<div class="ski">
+    <div class="ski-h">${m.code ? `<span class="sk-code">${esc(m.code)}</span>` : ''}<b>${esc(m.name)}</b></div>
+    ${act ? `<div class="ski-ctx">${esc(SKILL_BLOCS[m.bloc].split(' — ')[0])} · ${esc(m.act)} — ${esc(act[1])}</div>` : ''}
+    ${m.info ? `<div class="ski-s"><h5>En pratique</h5><p>${esc(m.info)}</p></div>` : ''}
+    ${m.ex.length ? `<div class="ski-s"><h5>Exemples de preuves</h5><ul>${m.ex.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+    ${m.full ? `<div class="ski-s"><h5>Libellé de la grille ISTP</h5><p class="ski-q">${esc(m.full)}</p></div>` : ''}
+    <div class="ski-f">${n ? `${plural(n, 'action reliée', 'actions reliées')}` : 'Aucune action reliée pour l\'instant'}</div>
+  </div>`;
+}
 VIEWS.competences = () => {
-  const rows = S.skills.map(k => {
-    const as = S.actions.filter(a => (a.skills || []).includes(k.id));
-    return { k, as, done: as.filter(a => a.status === 'done'), doing: as.filter(a => !isClosed(a.status)) };
-  });
   const untagged = S.actions.filter(a => !(a.skills || []).length && a.status !== 'cancelled').length;
-  const max = Math.max(1, ...rows.map(r => r.as.length));
-  const card = r => `<section class="card sk-card">
-    <div class="card-h"><h3>${ic('award')} ${esc(r.k.name)}</h3><span class="n">${r.as.length}</span></div>
-    <div class="sk-bar"><i class="d" style="width:${r.done.length / max * 100}%"></i><i class="o" style="width:${r.doing.length / max * 100}%"></i></div>
-    <div class="legend small" style="margin:6px 0 10px"><span class="k"><span class="sw" style="--c:var(--good)"></span>${r.done.length} réalisée${r.done.length > 1 ? 's' : ''}</span><span class="k"><span class="sw" style="--c:var(--y)"></span>${r.doing.length} en cours / à venir</span></div>
-    ${r.as.length ? `<ul class="sk-list">${sortActions(r.as, 'status').slice(0, 6).map(a => `<li data-act="edit-action" data-id="${a.id}"><span class="chip st-${a.status}" style="height:20px;padding:0 6px"><span class="g">${STATUS[a.status].g}</span></span><span class="ellipsis">${esc(a.title)}</span>${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" title="Ouvrir la preuve / le livrable">${ic('ext', 14)}</a>` : ''}</li>`).join('')}</ul>${r.as.length > 6 ? `<p class="muted small">+ ${r.as.length - 6} autres</p>` : ''}` : '<p class="muted small">Aucune action reliée pour l\'instant.</p>'}
-  </section>`;
+  const card = k => {
+    const m = skillMeta(k), as = skillActs(k), done = as.filter(a => a.status === 'done'), doing = as.filter(a => !isClosed(a.status));
+    return `<article class="card sk-card ${as.length ? '' : 'is-empty'}">
+      <div class="sk-top">${m.code ? `<span class="sk-code">${esc(m.code)}</span>` : `<span class="sk-code">${ic('award', 13)}</span>`}<span class="spacer"></span>${as.length ? `<span class="n">${as.length}</span>` : ''}${infoBtn(k)}</div>
+      <h4 class="sk-name">${esc(m.name)}</h4>
+      ${as.length ? `<div class="sk-bar"><i class="d" style="width:${done.length / as.length * 100}%"></i><i class="o" style="width:${doing.length / as.length * 100}%"></i></div>
+      <div class="legend small"><span class="k"><span class="sw" style="--c:var(--good)"></span>${done.length} réalisée${done.length > 1 ? 's' : ''}</span><span class="k"><span class="sw" style="--c:var(--y)"></span>${doing.length} en cours / à venir</span></div>
+      <ul class="sk-list">${sortActions(as, 'status').slice(0, 5).map(a => `<li data-act="edit-action" data-id="${a.id}"><span class="chip st-${a.status}" style="height:20px;padding:0 6px"><span class="g">${STATUS[a.status].g}</span></span><span class="ellipsis">${esc(a.title)}</span>${a.link ? `<a href="${esc(a.link)}" target="_blank" rel="noopener" title="Ouvrir la preuve">${ic('ext', 13)}</a>` : ''}</li>`).join('')}${as.length > 5 ? `<li class="muted small">+ ${as.length - 5} autre${as.length - 5 > 1 ? 's' : ''}</li>` : ''}</ul>`
+      : `<p class="muted small">Aucune action reliée pour l'instant.</p>`}
+    </article>`;
+  };
+  const blocs = skillsByBloc().map(([b, ks]) => {
+    const used = ks.filter(k => skillActs(k).length).length;
+    return `<section class="sk-bloc"><div class="sk-bh"><h3>${esc(SKILL_BLOCS[b])}</h3><span class="chip ${used === ks.length ? 't-ok' : used ? 't-info' : 't-neutral'}">${used} / ${ks.length} travaillée${used > 1 ? 's' : ''}</span></div><div class="sk-grid">${ks.map(card).join('')}</div></section>`;
+  }).join('');
+  const used = S.skills.filter(k => skillActs(k).length).length;
   return {
-    title: 'Compétences', sub: `${plural(S.skills.length, 'compétence')} · ${plural(S.actions.filter(a => (a.skills || []).length).length, 'action reliée', 'actions reliées')} · ${untagged} sans compétence`,
-    html: `<div class="banner info">${ic('award')}<div class="grow"><b>Ton portfolio de compétences.</b> Relie tes actions aux compétences travaillées (dans la fiche d'une action) et ajoute un lien vers le livrable : c'est la matière de ton rapport et de ta soutenance.</div>${untagged ? `<button class="btn btn-sm btn-dark" data-act="skills-suggest">${ic('sparkle', 15)} Proposer des compétences (${untagged})</button>` : ''}<button class="btn btn-sm" data-act="skills-copy">${ic('copy', 15)} Copier pour mon rapport</button><a class="btn btn-sm btn-ghost" href="#/parametres/competences">${ic('edit', 15)} Modifier la liste</a></div>
-      <div class="pgrid">${rows.map(card).join('')}</div>`
+    title: 'Compétences', sub: `${used} / ${plural(S.skills.length, 'compétence')} travaillée${used > 1 ? 's' : ''} · ${plural(S.actions.filter(a => (a.skills || []).length).length, 'action reliée', 'actions reliées')} · ${untagged} sans compétence`,
+    html: `<div class="banner info">${ic('award')}<div class="grow"><b>Ta grille de compétences ISTP.</b> Relie tes actions aux compétences travaillées (dans la fiche d'une action) et ajoute un lien vers le livrable : c'est la matière de ton rapport et de ta soutenance. Le bouton <span class="ic-in">${ic('info', 14)}</span> explique chaque compétence.</div>${untagged ? `<button class="btn btn-sm btn-dark" data-act="skills-suggest">${ic('sparkle', 15)} Proposer des compétences (${untagged})</button>` : ''}<button class="btn btn-sm" data-act="skills-copy">${ic('copy', 15)} Copier pour mon rapport</button><a class="btn btn-sm btn-ghost" href="#/parametres/competences">${ic('edit', 15)} Modifier la liste</a></div>
+      ${blocs}`
   };
 };
 function skillsReport() {
   const out = ['Compétences mobilisées pendant l’alternance', ''];
-  S.skills.forEach(k => {
-    const done = S.actions.filter(a => (a.skills || []).includes(k.id) && a.status === 'done');
-    const doing = S.actions.filter(a => (a.skills || []).includes(k.id) && !isClosed(a.status));
-    if (!done.length && !doing.length) return;
-    out.push(`■ ${k.name}`);
-    done.forEach(a => out.push(`  ✓ ${a.title}${a.result ? ' — ' + a.result : ''}${a.link ? ' (' + a.link + ')' : ''}`));
-    doing.forEach(a => out.push(`  … ${a.title} (en cours)`));
-    out.push('');
+  skillsByBloc().forEach(([b, ks]) => {
+    const lines = [];
+    ks.forEach(k => {
+      const m = skillMeta(k), as = skillActs(k), done = as.filter(a => a.status === 'done'), doing = as.filter(a => !isClosed(a.status));
+      if (!done.length && !doing.length) return;
+      lines.push(`■ ${m.code ? m.code + ' — ' : ''}${m.name}`);
+      done.forEach(a => lines.push(`  ✓ ${a.title}${a.result ? ' — ' + a.result : ''}${a.link ? ' (' + a.link + ')' : ''}`));
+      doing.forEach(a => lines.push(`  … ${a.title} (en cours)`));
+      lines.push('');
+    });
+    if (lines.length) out.push(SKILL_BLOCS[b].toUpperCase(), '', ...lines);
   });
   return out.join('\n');
+}
+/* Modifier l'intitulé ou l'explication d'une compétence */
+function editSkill(id) {
+  const k = skill(id); if (!k) return;
+  const m = skillMeta(k), g = GRID[k.code];
+  openModal({
+    title: `${m.code ? `<span class="sk-code">${esc(m.code)}</span> ` : ''}Compétence`, size: 'narrow',
+    body: `<div class="fgrid">
+      ${fld('sk-c', 'Code', `<input class="input" id="sk-c" name="code" value="${esc(k.code || '')}" placeholder="Ex. A1C1" maxlength="12">`, '(facultatif)')}
+      ${fld('sk-n', 'Intitulé', `<input class="input" id="sk-n" name="name" value="${esc(m.name)}" required maxlength="160">`)}
+      ${fld('sk-in', 'Explication (bouton info)', `<textarea class="textarea" id="sk-in" name="info" rows="5">${esc(m.info)}</textarea>`)}
+      ${g ? `<p class="muted small">Libellé de la grille : ${esc(g.full)}</p>` : ''}
+    </div>`,
+    footer: `${g ? `<button type="button" class="btn btn-ghost" id="sk-reset">${ic('refresh', 15)} Texte de la grille</button>` : ''}<span class="spacer"></span><button type="button" class="btn" data-cancel>Annuler</button><button type="submit" class="btn btn-primary">${ic('check', 16)} Enregistrer</button>`,
+    onMount: form => { const r = $('#sk-reset', form); if (r) r.addEventListener('click', () => { $('#sk-n', form).value = g.name; $('#sk-in', form).value = g.info; }); },
+    onSubmit: form => {
+      const d = formData(form); if (!d.name.trim()) return false;
+      commit(s => { const x = s.skills.find(y => y.id === id); if (!x) return; x.code = d.code.trim().toUpperCase(); x.name = d.name.trim(); const gg = GRID[x.code]; x.info = gg && d.info.trim() === gg.info ? '' : d.info.trim(); });
+      toast('Compétence enregistrée.', 'success');
+    }
+  });
 }
 
 /* ---------- Contrôle du plan ---------- */
@@ -3685,7 +3885,7 @@ function editProject(id) {
     title: p ? `${refTag(p.ref)} Modifier le projet` : 'Nouveau projet', size: 'drawer', focus: !p,
     body: `<div class="fgrid">
       ${sec(1, 'Cadrage du projet', `
-        <div class="f2" style="grid-template-columns:minmax(0,1fr) 130px">${fld('f-name', 'Nom du projet *', `<input class="input" id="f-name" name="name" required maxlength="140" value="${esc(v.name)}" placeholder="Ex. Harmonisation du suivi maintenance" autofocus>`)}${fld('f-ref', 'ID projet', `<input class="input" id="f-ref" name="ref" maxlength="16" value="${esc(v.ref)}" placeholder="PRJ-002">`)}</div>
+        <div class="f2" style="grid-template-columns:minmax(0,1fr) 130px">${fld('f-name', 'Nom du projet *', `<input class="input" id="f-name" name="name" required maxlength="140" value="${esc(v.name)}" placeholder="Ex. Fiabiliser le suivi des interventions" autofocus>`)}${fld('f-ref', 'ID projet', `<input class="input" id="f-ref" name="ref" maxlength="16" value="${esc(v.ref)}" placeholder="PRJ-002">`)}</div>
         <div class="f2">${fld('f-ctx', 'Contexte', `<select class="select" id="f-ctx" name="context">${opts(CONTEXTS, v.context, 'long')}</select>`)}${fld('f-dom', 'Domaine / portefeuille', `<input class="input" id="f-dom" name="domain" value="${esc(v.domain)}" placeholder="Maintenance / Données / Outils">`)}</div>
         <div class="f2">${fld('f-man', 'Chef de projet', `<input class="input" id="f-man" name="manager" value="${esc(v.manager)}" list="dl-owners">`)}${fld('f-spo', 'Sponsor / commanditaire', `<input class="input" id="f-spo" name="sponsor" value="${esc(v.sponsor)}">`)}</div>
         ${fld('f-d', 'Objectif', `<textarea class="textarea" id="f-d" name="description" rows="3" placeholder="Ce que le projet doit permettre, en une ou deux phrases.">${esc(v.description)}</textarea>`)}
@@ -3768,6 +3968,10 @@ function actionRecap(a) {
     <ol class="aj-list" id="aj-list">${ajList(a)}</ol>
   </section>`;
 }
+function skillPicker(sel) {
+  const none = !sel.length;
+  return `<div class="skpick-g">${skillsByBloc().map(([b, ks]) => { const n = ks.filter(k => sel.includes(k.id)).length; return `<details class="skp-b" ${none || n ? 'open' : ''}><summary>${esc(SKILL_BLOCS[b])}${n ? ` <span class="cnt">${n}</span>` : ''}</summary><div class="skpick">${ks.map(k => { const m = skillMeta(k); return `<span class="skc-w"><label class="skc" title="${esc(m.full || m.name)}"><input type="checkbox" name="skills" value="${k.id}" ${sel.includes(k.id) ? 'checked' : ''}><span>${m.code ? `<b>${esc(m.code)}</b> ` : ''}${esc(m.name)}</span></label>${infoBtn(k)}</span>`; }).join('')}</div></details>`; }).join('')}</div>`;
+}
 function editAction(id, preset = {}) {
   const a = id ? act(id) : null;
   if (id && !a) return;
@@ -3799,7 +4003,7 @@ function editAction(id, preset = {}) {
         ${fld('a-desc', 'Commentaires', `<textarea class="textarea" id="a-desc" name="description" rows="2" style="min-height:60px">${esc(v.description || '')}</textarea>`)}
         <div class="field"><span class="lbl">Sous-tâches (checklist)</span><div class="cl-list" id="a-cl">${v.checklist.map(clRow).join('')}</div><button type="button" class="btn btn-sm btn-ghost" id="a-cl-add" style="align-self:flex-start">${ic('plus', 15)} Ajouter une sous-tâche</button></div>`)}
       ${sec(4, 'Valorisation & récurrence', `
-        <div class="field"><span class="lbl">Compétences mobilisées <span class="hint">(pour ton rapport et ta soutenance)</span></span><div class="skpick">${S.skills.map(k => `<label class="skc"><input type="checkbox" name="skills" value="${k.id}" ${(v.skills || []).includes(k.id) ? 'checked' : ''}><span>${esc(k.name)}</span></label>`).join('')}</div></div>
+        <div class="field"><span class="lbl">Compétences mobilisées <span class="hint">(pour ton rapport et ta soutenance — <span class="ic-in">${ic('info', 12)}</span> pour le détail)</span></span>${skillPicker(v.skills || [])}</div>
         <div class="f2" style="grid-template-columns:minmax(0,1fr) 220px">${fld('a-lk', 'Preuve / livrable (lien)', `<input class="input" id="a-lk" type="url" name="link" value="${esc(v.link || '')}" placeholder="https://… (SharePoint, Teams, OneDrive)">`)}${fld('a-rc', 'Récurrence', `<select class="select" id="a-rc" name="recur">${Object.entries(RECUR).map(([k, l]) => `<option value="${k}" ${k === (v.recur || '') ? 'selected' : ''}>${l}</option>`).join('')}</select>`)}</div>
         <p class="muted small">Une action récurrente crée automatiquement la suivante quand tu la termines (ex. point mensuel avec le manager).</p>`)}
       <datalist id="dl-owners2">${owners().map(o => `<option value="${esc(o)}">`).join('')}</datalist>
@@ -4033,7 +4237,7 @@ const ACT = {
   'weekly-review': el => weeklyReview(el.dataset.id),
   'av': el => { UI.av = el.dataset.v; saveUI(); render(); },
   'af-reset': () => { Object.assign(AF(), { status: 'open', q: '', prio: 'all', owner: 'all' }); saveUI(); render(); },
-  'af-proj': el => { UI.afG.project = el.dataset.v; SEL.clear(); saveUI(); render(); },
+  'pp-open': el => projectMenu(el),
   'af-clear': el => { const f = AF(), d = AF_DEFAULT(); f[el.dataset.k] = d[el.dataset.k]; saveUI(); render(); },
   'sel-mode': () => { selMode = !selMode; SEL.clear(); render(); },
   'sel-row': el => { const id = el.dataset.id; if (SEL.has(id)) SEL.delete(id); else SEL.add(id); refreshSel(); },
@@ -4068,7 +4272,15 @@ const ACT = {
     if (ok) { commit(() => todo.forEach(([id, k]) => { act(id).skills = k; })); toast(`${plural(todo.length, 'action reliée', 'actions reliées')} à des compétences.`, 'success', { label: 'Annuler', fn: undo }); }
   },
   'skills-copy': async () => { const txt = skillsReport(); try { await navigator.clipboard.writeText(txt); toast('Portfolio copié : colle-le dans ton rapport.', 'success'); } catch (e) { download('competences.txt', txt, 'text/plain;charset=utf-8'); } },
-  'new-skill': () => commit(s => s.skills.push({ id: uid('sk'), name: 'Nouvelle compétence' })),
+  'new-skill': () => { const id = uid('sk'); commit(s => s.skills.push({ id, code: '', name: 'Nouvelle compétence', info: '' })); editSkill(id); },
+  'sk-info': el => { const k = skill(el.dataset.id); if (k) openPop(el, skillInfoHtml(k), () => {}); },
+  'sk-edit': el => editSkill(el.dataset.id),
+  'skills-grid': async () => {
+    const ok = await confirmDialog({ title: 'Remettre la grille ISTP ?', message: "Les 24 compétences de la grille retrouvent leur intitulé et leur explication d'origine, et celles que tu as supprimées reviennent. Tes compétences ajoutées à la main et les liens avec tes actions sont conservés.", ok: 'Remettre la grille' });
+    if (!ok) return;
+    commit(s => { const own = s.skills.filter(k => !GRID[k.code]); s.skills = gridSkills().concat(own); });
+    toast('Grille ISTP remise en place.', 'success', { label: 'Annuler', fn: undo });
+  },
   'del-skill': el => { const k = skill(el.dataset.id); if (!k) return; commit(s => { s.skills = s.skills.filter(x => x.id !== k.id); s.actions.forEach(a => { a.skills = (a.skills || []).filter(x => x !== k.id); }); }); toast(`« ${k.name} » supprimée.`, '', { label: 'Annuler', fn: undo }); },
   'new-period': () => editPeriod(null),
   'edit-period': el => editPeriod(el.dataset.id),
@@ -4108,25 +4320,10 @@ const ACT = {
   },
   'logo-upload': el => { const i = $('#logo-input'); i.dataset.k = el.dataset.k; i.click(); },
   'logo-clear': el => { commit(s => { s.settings.logos[el.dataset.k] = null; }); applyLogos(); },
-  'add-seed': () => {
-    const seed = seedState();
-    commit(s => {
-      const p = seed.projects[0]; p.color = nextColor();
-      s.projects.push(p); s.actions.push(...seed.actions); s.milestones.push(...seed.milestones); s.journal.push(...seed.journal);
-    });
-    toast('Projet PRJ-001 ajouté avec ses 40 actions et 10 jalons.', 'success', { label: 'Annuler', fn: undo });
-  },
-  'dismiss-seed': () => commit(s => { s.settings.seedDismissed = true; }, { undo: false }),
-  'reload-seed': async () => {
-    const ok = await confirmDialog({ title: "Revenir au plan Excel d'origine ?", message: "Toutes les données actuelles seront remplacées par le contenu d'origine de ton classeur (PRJ-001 : 40 actions, 10 jalons). Ton profil, tes logos et le thème sont conservés. Tu pourras annuler juste après.", ok: 'Remplacer', danger: true });
-    if (!ok) return;
-    const d = seedState(); d.profile = S.profile; d.settings = Object.assign({}, S.settings, { seedDismissed: false });
-    replaceState(d, "Plan d'origine rechargé."); go('#/dashboard');
-  },
   'reset-all': async () => {
     const ok = await confirmDialog({ title: 'Tout effacer ?', message: 'Tous les projets, actions, jalons et entrées de journal seront effacés. Ton profil, tes logos et le thème sont conservés. Tu pourras annuler juste après.', ok: 'Tout effacer', danger: true });
     if (!ok) return;
-    const e = emptyState(); e.profile = S.profile; e.settings = Object.assign({}, S.settings, { lastReview: null, seedDismissed: true });
+    const e = emptyState(); e.profile = S.profile; e.settings = Object.assign({}, S.settings, { lastReview: null });
     replaceState(e, 'Tout est effacé : crée ton premier projet !'); go('#/dashboard');
   },
   'undo': undo

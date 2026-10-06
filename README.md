@@ -4,8 +4,8 @@ Une page HTML autonome pour piloter tes projets d'alternance (NaTran) et d'écol
 
 **Aucune installation, aucun code.** Double-clique sur `index.html` : la page s'ouvre dans ton navigateur (Chrome ou Edge recommandés). Les logos NaTran et ISTP sont intégrés au fichier.
 
-Au premier lancement, la page contient :
-- ton plan Excel *Plan_action_NaTran_v7_avec_Gantt* : le projet **PRJ-001 — Harmonisation du suivi maintenance multi-sites**, ses **40 actions** réparties en 10 phases et ses **10 jalons (J1 → J10)** ;
+Au premier lancement, la page est **vierge** (aucun projet) : importe ta sauvegarde (.json) ou ton classeur Excel depuis le tableau de bord. Elle contient déjà :
+- ta **grille de compétences ISTP** : les 24 compétences de la grille d'évaluation en entreprise (A1C1 à A11C3), rangées par bloc ;
 - ton **calendrier d'alternance ISTP** (Ingénieur Génie industriel FA) pour la dernière année : périodes à l'école **P13 à P17** et **épreuves finales du 6 au 24 septembre 2027**. La mobilité internationale est comptée en entreprise.
 
 ## Les fenêtres
@@ -15,13 +15,13 @@ Au premier lancement, la page contient :
 | **Tableau de bord** | En-tête *Ma semaine* (en entreprise ou à l'ISTP, prochaine période, jours en entreprise restants, J-xxx avant le diplôme, frise du parcours), bannière *Depuis ta dernière visite*, boutons rapides, indicateurs, *Mes priorités* / *À relancer*, prochains jalons, projets |
 | **Projets** | Une carte par projet : ID, chef de projet, avancement, risque, santé |
 | **Page projet** | Objectif, livrables, avancement par phase, **contrôle du plan**, glissement par rapport à la référence, courbe réel/prévu, risques & décisions, plan d'action, Gantt, planning, jalons, journal. Bouton imprimante = **fiche projet PDF** |
-| **Plan d'action** | Sélecteur **Ton projet** (tous les projets ou un seul), actions par phase, filtres (dont *Moi* / *Les autres*), puces de filtres actifs, **sélection multiple** (décaler, statut, responsable, priorité, terminer), ajout rapide, vue Kanban |
+| **Plan d'action** | Liste déroulante **Projet** (tous les projets ou un seul), actions par phase, filtres (dont *Moi* / *Les autres*), puces de filtres actifs, **sélection multiple** (décaler, statut, responsable, priorité, terminer), ajout rapide, vue Kanban |
 | **Fiche action** | Clic sur une action : **récapitulatif** (projet, statut, avancement, dates, prochaine étape) et **suivi daté** — la date du jour est déjà remplie, tu écris ce que tu as fait et l'avancement atteint. L'avancement de l'action et celui du projet se recalculent tout seuls |
 | **Gantt** | Ligne *Alternance* (périodes ISTP, épreuves), jours fériés, planning de référence en fantôme, glisser-déposer pour replanifier |
 | **Planning** | Calendrier teinté les jours à l'ISTP, jours fériés, dates cibles, prochains points et jalons |
 | **Jalons** | Frise chronologique ; un jalon qui tombe pendant l'école est signalé |
 | **Journal de bord** | Notes, **revue hebdomadaire** guidée, points hebdo gardés et tout le **suivi des actions** par date |
-| **Compétences** | Portfolio : actions reliées à chaque compétence, preuves (liens), texte à copier pour le rapport et la soutenance |
+| **Compétences** | Ta grille ISTP par bloc : actions reliées à chaque compétence, bouton ⓘ qui explique la compétence (en pratique, exemples de preuves, libellé de la grille), texte à copier pour le rapport et la soutenance |
 
 ## Pensé pour l'alternance
 
@@ -35,11 +35,17 @@ Au premier lancement, la page contient :
 
 ## Suivi d'une action
 
-1. *Plan d'action* → choisis ton projet en haut (**Ton projet**).
+1. *Plan d'action* → choisis ton projet dans la liste déroulante **Projet**, en haut.
 2. Clique sur l'action : le récapitulatif s'affiche, avec la zone **Suivi de l'action** prête (date du jour).
 3. Écris ce que tu as fait, règle l'**avancement après**, puis **Ajouter au suivi** (ou `Ctrl + Entrée`).
 
 L'avancement du projet est la moyenne de ses actions : il se met à jour aussitôt. Une entrée antidatée garde son pourcentage sans modifier l'avancement actuel. Le suivi apparaît aussi dans le *Journal de bord*, dans le *point hebdo* (« Ce que j'ai fait ») et dans l'export Excel (onglet *Suivi des actions*).
+
+## Compétences
+
+La liste vient de la colonne *Compétences* de la grille d'évaluation en entreprise ISTP (Ingénieur Génie industriel, version du 16/10/2024). Dans la fiche d'une action, coche les compétences travaillées ; le bouton ⓘ explique chacune d'elles. *Paramètres → Compétences* permet de modifier un intitulé ou une explication, d'ajouter tes propres compétences et de remettre la grille d'origine.
+
+À l'import d'une ancienne sauvegarde, les 8 anciennes compétences par défaut sont remplacées par la compétence de la grille la plus proche ; celles que tu avais ajoutées toi-même sont gardées dans « Autres compétences ».
 
 ## Excel
 
@@ -72,7 +78,7 @@ Il n'y a **pas de synchronisation automatique** entre appareils (PC, téléphone
 
 Tout ce que tu saisis reste dans ton navigateur : la page n'envoie tes données nulle part (ni à GitHub, ni ailleurs). Elle charge seulement les polices d'écriture (Google Fonts) et, à la demande, le module Excel (cdnjs).
 
-> Le fichier `index.html` contient le plan de départ issu de ton classeur Excel (PRJ-001). Si le dépôt GitHub est public, ce plan de départ est visible par tous : passe le dépôt en privé si ces informations sont internes.
+> Le fichier `index.html` ne contient plus aucun projet. Les anciennes versions, qui contenaient le plan PRJ-001, restent visibles dans l'historique Git : passe le dépôt en privé si ces informations sont internes.
 
 ## Raccourcis
 
