@@ -35,3 +35,21 @@ Dossier `V03/` : la V0.1 ci-dessus est conservée telle quelle.
 python3 maintenance-2027/outils/tests/test_gmao_ot.py
 python3 maintenance-2027/outils/construire_prototype_v03.py
 ```
+
+## V0.4 : vision globale du préventif (corrective)
+
+Dossier `V04/` : les versions précédentes sont conservées telles quelles. Données de démonstration **entièrement fictives**.
+
+| Fichier | Contenu |
+|---|---|
+| `V04/Prototype_Maintenance_Preventive_V04.xlsx` | 01 : une ligne par poste, opérations prévues par année (programme). 02 : OT préventifs distincts par poste et activité (TCD, double-clic = détail). 03 : détail des OT. 04 : paramètres. 05 : notice. |
+| `V04/COMPTE_RENDU_V04.md` | Architecture, remplacement du PDM et de l'export GMAO, segments, rapprochement, points à valider, ce qui n'a pas pu être testé dans Excel. |
+| `V04/DEMO_PDM.xlsx`, `V04/DEMO_GMAO.xlsx` | Fichiers fictifs lus par défaut par les requêtes intégrées (à garder à côté du classeur). |
+| `V04/power-query/` | Copie du code M des 7 requêtes intégrées au classeur. |
+| `outils/v04/` | `construire.py` (régénération), `regles.py` (règles en Python), `donnees_demo.py`, `ooxml.py` (requêtes, TCD, segments), `tests_v04.py` (26 contrôles de livraison). |
+| `outils/validation/` | Validateur Open XML SDK (.NET 8) : `dotnet build -o out && dotnet out/Valid.dll fichier.xlsx`. |
+
+```bash
+python3 maintenance-2027/outils/v04/construire.py
+python3 maintenance-2027/outils/v04/tests_v04.py
+```
