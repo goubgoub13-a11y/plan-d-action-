@@ -1,0 +1,168 @@
+PROMPT À DONNER À ASTRA / CLAUDE CODE
+======================================
+
+RÔLE
+Tu es expert senior en Excel, Power Query, structuration de données, UX d’outils métiers et conception d’outils de suivi opérationnel.
+
+MISSION
+À partir des fichiers fictifs joints, construis un prototype Excel professionnel de suivi annuel de maintenance pour 2027.
+
+Le prototype est destiné à être montré à des responsables opérationnels afin de recueillir leurs retours avant toute industrialisation.
+Les données fournies sont volontairement fictives. Ne déduis aucune règle métier réelle à partir de leurs valeurs.
+
+OBJECTIF FONCTIONNEL
+Le fichier doit permettre à un utilisateur de comprendre rapidement :
+- quelles opérations sont prévues en 2027 ;
+- sur quelles installations ;
+- leur type ;
+- leur périodicité ;
+- les informations disponibles dans la source.
+
+La future solution réelle utilisera une GMAO comme source officielle. Le prototype Excel ne doit donc jamais être conçu comme une seconde source de vérité.
+
+PRINCIPES À PRIVILÉGIER
+- simplicité ;
+- lisibilité ;
+- robustesse ;
+- maintenabilité ;
+- structure de données compatible avec une future exploitation Power BI ;
+- usage principalement en consultation pour cette V0.1 ;
+- une ligne = une opération de maintenance sur une installation.
+
+Évite une structure horizontale avec une colonne différente pour chaque type d’opération ou chaque dernière/prochaine date.
+Privilégie une table normalisée.
+
+FICHIERS FOURNIS
+1. DATA_PDM_TEST.xlsx
+   Jeu de données fictif représentant un programme pluriannuel.
+   Le prototype doit se focaliser sur l’année 2027.
+
+2. EXEMPLE_SUIVI_ACTUEL.xlsx
+   Exemple fictif d’un ancien suivi local plus horizontal.
+   Analyse-le uniquement pour comprendre les usages potentiels.
+   Ne reproduis pas automatiquement sa structure.
+
+3. REFERENTIEL_TEST.xlsx
+   Table fictive de correspondance entre codes sources et libellés lisibles.
+   Un exemple est volontairement marqué « À confirmer » afin de tester la gestion de l’incertitude.
+
+4. CHARTE_GRAPHIQUE_SIMPLIFIEE.txt
+   Règles graphiques minimales à appliquer.
+
+5. Logos officiels fournis.
+   Utilise les images telles quelles, sans déformation, recoloration ni redessin.
+
+LIBERTÉ DE CONCEPTION
+Ne te contente pas d’exécuter mécaniquement ce brief.
+Si tu identifies une meilleure manière de répondre au besoin, applique-la si elle reste simple, robuste et compréhensible.
+Tu peux proposer :
+- meilleurs ordres de colonnes ;
+- filtres ou segments ;
+- quelques indicateurs synthétiques ;
+- recherche rapide ;
+- compteur d’opérations ;
+- répartition par type ;
+- nombre d’installations concernées ;
+- autres améliorations UX pertinentes.
+
+Toute fonctionnalité supplémentaire doit avoir une utilité claire.
+Évite les dashboards surchargés.
+
+RIGUEUR
+Tu as de la liberté sur l’ergonomie, pas sur le sens des données.
+Ne crée aucune donnée qui n’existe pas dans les fichiers.
+Ne transforme pas une hypothèse en vérité.
+Lorsqu’une information n’est pas certaine, affiche ou documente « À confirmer ».
+
+STRUCTURE DU CLASSEUR
+Propose une architecture simple, idéalement autour de :
+- 01_SUIVI_2027 : vue principale destinée à l’utilisateur ;
+- 02_DONNEES_SOURCE : données propres/tabulaires ;
+- 03_REFERENTIEL : correspondances de libellés ;
+- 04_AVIS_UTILISATEURS : recueil simple des retours ;
+- 05_POINTS_A_VALIDER : seulement si cela apporte de la valeur.
+
+Tu peux adapter cette architecture si une autre organisation est plus ergonomique.
+Évite de multiplier les onglets sans raison.
+
+FEUILLE PRINCIPALE
+Elle doit répondre immédiatement à :
+« Qu’est-ce que j’ai à faire en maintenance en 2027 ? »
+
+Prévoir :
+- titre clair ;
+- année 2027 ;
+- mention indiquant que la future GMAO resterait la source de référence ;
+- date de dernière actualisation ou zone prévue à cet effet ;
+- tableau principal très lisible ;
+- filtres actifs ;
+- volets figés ;
+- largeur des colonnes adaptée ;
+- aucune manipulation technique nécessaire pour consulter.
+
+Une base possible de colonnes est :
+- Périmètre ;
+- Groupe ;
+- Code installation ;
+- Installation ;
+- Opération ;
+- Périodicité ;
+- Année ;
+- Référence technique.
+
+Considère cette liste comme une base de réflexion et non comme une obligation.
+Tu peux renommer, réordonner, ajouter ou retirer une colonne si cela améliore réellement l’usage.
+
+AVIS UTILISATEURS
+Prévoir un espace simple pour noter :
+- ce qui est utile ;
+- ce qui est inutile ;
+- les informations manquantes ;
+- les filtres indispensables ;
+- les besoins spécifiques ;
+- un éventuel besoin de saisie ou de commentaires ;
+- les données complémentaires à rechercher dans la future extraction GMAO.
+
+ACTUALISATION FUTURE
+Le prototype doit être construit de façon à permettre plus tard un fonctionnement :
+export GMAO → remplacement / import → actualisation → tableau mis à jour.
+
+Power Query peut être utilisé si cela simplifie réellement le processus, mais ne rends pas la V0.1 inutilement complexe avant validation fonctionnelle.
+
+COMPATIBILITÉ POWER BI
+Conserve une table de données propre et tabulaire.
+Évite :
+- cellules fusionnées dans les tables de données ;
+- une colonne par type d’opération ;
+- règles métier exprimées uniquement par une couleur ;
+- mises en page impossibles à importer dans Power BI.
+
+CHARTE VISUELLE
+Respecte les règles contenues dans CHARTE_GRAPHIQUE_SIMPLIFIEE.txt.
+Le résultat doit être professionnel, moderne, sobre et respirant.
+Il s’agit d’un outil interne, pas d’une brochure marketing.
+
+CONTRÔLES QUALITÉ
+Avant livraison :
+- ouvrir le .xlsx ;
+- vérifier filtres et volets figés ;
+- vérifier les types de données ;
+- vérifier l’absence d’erreur de formule ;
+- vérifier la lisibilité sur écran bureautique ;
+- vérifier que les logos conservent leurs proportions ;
+- vérifier qu’aucune donnée non présente dans les sources n’a été inventée.
+
+LIVRABLE
+Créer un fichier :
+Prototype_Suivi_Maintenance_2027.xlsx
+
+Fournir également un court compte rendu contenant :
+1. principaux choix ;
+2. améliorations proposées ;
+3. points restant « À confirmer » ;
+4. éléments des anciens suivis non intégrés mais potentiellement utiles ;
+5. limites de la V0.1 ;
+6. recommandations pour la V0.2.
+
+PRINCIPE FINAL
+Privilégie toujours une solution simple, robuste et maintenable à une solution impressionnante mais difficile à maintenir.

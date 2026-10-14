@@ -1,0 +1,27 @@
+CHARTE GRAPHIQUE SIMPLIFIÉE POUR LE PROTOTYPE
+==============================================
+
+Couleurs principales :
+- Jaune : #FFC600
+- Vert canard : #214B4D
+- Blanc : #FFFFFF
+
+Couleurs neutres :
+- Gris clair : #E9EDED
+- Gris moyen clair : #D3DBDB
+
+Couleur secondaire possible, à utiliser ponctuellement :
+- Bleu : #265B88
+
+Typographie bureautique recommandée :
+- Century Gothic
+
+Principes :
+- beaucoup de blanc pour la lisibilité ;
+- jaune utilisé comme accent de marque, sans envahir le tableau ;
+- vert canard pour titres, en-têtes ou zones structurantes ;
+- éviter dégradés, effets 3D, ombres lourdes et bordures excessives ;
+- garder le tableau principal sobre et très lisible ;
+- utiliser les logos officiels fournis sans déformation, recoloration, changement d’opacité ou redessin.
+
+Le fichier final doit ressembler à un outil opérationnel professionnel, pas à un support publicitaire.
