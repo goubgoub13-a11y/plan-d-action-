@@ -568,8 +568,13 @@ NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 NS_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 
 
-def injecter_valeurs(classeur, recalcule):
-    """Recopie les résultats d'une copie recalculée comme valeurs en cache des formules."""
+def injecter_valeurs(classeur, recalcule, remplacements=None):
+    """Recopie les résultats d'une copie recalculée comme valeurs en cache des formules.
+
+    remplacements : {(feuille, cellule): valeur} imposée en cache, par exemple pour ne pas
+    figer un chemin propre à la machine de construction.
+    """
+    remplacements = remplacements or {}
     valeurs = openpyxl.load_workbook(recalcule, data_only=True)
     with zipfile.ZipFile(classeur) as z:
         contenu = {n: z.read(n) for n in z.namelist()}
@@ -588,7 +593,11 @@ def injecter_valeurs(classeur, recalcule):
                 continue
             for ancien in c.findall(f"{{{NS}}}v"):
                 c.remove(ancien)
-            val = ws_val[c.get("r")].value
+            val = remplacements.get((sheet.get("name"), c.get("r")), ws_val[c.get("r")].value)
+            if isinstance(val, dt.datetime):
+                val = (val - dt.datetime(1899, 12, 30)).total_seconds() / 86400
+            elif isinstance(val, dt.date):
+                val = (val - dt.date(1899, 12, 30)).days
             v = etree.SubElement(c, f"{{{NS}}}v")
             if isinstance(val, bool):
                 c.set("t", "b")
