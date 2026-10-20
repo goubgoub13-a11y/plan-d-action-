@@ -1117,6 +1117,53 @@ body{font-size:13px;line-height:1.55;letter-spacing:-.012em}h1,h2,h3,h4{font-wei
 .project-mark{background:color-mix(in srgb,var(--c,var(--y)) 12%,var(--surface));color:var(--c,var(--text-2))}
 .project-heading{border-top:4px solid var(--c,var(--y));padding-top:22px}
 .project-objective{border-left-color:var(--c,var(--y))}
+
+/* Couleurs de repérage : jaune pour agir, bleu pour planifier, violet pour le parcours. */
+@media screen{
+:root{--accent-blue:var(--s1);--accent-violet:var(--s7)}
+.sidebar{background:linear-gradient(180deg,color-mix(in srgb,var(--y) 5%,var(--surface)),var(--surface) 300px)}
+.brand .tag b{border-bottom:3px solid var(--y);padding-bottom:4px;display:inline-block}
+.nav a.active{background:var(--y);color:var(--on-y);box-shadow:0 4px 12px color-mix(in srgb,var(--y) 16%,transparent)}
+.nav a.active .ic{color:var(--on-y)}
+.nav a[href="#/planning"]:not(.active)>.ic{color:var(--accent-blue)}
+.nav-more summary>.ic:first-child,.nav a[href="#/parcours"]:not(.active)>.ic{color:var(--accent-violet)}
+.who .avatar{background:var(--y-soft);border-color:color-mix(in srgb,var(--y) 35%,var(--border));color:var(--y-text)}
+.workspace-heading>.btn{background:var(--y-soft);border-color:color-mix(in srgb,var(--y) 40%,var(--border));color:var(--y-text)}
+.workspace-heading>.btn:hover{background:var(--y);color:var(--on-y)}
+.metrics{border:0;background:transparent;gap:14px;padding:0}
+.metric{--metric-accent:var(--accent-blue);border:1px solid color-mix(in srgb,var(--metric-accent) 18%,var(--border));border-radius:12px;padding:22px 24px;background:color-mix(in srgb,var(--metric-accent) 7%,var(--surface));position:relative;overflow:hidden}
+.metric::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--metric-accent)}
+.metric:nth-child(2){--metric-accent:var(--y)}
+.metric:last-child{border:1px solid color-mix(in srgb,var(--metric-accent) 18%,var(--border))}
+.metric.attention{--metric-accent:var(--critical-text)}
+.metric:not(.attention):last-child{--metric-accent:var(--good)}
+.metric>.ic{color:var(--metric-accent)}
+.metric:hover{background:color-mix(in srgb,var(--metric-accent) 12%,var(--surface))}
+.focus-panel{border-top:3px solid var(--y)}
+.panel-head h3{display:flex;align-items:center;gap:9px}
+.panel-head h3::before{content:"";width:7px;height:7px;flex:none;border-radius:50%;background:var(--y)}
+.project-panel .panel-head h3::before{background:var(--accent-blue)}
+.quiet-tabs button.on span{background:var(--y-soft);color:var(--y-text)}
+.next-panel{background:color-mix(in srgb,var(--accent-blue) 4%,var(--surface));border-color:color-mix(in srgb,var(--accent-blue) 17%,var(--border))}
+.next-panel .msi .datebox{background:color-mix(in srgb,var(--accent-blue) 12%,var(--surface));color:var(--text)}
+.next-panel .eyebrow{color:var(--text-2)}
+.alternance-note{background:color-mix(in srgb,var(--accent-violet) 7%,var(--surface));border-color:color-mix(in srgb,var(--accent-violet) 20%,var(--border))}
+.alternance-note>.eyebrow{color:var(--text-2)}
+.alternance-note .sit>.ic{color:var(--accent-violet)}
+.weekly-link,.analysis-link{padding:16px;border:1px solid var(--border);border-radius:11px;background:color-mix(in srgb,var(--y) 6%,var(--surface))}
+.weekly-link>.ic:first-child,.analysis-link>.ic:first-child{color:var(--y-text)}
+.portfolio-card{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 5%,var(--surface)),var(--surface) 55%)}
+.tbl thead th{background:color-mix(in srgb,var(--y) 7%,var(--surface));color:var(--text-2)}
+.seg button.on{background:var(--y-soft);color:var(--y-text)}
+.st-done{background:var(--good-soft);color:var(--good-text)}
+.focus-date.late{background:var(--critical-soft);padding:3px 6px;border-radius:5px}
+.inline-add:hover{background:var(--y-soft);border-radius:6px}
+.arecap{border-left-color:var(--c,var(--y));background:color-mix(in srgb,var(--c,var(--y)) 4%,var(--surface))}
+.form-section[open]>summary{color:var(--y-text)}
+.snav a.active,.snav a.on{background:var(--y-soft);color:var(--y-text)}
+@media(max-width:700px){.metrics{gap:10px;padding:0}.metric{padding:18px 15px}}
+@media(max-width:480px){.metrics{gap:7px}.metric{padding:16px 10px}.metric>span{font-size:9px}}
+}
 </style>
 </head>
 <body>
