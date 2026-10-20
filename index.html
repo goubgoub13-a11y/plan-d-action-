@@ -1110,6 +1110,13 @@ body{font-size:13px;line-height:1.55;letter-spacing:-.012em}h1,h2,h3,h4{font-wei
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 }
 @media print{.project-back,.project-nav,.workspace-details,.weekly-link,.more-menu{display:none!important}.project-heading h2{font-size:24px}.project-header-progress{display:none}}
+
+/* Repères de couleur propres à chaque projet, sur une surface sobre. */
+.portfolio-card{position:relative;overflow:hidden}
+.portfolio-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--c,var(--y))}
+.project-mark{background:color-mix(in srgb,var(--c,var(--y)) 12%,var(--surface));color:var(--c,var(--text-2))}
+.project-heading{border-top:4px solid var(--c,var(--y));padding-top:22px}
+.project-objective{border-left-color:var(--c,var(--y))}
 </style>
 </head>
 <body>
@@ -2699,7 +2706,7 @@ function quietAction(a, showProject = true) {
 }
 function quietProject(p) {
   const progress = projectProgress(p), late = actionsOf(p.id).filter(isOverdue).length;
-  return `<a class="project-line" href="#/projet/${p.id}"><span class="project-mark" style="--c:${colorOf(p)}">${ic('folder',19)}</span><span class="project-line-name"><b>${esc(p.name)}</b><small>${esc(p.ref || CONTEXTS[p.context].label)}${late ? ` · ${late} en retard` : p.end ? ` · ${fmtS(p.end)}` : ''}</small></span><span class="project-line-progress">${pbar(progress, 'var(--y)', null, 'sm')}<b>${progress} %</b></span>${ic('chevR',16)}</a>`;
+  return `<a class="project-line" href="#/projet/${p.id}"><span class="project-mark" style="--c:${colorOf(p)}">${ic('folder',19)}</span><span class="project-line-name"><b>${esc(p.name)}</b><small>${esc(p.ref || CONTEXTS[p.context].label)}${late ? ` · ${late} en retard` : p.end ? ` · ${fmtS(p.end)}` : ''}</small></span><span class="project-line-progress">${pbar(progress, colorOf(p), null, 'sm')}<b>${progress} %</b></span>${ic('chevR',16)}</a>`;
 }
 function startCard() {
   return `<section class="start-card"><span class="start-icon">${ic('folder',32)}</span><div class="eyebrow">UN ESPACE POUR AVANCER</div><h2>Tout commence par un projet.</h2><p>Retrouve ton plan existant ou pose la première étape de ton prochain projet.</p><div class="row"><button class="btn btn-primary" data-act="import-json">${ic('upload',16)} Importer ma sauvegarde</button><button class="btn" data-act="new-project">${ic('plus',16)} Créer un projet</button></div><details class="start-more"><summary>Importer un Excel ou utiliser le modèle ISTP</summary><div class="row"><button class="btn btn-sm" data-act="import-xlsx">Importer un Excel</button><button class="btn btn-sm" data-act="tpl-istp">Créer mon parcours ISTP</button></div></details></section>`;
@@ -2731,7 +2738,7 @@ VIEWS.parcours = () => ({title:'Mon alternance', html:`<header class="workspace-
 /* ---------- Projets ---------- */
 function projectCard(p) {
   const pr = projectProgress(p), as = actionsOf(p.id), late = as.filter(isOverdue).length;
-  return `<a class="portfolio-card" href="#/projet/${p.id}"><div class="portfolio-top"><span class="project-mark" style="--c:${colorOf(p)}">${ic('folder',22)}</span>${pstChip(p.status)}</div><h3>${esc(p.name)}</h3><p>${esc(p.description)||'Définis le résultat que tu veux atteindre.'}</p><div class="portfolio-progress"><span>Avancement</span><b>${pr} %</b></div>${pbar(pr,'var(--y)')}<footer><span>${late ? `<span class="late">${plural(late,'action')} en retard</span>` : `${as.filter(a=>a.status==='done').length} / ${as.length} actions terminées`}</span><span>${p.end ? fmtS(p.end) : 'Sans échéance'} ${ic('chevR',14)}</span></footer></a>`;
+  return `<a class="portfolio-card" style="--c:${colorOf(p)}" href="#/projet/${p.id}"><div class="portfolio-top"><span class="project-mark" style="--c:${colorOf(p)}">${ic('folder',22)}</span>${pstChip(p.status)}</div><h3>${esc(p.name)}</h3><p>${esc(p.description)||'Définis le résultat que tu veux atteindre.'}</p><div class="portfolio-progress"><span>Avancement</span><b>${pr} %</b></div>${pbar(pr,colorOf(p))}<footer><span>${late ? `<span class="late">${plural(late,'action')} en retard</span>` : `${as.filter(a=>a.status==='done').length} / ${as.length} actions terminées`}</span><span>${p.end ? fmtS(p.end) : 'Sans échéance'} ${ic('chevR',14)}</span></footer></a>`;
 }
 VIEWS.projets = () => {
   const f = UI.pf;
@@ -2767,7 +2774,7 @@ VIEWS.projet = () => {
   const left = p.end ? diffDays(today(), p.end) : null;
   const TABS = [['apercu','Vue d’ensemble'],['actions','Actions'],['planning','Calendrier']];
   const MORE = [['gantt','Gantt'],['jalons','Jalons'],['journal','Journal'],['analyse','Détails & analyse']];
-  const head = `<a class="project-back" href="#/projets">${ic('back',15)} Tous les projets</a><header class="project-heading"><div><div class="eyebrow">${esc(p.ref||'PROJET')} · ${esc(CONTEXTS[p.context].long)}</div><h2>${esc(p.name)}</h2><div class="project-byline">${pstChip(p.status)}<span>${esc(p.manager||'Responsable à définir')}</span><span>${p.end ? 'Échéance · '+fmtS(p.end,true) : 'Échéance à définir'}</span></div></div><div class="project-header-progress"><strong>${pr}<small>%</small></strong>${pbar(pr,'var(--y)')}<span>Avancement du projet</span></div></header>
+  const head = `<a class="project-back" href="#/projets">${ic('back',15)} Tous les projets</a><header class="project-heading" style="--c:${colorOf(p)}"><div><div class="eyebrow">${esc(p.ref||'PROJET')} · ${esc(CONTEXTS[p.context].long)}</div><h2>${esc(p.name)}</h2><div class="project-byline">${pstChip(p.status)}<span>${esc(p.manager||'Responsable à définir')}</span><span>${p.end ? 'Échéance · '+fmtS(p.end,true) : 'Échéance à définir'}</span></div></div><div class="project-header-progress"><strong>${pr}<small>%</small></strong>${pbar(pr,colorOf(p))}<span>Avancement du projet</span></div></header>
     <div class="project-nav"><nav class="tabs" aria-label="Sections du projet">${TABS.map(([k,l])=>`<a href="#/projet/${p.id}/${k}" class="${tab===k?'on':''}" ${tab===k?'aria-current="page"':''}>${l}</a>`).join('')}<details class="more-menu"><summary class="${MORE.some(([k])=>k===tab)?'on':''}">${MORE.find(([k])=>k===tab)?.[1]||'Plus'} ${ic('chevD',14)}</summary><div class="more-pop">${MORE.map(([k,l])=>`<a href="#/projet/${p.id}/${k}">${l}</a>`).join('')}<button data-act="print">Imprimer la fiche projet</button></div></details></nav><button class="btn btn-sm" data-act="edit-project" data-id="${p.id}">${ic('edit',15)} Modifier le projet</button></div>`;
   let body = '';
   if (tab === 'actions') body = actionsBlock(p.id);
@@ -2796,7 +2803,7 @@ function projectOverview(p) {
   const upcoming = [...prio,...active.filter(a=>!prio.includes(a)).sort(byDue)].slice(0,4);
   const ms = milestonesOf(p.id).filter(m=>!m.done).slice(0,3);
   const objectives = (p.objectives||'').split('\n').filter(x=>x.trim());
-  return `<div class="project-objective"><span class="eyebrow">L’OBJECTIF</span><p>${esc(p.description)||'Quel résultat souhaites-tu atteindre avec ce projet ?'}</p></div><div class="overview-grid"><div class="overview-main"><section class="panel"><div class="panel-head"><h3>Les prochaines actions</h3><a class="text-link" href="#/projet/${p.id}/actions">Tout voir ${ic('chevR',14)}</a></div>${upcoming.length?`<ul class="focus-list">${upcoming.map(a=>quietAction(a,false)).join('')}</ul>`:'<div class="quiet-empty">Aucune action ouverte.<small>Ajoute la prochaine étape de ton projet.</small></div>'}<button class="inline-add" data-act="new-action" data-project="${p.id}">${ic('plus',16)} Ajouter une action</button></section>
+  return `<div class="project-objective" style="--c:${colorOf(p)}"><span class="eyebrow">L’OBJECTIF</span><p>${esc(p.description)||'Quel résultat souhaites-tu atteindre avec ce projet ?'}</p></div><div class="overview-grid"><div class="overview-main"><section class="panel"><div class="panel-head"><h3>Les prochaines actions</h3><a class="text-link" href="#/projet/${p.id}/actions">Tout voir ${ic('chevR',14)}</a></div>${upcoming.length?`<ul class="focus-list">${upcoming.map(a=>quietAction(a,false)).join('')}</ul>`:'<div class="quiet-empty">Aucune action ouverte.<small>Ajoute la prochaine étape de ton projet.</small></div>'}<button class="inline-add" data-act="new-action" data-project="${p.id}">${ic('plus',16)} Ajouter une action</button></section>
     <details class="workspace-details"><summary>Livrables & cadrage ${ic('chevD',15)}</summary>${objectives.length?`<ul class="objectives">${objectives.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p class="muted">Aucun livrable défini.</p>'}${p.comment?`<p class="prose mt">${esc(p.comment)}</p>`:''}<dl class="project-facts"><dt>Sponsor</dt><dd>${esc(p.sponsor||'Non renseigné')}</dd><dt>Domaine</dt><dd>${esc(p.domain||'Non renseigné')}</dd><dt>Risque global</dt><dd>${riskChip(p.risk)}</dd><dt>Santé du projet</dt><dd>${healthChip(projectHealth(p))}</dd></dl><a class="text-link" href="#/projet/${p.id}/analyse">Toutes les données & analyses →</a></details></div>
     <aside class="overview-aside"><section class="next-panel"><div class="eyebrow">LES ÉTAPES CLÉS</div><h3>Prochains jalons</h3><div class="mslist">${ms.map(m=>msItem(m,false)).join('')||'<p class="muted">Aucun jalon à venir.</p>'}</div><button class="inline-add" data-act="new-milestone" data-project="${p.id}">${ic('plus',16)} Ajouter un jalon</button></section><a class="analysis-link" href="#/projet/${p.id}/analyse">${ic('trend',20)}<span>Détails & analyse<small>Phases, courbes, risques et contrôles</small></span>${ic('chevR',16)}</a></aside></div>`;
 }
