@@ -50,6 +50,25 @@ test('Essential/detailed lists and filters agree; completion updates project pro
  a.ui.afG.status='all';assert.equal(a.filterActions(a.state.actions,null).length,1);
  assert.equal(a.doSearch('Suivi conservé').length,1);
 });
+test('Project phases remain visible and global actions identify their project even after filtering',()=>{
+ const a=app();a.state=fixture(a);
+ a.state.projects.push({...a.state.projects[0],id:'p2',name:'Second projet'});
+ a.state.actions.push({...a.state.actions[0],id:'a2',projectId:'p2',title:'Autre action'});
+ a.setRoute({page:'projet',id:'p1',tab:'apercu'});
+ const overview=a.views.projet().html;
+ assert.ok(overview.includes('Avancement par phase'));
+ assert.ok(overview.includes('Cadrage'));
+ assert.ok(!overview.includes('Autre action'));
+ a.setRoute({page:'actions'});
+ let out=a.results(null);
+ assert.equal((out.match(/class="project-group-row"/g)||[]).length,2);
+ a.ui.afG.project='p2';out=a.results(null);
+ assert.ok(out.includes('Second projet'));
+ assert.ok(!out.includes('Projet &lt;test&gt;'));
+ assert.ok(out.includes('action-project'));
+ a.ui.afG.project='all';a.ui.afG.group=true;
+ assert.equal((a.results(null).match(/class="project-group-row"/g)||[]).length,2);
+});
 test('Empty app stays empty and offers import instead of fabricated projects',()=>{
  const a=app();assert.equal(a.state.projects.length,0);assert.equal(a.state.actions.length,0);
  assert.ok(a.views.dashboard().html.includes('Importer ma sauvegarde'));
