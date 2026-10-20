@@ -8,20 +8,25 @@ Au premier lancement, la page est **vierge** (aucun projet) : importe ta sauvega
 - ta **grille de compétences ISTP** : les 24 compétences de la grille d'évaluation en entreprise (A1C1 à A11C3), rangées par bloc ;
 - ton **calendrier d'alternance ISTP** (Ingénieur Génie industriel FA) pour la dernière année : périodes à l'école **P13 à P17** et **épreuves finales du 6 au 24 septembre 2027**. La mobilité internationale est comptée en entreprise.
 
-## Les fenêtres
+## Interface Essentiel — 20 octobre 2026
 
-| Fenêtre | À quoi elle sert |
+L’accueil montre trois repères (projets ouverts, échéances à 7 jours, retards), quatre actions prioritaires et un résumé des projets. Le jaune NaTran est rétabli ; le logo noir transparent est utilisé sur fond clair, le jaune sur fond sombre.
+
+| Accès | Contenu |
 |---|---|
-| **Tableau de bord** | En-tête *Ma semaine* (en entreprise ou à l'ISTP, prochaine période, jours en entreprise restants, J-xxx avant le diplôme, frise du parcours), bannière *Depuis ta dernière visite*, boutons rapides, indicateurs, *Mes priorités* / *À relancer*, prochains jalons, projets |
-| **Projets** | Une carte par projet : ID, chef de projet, avancement, risque, santé |
-| **Page projet** | Objectif, livrables, avancement par phase, **contrôle du plan**, glissement par rapport à la référence, courbe réel/prévu, risques & décisions, plan d'action, Gantt, planning, jalons, journal. Bouton imprimante = **fiche projet PDF** |
-| **Plan d'action** | Liste déroulante **Projet** (tous les projets ou un seul), actions par phase, filtres (dont *Moi* / *Les autres*), puces de filtres actifs, **sélection multiple** (décaler, statut, responsable, priorité, terminer), ajout rapide, vue Kanban |
-| **Fiche action** | Clic sur une action : **récapitulatif** (projet, statut, avancement, dates, prochaine étape) et **suivi daté** — la date du jour est déjà remplie, tu écris ce que tu as fait et l'avancement atteint. L'avancement de l'action et celui du projet se recalculent tout seuls |
-| **Gantt** | Ligne *Alternance* (périodes ISTP, épreuves), jours fériés, planning de référence en fantôme, glisser-déposer pour replanifier |
-| **Planning** | Calendrier teinté les jours à l'ISTP, jours fériés, dates cibles, prochains points et jalons |
-| **Jalons** | Frise chronologique ; un jalon qui tombe pendant l'école est signalé |
-| **Journal de bord** | Notes, **revue hebdomadaire** guidée, points hebdo gardés et tout le **suivi des actions** par date |
-| **Compétences** | Ta grille ISTP par bloc : actions reliées à chaque compétence, bouton ⓘ qui explique la compétence (en pratique, exemples de preuves, libellé de la grille), texte à copier pour le rapport et la soutenance |
+| **Vue d’ensemble** | Priorités, relances, projets, trois prochains jalons et alternance |
+| **Projets** | Cartes avec objectif et avancement ; ouvrir un projet pour consulter ses prochaines actions |
+| **Projet → Plus → Détails & analyse** | Cadrage complet, phases, courbe réel/prévu, contrôles, risques, décisions et planning de référence |
+| **Plan d’action** | Liste essentielle par défaut ; **Filtres** pour affiner et **Options → Tableau détaillé** pour toutes les colonnes |
+| **Plan d’action → Options** | Sélection multiple, replanification, export Excel et ajout rapide |
+| **Fiche action** | Récapitulatif et suivi daté en premier ; définition, pilotage, risques, compétences et récurrence dans des sections dépliables |
+| **Planning** | Calendrier des actions, points de suivi, jalons et alternance |
+| **Outils & parcours** | Gantt, jalons, journal de bord, compétences et mon alternance |
+| **Paramètres & sauvegardes** | Profil, calendrier, logos, imports/exports et restauration |
+
+Les données, identifiants, historiques et formats de sauvegarde sont conservés. Aucune donnée de démonstration n’est ajoutée au plan. Les autres applications du dépôt ne sont pas modifiées.
+
+Validation : `node --test tests/plan-action.test.cjs` vérifie la conservation des données, les points de restauration, les vues, les filtres et le calcul d’avancement. Le suivi puis le rechargement et le filtrage ont également été vérifiés dans le navigateur sur des données de test séparées.
 
 ## Pensé pour l'alternance
 
@@ -35,7 +40,7 @@ Au premier lancement, la page est **vierge** (aucun projet) : importe ta sauvega
 
 ## Suivi d'une action
 
-1. *Plan d'action* → choisis ton projet dans la liste déroulante **Projet**, en haut.
+1. *Plan d'action* → choisis ton projet avec le sélecteur **Tous les projets**, en haut.
 2. Clique sur l'action : le récapitulatif s'affiche, avec la zone **Suivi de l'action** prête (date du jour).
 3. Écris ce que tu as fait, règle l'**avancement après**, puis **Ajouter au suivi** (ou `Ctrl + Entrée`).
 
