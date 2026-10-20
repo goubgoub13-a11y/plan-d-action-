@@ -1,13 +1,13 @@
-# Publie l'application « Mon bien locatif » sur GitHub Pages.
+# Publie « Mon bien locatif » et le plan d’action sur GitHub Pages.
 # Prérequis (une seule fois) : Settings → Pages → Source : « GitHub Actions ».
 name: Publier l'application
 
 on:
   push:
     branches: [claude/zealous-einstein-6u50ue]
-    paths: ['immobilier-locatif/**', '.github/workflows/pages.yml']
+    paths: ['index.html', 'immobilier-locatif/**', '.github/workflows/pages.yml']
   pull_request:
-    paths: ['immobilier-locatif/**', '.github/workflows/pages.yml']
+    paths: ['index.html', 'immobilier-locatif/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -35,6 +35,10 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - name: Ajouter le plan d'action autonome
+        run: |
+          mkdir -p dist/plan-action
+          cp ../index.html dist/plan-action/index.html
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
