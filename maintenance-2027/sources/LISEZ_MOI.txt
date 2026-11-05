@@ -1,0 +1,25 @@
+PACK DE DÉVELOPPEMENT ANONYMISÉ — PROTOTYPE MAINTENANCE 2027
+==============================================================
+
+Ce pack est conçu pour être transmis à un outil de développement externe sans fournir les fichiers opérationnels d’origine.
+
+Contenu :
+- PROMPT_ASTRA_CLAUDE.txt : brief complet.
+- DATA_PDM_TEST.xlsx : données fictives de programme de maintenance.
+- EXEMPLE_SUIVI_ACTUEL.xlsx : exemple fictif d’un ancien suivi local.
+- REFERENTIEL_TEST.xlsx : référentiel fictif.
+- CHARTE_GRAPHIQUE_SIMPLIFIEE.txt : couleurs / typographie / règles minimales.
+- logo_rvb.png : logo officiel fourni par l’utilisateur.
+- logo_blanc.png : variante blanche fournie par l’utilisateur.
+
+Ce qui N’EST PAS inclus volontairement :
+- exports opérationnels réels ;
+- noms / codes d’installations réels ;
+- localisations réelles ;
+- historiques d’interventions réels ;
+- commentaires ou métadonnées des fichiers originaux ;
+- documents internes décrivant des procédures techniques ;
+- charte graphique complète.
+
+Important :
+Les fichiers Excel inclus sont 100 % fictifs. Leur structure sert uniquement à permettre au développeur de concevoir le prototype.
