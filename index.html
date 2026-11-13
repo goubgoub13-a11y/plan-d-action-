@@ -3314,9 +3314,404 @@ function replanDates(a, mode, days, date, avoid) {
 /* ---------- Actions groupées ---------- */
 function bulkOp(op, anchor) {
   const ids = [...SEL].filter(id => act(id)); if (!ids.length) return;
-  const done = (msg) => toast(msg, 'success', 
-... 41186 bytes omitted ...
-is-cancelled' : ''}" data-act="edit-period" data-id="${p.id}"><td><span class="cal-tag ${p.type}">${ic(PTYPE[p.type].icon, 12)} ${PTYPE[p.type].label}</span></td><td><b>${esc(p.label)}</b>${p.start <= t && p.end >= t ? ' <span class="chip t-info">en cours</span>' : ''}</td><td class="c-date">${fmtS(p.start, true)}</td><td class="c-date">${fmtS(p.end, true)}</td><td class="muted small">${plural(Math.ceil((diffDays(p.start, p.end) + 1) / 7), 'semaine')}</td><td class="c-act"><button type="button" class="btn btn-ghost btn-icon btn-sm" data-act="edit-period" data-id="${p.id}" aria-label="Modifier">${ic('edit', 15)}</button></td></tr>`).join('') || '<tr><td colspan="6" class="muted">Aucune période.</td></tr>'}</tbody></table></div>
+  const done = (msg) => toast(msg, 'success', { label: 'Annuler', fn: undo });
+  const n = ids.length, lbl = plural(n, 'action');
+  if (op === 'shift') {
+    openPop(anchor, `<div class="ph">Décaler les dates</div><div class="grid-pct" style="grid-template-columns:repeat(3,1fr)">${[-7, -1, 1, 3, 7, 14].map(d => `<button type="button" data-pick="${d}">${d > 0 ? '+' : ''}${d} j</button>`).join('')}</div><button type="button" class="opt" data-pick="school">${ic('school', 15)} Après l'école / jours fériés</button><button type="button" class="opt" data-pick="today">${ic('target', 15)} Repartir d'aujourd'hui</button>`, v => {
+      commit(() => ids.forEach(id => { const a = act(id), sp = actionSpan(a); if (!sp) return;
+        if (v === 'school') { const e = nextCompanyDay(sp[1]); const delta = diffDays(sp[1], e); a.due = e; if (a.start) a.start = addDays(a.start, delta); }
+        else if (v === 'today') { const [s, e] = replanDates(a, 'today', 0, null, true); a.start = s; a.due = e; }
+        else { const d = +v; if (a.start) a.start = addDays(a.start, d); if (a.due) a.due = addDays(a.due, d); } }));
+      done(`${lbl} replanifiée${n > 1 ? 's' : ''}.`);
+    });
+  } else if (op === 'status') {
+    openPop(anchor, `<div class="ph">Nouveau statut</div>` + STATUS_ORDER.map(s => `<button type="button" class="opt" data-pick="${s}">${stChip(s)}</button>`).join(''), v => { commit(() => ids.forEach(id => applyStatus(act(id), v))); done(`${lbl} → ${STATUS[v].label}.`); });
+  } else if (op === 'prio') {
+    openPop(anchor, `<div class="ph">Priorité</div>` + Object.entries(PRIORITY).map(([k, o]) => `<button type="button" class="opt" data-pick="${k}">${prChip(k)}</button>`).join(''), v => { commit(() => ids.forEach(id => { act(id).priority = v; })); done(`Priorité mise à jour (${lbl}).`); });
+  } else if (op === 'owner') {
+    const list = [...new Set([S.profile.name || S.profile.aliases[0] || 'Moi', ...owners()])].filter(Boolean);
+    openPop(anchor, `<div class="ph">Responsable</div><div style="max-height:260px;overflow:auto">${list.map(o => `<button type="button" class="opt" data-pick="${esc(o)}">${ic('user', 14)} ${esc(o)}</button>`).join('')}</div>`, v => { commit(() => ids.forEach(id => { act(id).owner = v; })); done(`Responsable : ${v} (${lbl}).`); });
+  } else if (op === 'done') {
+    commit(() => ids.forEach(id => applyStatus(act(id), 'done'))); SEL.clear(); done(`${lbl} terminée${n > 1 ? 's' : ''} ✓`);
+  } else if (op === 'delete') {
+    confirmDialog({ title: `Supprimer ${lbl} ?`, message: `Les ${lbl} sélectionnées seront supprimées. Tu pourras annuler juste après.`, ok: 'Supprimer', danger: true }).then(ok => {
+      if (!ok) return;
+      commit(s => { const g = new Set(ids); s.actions = s.actions.filter(a => !g.has(a.id)); s.actions.forEach(a => { a.dependsOn = a.dependsOn.filter(x => !g.has(x)); }); });
+      SEL.clear(); render(); done(`${lbl} supprimée${n > 1 ? 's' : ''}.`);
+    });
+  }
+}
+
+/* ---------- Gantt ---------- */
+const ZOOM = { day: { dw: 34, label: 'Jours' }, week: { dw: 16, label: 'Semaines' }, month: { dw: 5, label: 'Mois' } };
+const RH = 38;
+function ganttRows(projectId) {
+  const rows = [];
+  const projects = projectId ? [proj(projectId)].filter(Boolean) : sortedProjects().filter(p => UI.gDone || !isClosed(p.status));
+  for (const p of projects) {
+    const acts = actionsOf(p.id).filter(a => UI.gDone || !isClosed(a.status));
+    if (!projectId) rows.push({ type: 'project', p });
+    else if (milestonesOf(p.id).length) rows.push({ type: 'ms', p });
+    if (!projectId && UI.gCollapsed[p.id]) continue;
+    const groups = phaseGroups(acts);
+    const phased = groups.some(g => g.name);
+    for (const g of groups) {
+      const key = p.id + '|' + g.name;
+      if (phased) rows.push({ type: 'phase', p, g, key });
+      if (!phased || !UI.gPh[key]) sortActions(g.items, 'start').forEach(a => rows.push({ type: 'action', a, p, inPhase: phased }));
+    }
+  }
+  return rows;
+}
+function ganttHTML(projectId) {
+  const zoom = ZOOM[UI.gz] ? UI.gz : 'week', dw = ZOOM[zoom].dw, t = today();
+  const rows = ganttRows(projectId);
+  let lo = t, hi = t;
+  const see = d => { if (!d) return; if (d < lo) lo = d; if (d > hi) hi = d; };
+  rows.forEach(r => { const sp = r.type === 'action' ? actionSpan(r.a) : r.type === 'phase' ? [r.g.start, r.g.end] : projectSpan(r.p); if (sp) { see(sp[0]); see(sp[1]); } });
+  const start = startOfWeek(addDays(lo, zoom === 'month' ? -21 : -7));
+  let end = addDays(hi, zoom === 'day' ? 14 : zoom === 'week' ? 28 : 60);
+  const minDays = { day: 56, week: 182, month: 420 }[zoom];
+  if (diffDays(start, end) < minDays) end = addDays(start, minDays);
+  const days = Math.ceil((diffDays(start, end) + 1) / 7) * 7;
+  end = addDays(start, days - 1);
+  const W = days * dw, X = d => diffDays(start, d) * dw;
+
+  let months = '', mlines = '';
+  for (let d = start; d <= end;) {
+    const me = minD(lastOfMonth(d), end), w = (diffDays(d, me) + 1) * dw, dd = parse(d);
+    const label = w > 110 ? fmtMY(d) : w > 44 ? cap(MONTHS_S[dd.getMonth()]) + (w > 70 ? ' ' + String(dd.getFullYear()).slice(2) : '') : '';
+    months += `<div style="width:${w}px" title="${fmtMY(d)}">${label}</div>`;
+    if (d !== start) mlines += `<div class="g-mline" style="left:${X(d)}px"></div>`;
+    d = addDays(me, 1);
+  }
+  let units = '';
+  if (zoom === 'day') for (let i = 0; i < days; i++) { const d = addDays(start, i), wd = dow(d); units += `<div class="${wd === 0 || wd === 6 ? 'we' : ''} ${d === t ? 'td' : ''}" style="width:${dw}px"><small>${'DLMMJVS'[wd]}</small>${parse(d).getDate()}</div>`; }
+  else for (let i = 0; i < days; i += 7) { const d = addDays(start, i), cur = t >= d && t <= addDays(d, 6); units += `<div class="${cur ? 'td' : ''}" style="width:${7 * dw}px" title="Semaine ${isoWeek(d)} · ${fmtS(d)}">${zoom === 'week' ? `S${isoWeek(d)} <small>${fmtDM(d)}</small>` : isoWeek(d)}</div>`; }
+  const bg = zoom === 'month'
+    ? `repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px ${7 * dw}px)`
+    : `repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px ${7 * dw}px), repeating-linear-gradient(to right, transparent 0 ${5 * dw}px, var(--weekend) ${5 * dw}px ${7 * dw}px)`;
+  let alt = '', bands = '';
+  periods().filter(p => p.end >= start && p.start <= end).forEach(p => {
+    const a = maxD(p.start, start), b = minD(p.end, end), x = X(a), w = (diffDays(a, b) + 1) * dw;
+    alt += `<div class="g-alt-seg ${p.type}" style="left:${x}px;width:${w}px" title="${esc(PTYPE[p.type].label)} ${esc(p.label)} · ${fmtS(p.start, true)} → ${fmtS(p.end, true)}">${w > 46 ? `${ic(PTYPE[p.type].icon, 12)}<span>${esc(w > 110 ? PTYPE[p.type].short + ' ' + p.label : p.label)}</span>` : ''}</div>`;
+    bands += `<div class="g-band ${p.type}" style="left:${x}px;width:${w}px"></div>`;
+  });
+  if (zoom !== 'month') for (let d = start; d <= end; d = addDays(d, 1)) { const hn = holidayName(d); if (hn && !isWeekend(d)) { bands += `<div class="g-band hol" style="left:${X(d)}px;width:${dw}px"></div>`; alt += `<div class="g-alt-hol" style="left:${X(d)}px;width:${dw}px" title="Férié · ${esc(hn)}"></div>`; } }
+  const base = projectId ? proj(projectId)?.baseline : null;
+  const msDiamond = (m, label) => {
+    const st = msStatus(m), x = X(m.date) + dw / 2;
+    return `<div class="g-ms ${st === 'upcoming' ? '' : st}" style="left:${x - 8}px" data-drag="milestone" data-id="${m.id}" data-tip="◆ ${esc((m.ref ? m.ref + ' · ' : '') + m.title)}\n${fmtL(m.date)} · S${isoWeek(m.date)}\n${MSTYPE[m.type]} · ${msLabel(st)}${m.key ? ' · jalon clé' : ''}"></div>${label ? `<span class="g-mslabel" style="left:${x + 11}px">${esc(m.ref || m.title)}</span>` : ''}`;
+  };
+  const body = rows.map(r => {
+    const p = r.p;
+    if (r.type === 'project') {
+      const sp = projectSpan(p), pr = projectProgress(p), closed = !!UI.gCollapsed[p.id];
+      const s = p.start || sp?.[0], e = p.end || sp?.[1];
+      const sum = s && e ? `<div class="g-sum" style="left:${X(s)}px;width:${(diffDays(s, e) + 1) * dw}px" data-tip="${esc(p.name)}\n${fmtS(s, true)} → ${fmtS(e, true)}\nAvancement : ${pr} %"><i style="width:${pr}%"></i></div>` : '';
+      return `<div class="g-row g-prow" style="--c:${colorOf(p)}"><div class="g-label"><button type="button" class="g-toggle ${closed ? 'closed' : ''}" data-act="g-collapse" data-id="${p.id}" aria-label="${closed ? 'Déplier' : 'Replier'}" aria-expanded="${!closed}">${ic('chevD', 16)}</button><span class="dot"></span><a class="g-name" href="#/projet/${p.id}/gantt">${esc(p.name)}</a><span class="g-pct">${pr} %</span></div><div class="g-track" style="width:${W}px">${sum}${milestonesOf(p.id).map(m => msDiamond(m, false)).join('')}</div></div>`;
+    }
+    if (r.type === 'ms') {
+      const ms = milestonesOf(p.id);
+      return `<div class="g-row g-prow" style="--c:${colorOf(p)}"><div class="g-label"><span class="dia"></span><span class="g-name">Jalons</span><span class="g-pct">${ms.filter(m => m.done).length}/${ms.length}</span></div><div class="g-track" style="width:${W}px">${ms.map(m => msDiamond(m, true)).join('')}</div></div>`;
+    }
+    if (r.type === 'phase') {
+      const g = r.g, closed = !!UI.gPh[r.key];
+      const sum = g.start ? `<div class="g-sum ph" style="left:${X(g.start)}px;width:${(diffDays(g.start, g.end) + 1) * dw}px" data-tip="${esc(g.name || 'Sans phase')}\n${fmtS(g.start, true)} → ${fmtS(g.end, true)}\n${g.done}/${g.items.length} terminées · ${g.progress} %"><i style="width:${g.progress}%"></i></div>` : '';
+      return `<div class="g-row g-phrow" style="--c:${colorOf(p)}"><div class="g-label"><button type="button" class="g-toggle ${closed ? 'closed' : ''}" data-act="g-ph" data-k="${esc(r.key)}" aria-label="${closed ? 'Déplier la phase' : 'Replier la phase'}" aria-expanded="${!closed}">${ic('chevD', 15)}</button><span class="g-name" title="${esc(g.name)}">${esc(g.name || 'Sans phase')}</span><span class="g-pct">${g.progress} %</span></div><div class="g-track" style="width:${W}px">${sum}</div></div>`;
+    }
+    const a = r.a, sp = actionSpan(a), pr = actionProgress(a), late = isOverdue(a);
+    let track = '';
+    if (sp) {
+      const x = X(sp[0]), w = (diffDays(sp[0], sp[1]) + 1) * dw, n = diffDays(sp[0], sp[1]) + 1;
+      const deps = a.dependsOn.map(id => act(id)?.title).filter(Boolean);
+      const slipT = slipOf(a), sc = schoolClash(a);
+      const tip = `${a.ref ? a.ref + ' · ' : ''}${a.title}\n${fmtS(sp[0], true)} → ${fmtS(sp[1], true)} · ${plural(n, 'jour')}${slipT ? `\nRéférence : ${slipT > 0 ? '+' : ''}${slipT} j` : ''}${sc ? `\n⚠ Date cible pendant ${PTYPE[sc.type].label} ${sc.label}` : ''}\n${STATUS[a.status].g} ${STATUS[a.status].label} · ${pr} %${late ? ' · en retard' : ''}${a.owner ? '\nResponsable : ' + a.owner : ''}${deps.length ? '\nDépend de : ' + deps.join(', ') : ''}\nGlisser pour déplacer · bords pour redimensionner`;
+      const bl = UI.gBase && proj(a.projectId)?.baseline?.actions?.[a.id], slip = slipOf(a);
+      if (bl && bl[0] && bl[1] && (bl[0] !== sp[0] || bl[1] !== sp[1])) track += `<div class="g-base" style="left:${X(bl[0])}px;width:${(diffDays(bl[0], bl[1]) + 1) * dw}px" data-tip="Référence : ${fmtS(bl[0], true)} → ${fmtS(bl[1], true)}\n${slip > 0 ? 'Glissement : +' + plural(slip, 'jour') : slip < 0 ? 'En avance de ' + plural(-slip, 'jour') : 'Même date de fin'}"></div>`;
+      track += `<div class="g-bar st-${a.status}" style="left:${x}px;width:${w}px" data-drag="action" data-id="${a.id}" data-tip="${esc(tip)}"><i style="width:${pr}%"></i><span class="g-h l"></span><span class="g-h r"></span></div><span class="g-out" data-for="${a.id}" style="left:${x + w + 8}px">${esc(a.title)} <span class="${late ? 'late' : ''}">· ${late ? 'en retard' : pr + ' %'}</span></span>`;
+    }
+    return `<div class="g-row g-arow ${r.inPhase ? 'in-phase' : ''} ${sp ? '' : 'g-empty-row'}" style="--c:${colorOf(p)}"><div class="g-label"><span class="chip st-${a.status}" style="height:20px;padding:0 6px" title="${STATUS[a.status].label}"><span class="g">${STATUS[a.status].g}</span></span><button type="button" class="linklike g-name" style="font-weight:500" data-act="edit-action" data-id="${a.id}" title="${esc(a.title)}">${esc(a.title)}</button><span class="g-dates">${sp ? fmtDM(sp[0]) + ' → ' + fmtDM(sp[1]) : 'sans dates'}</span></div><div class="g-track" style="width:${W}px">${track}</div></div>`;
+  }).join('');
+
+  let deps = '';
+  if (UI.gDeps) {
+    const idx = {}; rows.forEach((r, i) => { if (r.type === 'action') idx[r.a.id] = i; });
+    let paths = '';
+    rows.forEach((r, i) => {
+      if (r.type !== 'action') return;
+      const sp = actionSpan(r.a); if (!sp) return;
+      r.a.dependsOn.forEach(pid => {
+        const j = idx[pid], b = act(pid), bs = b && actionSpan(b);
+        if (j == null || !bs) return;
+        const x1 = X(bs[1]) + dw, y1 = j * RH + RH / 2, x2 = X(sp[0]), y2 = i * RH + RH / 2;
+        const bad = sp[0] <= bs[1];
+        const d = x2 - x1 >= 14 ? `M${x1},${y1} H${x1 + 6} V${y2} H${x2 - 1}` : `M${x1},${y1} H${x1 + 6} V${y2 + (y2 > y1 ? -RH / 2 : RH / 2)} H${x2 - 12} V${y2} H${x2 - 1}`;
+        paths += `<path class="${bad ? 'bad' : ''}" d="${d}" marker-end="url(#${bad ? 'g-arr-bad' : 'g-arr'})"/>`;
+      });
+    });
+    if (paths) deps = `<svg class="g-deps" width="${W}" height="${rows.length * RH}" aria-hidden="true"><defs><marker id="g-arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--muted)"/></marker><marker id="g-arr-bad" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--critical)"/></marker></defs>${paths}</svg>`;
+  }
+  const hasPhases = rows.some(r => r.type === 'phase');
+  const toolbar = `<div class="toolbar">
+    <div class="seg">${Object.entries(ZOOM).map(([k, z]) => `<button type="button" class="${k === zoom ? 'on' : ''}" data-act="gz" data-v="${k}">${z.label}</button>`).join('')}</div>
+    <button type="button" class="btn btn-sm" data-act="g-today">${ic('target', 15)} Aujourd'hui</button>
+    <label class="toggle"><input type="checkbox" data-change="g-done" ${UI.gDone ? 'checked' : ''}> Terminées</label>
+    <label class="toggle"><input type="checkbox" data-change="g-deps" ${UI.gDeps ? 'checked' : ''}> Dépendances</label>
+    ${projectId ? `<label class="toggle" title="Afficher le planning de référence sous les barres"><input type="checkbox" data-change="g-base" ${UI.gBase ? 'checked' : ''}> Référence</label><button type="button" class="btn btn-sm btn-ghost" data-act="set-baseline" data-project="${projectId}" title="${base ? 'Référence figée le ' + fmtS(base.at, true) + (base.label ? ' (' + base.label + ')' : '') : 'Aucune référence'}">${ic('history', 15)} ${base ? 'Mettre à jour la référence' : 'Figer la référence'}</button>` : ''}
+    ${hasPhases || !projectId ? `<button type="button" class="btn btn-sm btn-ghost" data-act="g-all" data-v="open" data-project="${projectId || ''}">Tout déplier</button><button type="button" class="btn btn-sm btn-ghost" data-act="g-all" data-v="close" data-project="${projectId || ''}">Tout replier</button>` : ''}
+    <span class="spacer"></span>
+    <button type="button" class="btn btn-sm" data-act="new-milestone" data-project="${projectId || ''}">${ic('flag', 15)} Jalon</button>
+    <button type="button" class="btn btn-sm btn-primary" data-act="new-action" data-project="${projectId || ''}">${ic('plus', 15)} Action</button>
+  </div>`;
+  if (!rows.length) return toolbar + `<div class="card">${emptyBox('gantt', 'Rien à afficher dans le Gantt', projectId ? 'Ajoute des actions avec une date de début et une date cible.' : 'Crée un projet et ajoute des actions datées.', `<button class="btn btn-primary" data-act="${projectId ? 'new-action' : 'new-project'}" data-project="${projectId || ''}">${ic('plus', 16)} ${projectId ? 'Nouvelle action' : 'Nouveau projet'}</button>`)}</div>`;
+  return toolbar + `<div class="gantt" data-dw="${dw}">
+    <div class="g-scroll" data-key="${projectId || 'all'}:${zoom}" data-today-x="${X(t)}">
+      <div class="g-inner" style="width:calc(var(--lw) + ${W}px)">
+        <div class="g-head"><div class="g-corner"><span>${projectId ? 'Phases & actions' : 'Projets, phases & actions'}</span><span class="g-corner-alt">${ic('school', 12)} Alternance</span></div><div class="g-th" style="width:${W}px"><div class="g-months">${months}</div><div class="g-units">${units}</div><div class="g-alt" title="Calendrier d'alternance">${alt}</div></div></div>
+        <div class="g-body">
+          <div class="g-bg" style="width:${W}px;background-image:${bg}">${bands}${mlines}</div>
+          ${deps}${body}
+          <div class="g-today" style="left:calc(var(--lw) + ${X(t) + dw / 2}px)"></div>
+        </div>
+      </div>
+    </div>
+    <div class="g-foot">
+      <span class="k"><span class="lg-bar"><i></i></span> Action (partie pleine = avancement)</span>
+      <span class="k"><span class="lg-bar lg-blocked"></span> Bloquée / en attente</span>
+      <span class="k"><span style="width:22px;height:6px;border-radius:2px;background:color-mix(in srgb,var(--text) 55%,var(--surface))"></span> Phase</span>
+      <span class="k"><span class="dia" style="width:9px;height:9px"></span> Jalon</span>
+      <span class="k"><span class="lg-band school"></span> ISTP</span>
+      <span class="k"><span class="lg-band exam"></span> Épreuves</span>
+      <span class="k"><span class="lg-band hol"></span> Férié</span>
+      ${projectId && base ? `<span class="k"><span class="lg-base"></span> Référence (${fmtS(base.at, true)})</span>` : ''}
+      <span class="k"><span class="lg-today"></span> Aujourd'hui</span>
+      <span class="spacer"></span><span class="muted">Glisse une barre pour la déplacer, tire ses bords pour changer ses dates.</span>
+    </div>
+  </div>`;
+}
+const ganttOffset = sc => clamp(Math.round((sc.clientWidth - parseFloat(getComputedStyle(sc.closest('.gantt')).getPropertyValue('--lw') || 320)) / 4), 24, 160);
+function mountGantt(root) {
+  const sc = $('.g-scroll', root); if (!sc) return;
+  const saved = UI._gScroll;
+  if (saved && saved.key === sc.dataset.key) { sc.scrollLeft = saved.left; sc.scrollTop = saved.top; }
+  else sc.scrollLeft = Math.max(0, +sc.dataset.todayX - ganttOffset(sc));
+}
+VIEWS.gantt = () => ({ title: 'Gantt', sub: 'Planification des projets par phase · glisser-déposer pour replanifier', html: ganttHTML(null) });
+
+/* Glisser-déplacer des barres du Gantt */
+let drag = null;
+document.addEventListener('pointerdown', e => {
+  const el = e.target.closest('[data-drag]');
+  if (!el || e.button !== 0) return;
+  const g = el.closest('.gantt'); if (!g) return;
+  const kind = el.dataset.drag, id = el.dataset.id;
+  const item = kind === 'action' ? act(id) : mil(id); if (!item) return;
+  const mode = e.target.classList.contains('g-h') ? (e.target.classList.contains('l') ? 'l' : 'r') : 'move';
+  drag = { el, kind, id, mode, item, dw: +g.dataset.dw, x0: e.clientX, left0: parseFloat(el.style.left), width0: parseFloat(el.style.width) || 16, n: 0, moved: false,
+    span: kind === 'action' ? actionSpan(item) : [item.date, item.date], out: $(`.g-out[data-for="${id}"]`, g) };
+  try { el.setPointerCapture(e.pointerId); } catch (_) {}
+  e.preventDefault();
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x0;
+  if (Math.abs(dx) > 3) drag.moved = true;
+  if (!drag.moved) return;
+  const { dw, mode, el } = drag;
+  const n = Math.round(dx / dw); drag.n = n;
+  let left = drag.left0, width = drag.width0;
+  if (mode === 'move') left = drag.left0 + n * dw;
+  else if (mode === 'r') width = Math.max(dw, drag.width0 + n * dw);
+  else { left = Math.min(drag.left0 + n * dw, drag.left0 + drag.width0 - dw); width = drag.width0 - (left - drag.left0); }
+  el.style.left = left + 'px';
+  if (drag.kind === 'action') el.style.width = width + 'px';
+  if (drag.out) drag.out.style.left = (left + width + 8) + 'px';
+  el.classList.add('dragging');
+  const [s, en] = newSpan(drag);
+  showTip(drag.kind === 'action' ? `${drag.item.title}\n${fmtS(s, true)} → ${fmtS(en, true)} · ${plural(diffDays(s, en) + 1, 'jour')}` : `◆ ${drag.item.title}\n${fmtL(s)}`, e.clientX, e.clientY);
+});
+function newSpan(d) {
+  let [s, e] = d.span; const n = d.n;
+  if (d.mode === 'move') { s = addDays(s, n); e = addDays(e, n); }
+  else if (d.mode === 'r') e = maxD(s, addDays(e, n));
+  else s = minD(e, addDays(s, n));
+  return [s, e];
+}
+document.addEventListener('pointerup', () => {
+  if (!drag) return;
+  const d = drag; drag = null; hideTip(); tipTarget = null;
+  if (!d.moved) { if (d.kind === 'action') editAction(d.id); else editMilestone(d.id); return; }
+  if (!d.n) { render(); return; }
+  const [s, e] = newSpan(d);
+  commit(() => {
+    const it = d.kind === 'action' ? act(d.id) : mil(d.id); if (!it) return;
+    if (d.kind === 'action') { it.start = s; it.due = e; } else it.date = s;
+  });
+  toast(d.kind === 'action' ? `Replanifiée : ${fmtS(s)} → ${fmtS(e)}` : `Jalon déplacé au ${fmtS(s)}`, 'success', { label: 'Annuler', fn: undo });
+});
+document.addEventListener('pointercancel', () => { if (drag) { drag = null; render(); } });
+
+/* ---------- Planning (calendrier) ---------- */
+const dayClass = d => { const p = periodAt(d); return p ? 'pd-' + p.type : holidayName(d) ? 'pd-hol' : ''; };
+function dayTag(d, first) {
+  const p = periodAt(d), hn = holidayName(d);
+  if (hn) return `<span class="cal-tag hol" title="Jour férié">${esc(hn)}</span>`;
+  if (p && (first || d === p.start || dow(d) === 1)) return `<span class="cal-tag ${p.type}">${ic(PTYPE[p.type].icon, 11)} ${esc(p.type === 'school' ? p.label : PTYPE[p.type].short)}</span>`;
+  return '';
+}
+function calendarHTML(projectId) {
+  const mode = UI.calMode === 'week' ? 'week' : 'month', t = today(), anchor = UI.calAnchor || t;
+  const acts = projectId ? actionsOf(projectId) : S.actions;
+  const mss = projectId ? milestonesOf(projectId) : S.milestones;
+  const due = {}, msd = {}, pts = {};
+  acts.forEach(a => { if (a.due) (due[a.due] = due[a.due] || []).push(a); if (UI.calPts && a.nextDate && !isClosed(a.status) && a.nextDate !== a.due) (pts[a.nextDate] = pts[a.nextDate] || []).push(a); });
+  mss.forEach(m => (msd[m.date] = msd[m.date] || []).push(m));
+  const itemA = (a, kind) => { const p = proj(a.projectId); return `<div class="cal-it ${kind || ''} ${a.status === 'done' ? 'done' : ''} ${isOverdue(a) && !kind ? 'late' : ''}" style="--c:${colorOf(p)}" ${kind ? '' : `draggable="true" data-dnd="a:${a.id}"`} data-act="edit-action" data-id="${a.id}" data-tip="${esc((a.ref ? a.ref + ' · ' : '') + a.title)}\n${esc(p?.name || '')}\n${kind === 'pt' ? 'Prochain point : ' + esc(a.next || '—') : kind === 'span' ? 'En cours · date cible ' + fmtS(a.due) : 'Date cible · ' + STATUS[a.status].label + ' · ' + actionProgress(a) + ' %'}"><span class="dot"></span><span>${kind === 'pt' ? '↻ ' : kind === 'span' ? '▸ ' : ''}${esc(kind === 'pt' ? (a.next || a.title) : a.title)}</span></div>`; };
+  const itemM = m => `<div class="cal-it ms" draggable="true" data-dnd="m:${m.id}" data-act="edit-milestone" data-id="${m.id}" data-tip="◆ ${esc((m.ref ? m.ref + ' · ' : '') + m.title)}\n${esc(proj(m.projectId)?.name || '')} · ${msLabel(msStatus(m))}"><span class="dia ${msStatus(m) === 'upcoming' ? '' : msStatus(m)}"></span><span>${esc((m.ref ? m.ref + ' · ' : '') + m.title)}</span></div>`;
+  const dayItems = d => [...(msd[d] || []).map(itemM), ...sortActions(due[d] || [], 'priority').map(a => itemA(a)), ...(pts[d] || []).map(a => itemA(a, 'pt'))];
+  let title, grid;
+  if (mode === 'month') {
+    const first = firstOfMonth(anchor), gs = startOfWeek(first), month = parse(first).getMonth();
+    const weeks = Math.ceil((diffDays(gs, lastOfMonth(first)) + 1) / 7);
+    title = fmtMY(first);
+    let cells = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+    for (let i = 0; i < weeks * 7; i++) {
+      const d = addDays(gs, i), wd = dow(d), items = dayItems(d), max = 3;
+      cells += `<div class="cal-cell ${parse(d).getMonth() !== month ? 'other' : ''} ${d === t ? 'today' : ''} ${wd === 0 || wd === 6 ? 'we' : ''} ${dayClass(d)}" data-drop-date="${d}" data-act="cal-day" data-date="${d}" aria-label="${fmtL(d)}"><div class="cal-top"><div class="cal-d">${parse(d).getDate()}</div>${dayTag(d, i % 7 === 0)}</div>${items.slice(0, max).join('')}${items.length > max ? `<div class="cal-more">+ ${items.length - max} autre${items.length - max > 1 ? 's' : ''}</div>` : ''}</div>`;
+    }
+    grid = `<div class="cal">${cells}</div>`;
+  } else {
+    const ws = startOfWeek(anchor);
+    title = `Semaine ${isoWeek(ws)} · ${fmtS(ws)} → ${fmtS(addDays(ws, 6), true)}`;
+    let head = '', cells = '';
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(ws, i), wd = dow(d);
+      head += `<div class="cal-dow ${dayClass(d)}"><div class="cal-wh"><small>${DAYS_S[wd]}</small><b style="font-size:15px;color:${d === t ? 'var(--y-text)' : 'var(--text)'}">${parse(d).getDate()}</b>${dayTag(d, true)}</div></div>`;
+      const spans = acts.filter(a => !isClosed(a.status) && a.start && a.due && a.start <= d && a.due > d).sort(byDue);
+      const items = dayItems(d);
+      cells += `<div class="cal-cell ${d === t ? 'today' : ''} ${wd === 0 || wd === 6 ? 'we' : ''} ${dayClass(d)}" data-drop-date="${d}" data-act="cal-day" data-date="${d}">${items.length ? `<div class="cal-sub">Échéances & points</div>${items.join('')}` : ''}${spans.length ? `<div class="cal-sub">En cours</div>${spans.map(a => itemA(a, 'span')).join('')}` : ''}</div>`;
+    }
+    grid = `<div class="cal week">${head}${cells}</div>`;
+  }
+  return `<div class="cal-head">
+    <div class="row"><button type="button" class="btn btn-icon btn-sm" data-act="cal-nav" data-v="-1" aria-label="Précédent">${ic('chevL')}</button><button type="button" class="btn btn-sm" data-act="cal-nav" data-v="0">Aujourd'hui</button><button type="button" class="btn btn-icon btn-sm" data-act="cal-nav" data-v="1" aria-label="Suivant">${ic('chevR')}</button></div>
+    <h3>${title}</h3><span class="spacer"></span>
+    <label class="toggle"><input type="checkbox" data-change="cal-pts" ${UI.calPts ? 'checked' : ''}> Prochains points</label>
+    <button type="button" class="btn btn-sm no-embed" data-act="ics" title="Ajouter tes échéances à ton agenda Outlook">${ic('calendar', 15)} Vers Outlook</button>
+    <div class="seg"><button type="button" class="${mode === 'month' ? 'on' : ''}" data-act="cal-mode" data-v="month">Mois</button><button type="button" class="${mode === 'week' ? 'on' : ''}" data-act="cal-mode" data-v="week">Semaine</button></div>
+    <button type="button" class="btn btn-sm btn-primary" data-act="new-action" data-project="${projectId || ''}">${ic('plus', 15)} Action</button>
+  </div>${grid}
+  <div class="legend mt"><span class="k"><span class="dot" style="--c:var(--s3);width:8px;height:8px"></span> Date cible d'une action</span><span class="k"><span style="display:inline-block;width:14px;height:10px;border:1px dashed var(--muted);border-radius:3px"></span> Prochain point de suivi</span><span class="k"><span class="dia" style="width:8px;height:8px"></span> Jalon</span><span class="k" style="color:var(--critical-text)">▎ En retard</span><span class="k"><span class="lg-band school"></span> À l'ISTP</span><span class="k"><span class="lg-band exam"></span> Épreuves</span><span class="k"><span class="lg-band hol"></span> Férié</span><span class="muted">· Clique sur un jour pour le détail · glisse un élément pour changer sa date.</span></div>`;
+}
+VIEWS.planning = () => {
+  const t = today(), end = addDays(t, 14);
+  const items = S.actions.filter(a => !isClosed(a.status) && a.due && a.due >= t && a.due <= end).sort(byDue);
+  const points = S.actions.filter(a => !isClosed(a.status) && a.nextDate && a.nextDate >= t && a.nextDate <= end).sort((a, b) => a.nextDate.localeCompare(b.nextDate));
+  const msN = S.milestones.filter(m => !m.done && m.date >= t && m.date <= addDays(t, 30)).sort(byDate);
+  return {
+    title: 'Planning', sub: 'Calendrier des dates cibles, points de suivi et jalons',
+    html: `${calendarHTML(null)}
+    <div class="grid g-3 mt-l">
+      <section class="card"><div class="card-h"><h3>${ic('clock')} Dates cibles · 14 jours</h3><span class="n">${items.length}</span></div>${items.length ? `<ul class="tasks">${items.map(a => taskItem(a)).join('')}</ul>` : '<p class="muted small">Aucune date cible dans les 14 prochains jours.</p>'}</section>
+      <section class="card"><div class="card-h"><h3>${ic('refresh')} Prochains points · 14 jours</h3><span class="n">${points.length}</span></div>${points.length ? `<div class="mslist">${points.map(a => `<div class="msi" data-act="edit-action" data-id="${a.id}"><div class="datebox"><b>${parse(a.nextDate).getDate()}</b><span>${MONTHS_S[parse(a.nextDate).getMonth()]}</span></div><div style="min-width:0"><div class="t">${esc(a.next || a.title)}</div><div class="m">${a.ref ? esc(a.ref) + ' · ' : ''}${esc(a.title)}</div></div><span></span></div>`).join('')}</div>` : '<p class="muted small">Aucun point de suivi planifié.</p>'}</section>
+      <section class="card"><div class="card-h"><h3>${ic('flag')} Jalons · 30 jours</h3><span class="n">${msN.length}</span></div><div class="mslist">${msN.map(m => msItem(m)).join('') || '<p class="muted small">Aucun jalon dans les 30 prochains jours.</p>'}</div></section>
+    </div>`
+  };
+};
+function dayModal(date) {
+  const pid = R.page === 'projet' ? R.id : null;
+  const acts = pid ? actionsOf(pid) : S.actions;
+  const due = acts.filter(a => a.due === date).sort(byDue);
+  const pts = acts.filter(a => a.nextDate === date && !isClosed(a.status));
+  const spans = acts.filter(a => !isClosed(a.status) && a.start && a.due && a.start <= date && a.due > date);
+  const ms = (pid ? milestonesOf(pid) : S.milestones).filter(m => m.date === date);
+  openModal({
+    title: cap(fmtL(date)) + ` <span class="muted" style="font-size:14px;font-weight:600">· S${isoWeek(date)}</span>`,
+    body: `${ms.length ? `<div class="list-sep">Jalons</div><div class="mslist">${ms.map(m => msItem(m)).join('')}</div>` : ''}
+      <div class="list-sep">Dates cibles · ${due.length}</div>${due.length ? `<ul class="tasks">${due.map(a => taskItem(a)).join('')}</ul>` : '<p class="muted small" style="padding:0 8px">Aucune date cible ce jour-là.</p>'}
+      ${pts.length ? `<div class="list-sep">Points de suivi</div><ul class="tasks">${pts.map(a => taskItem(a)).join('')}</ul>` : ''}
+      ${spans.length ? `<div class="list-sep">En cours ce jour-là</div><ul class="tasks">${spans.map(a => taskItem(a)).join('')}</ul>` : ''}`,
+    footer: `<button type="button" class="btn" data-act="new-milestone" data-date="${date}" data-project="${pid || ''}">${ic('flag', 16)} Jalon ce jour</button><span class="spacer"></span><button type="button" class="btn" data-cancel>Fermer</button><button type="button" class="btn btn-primary" data-act="new-action" data-date="${date}" data-project="${pid || ''}">${ic('plus', 16)} Action ce jour</button>`
+  });
+}
+
+/* ---------- Jalons ---------- */
+function milestonesBlock(projectId) {
+  const f = UI.msf;
+  let list = projectId ? milestonesOf(projectId) : S.milestones.slice().sort(byDate);
+  if (!projectId && UI.msp && UI.msp !== 'all') list = list.filter(m => m.projectId === UI.msp);
+  const all = list;
+  if (f === 'upcoming') list = list.filter(m => !m.done);
+  else if (f === 'late') list = list.filter(m => msStatus(m) === 'late');
+  else if (f === 'done') list = list.filter(m => m.done);
+  const cnt = k => ({ upcoming: all.filter(m => !m.done).length, late: all.filter(m => msStatus(m) === 'late').length, done: all.filter(m => m.done).length, all: all.length }[k]);
+  let lastMonth = '', html = '';
+  for (const m of list) {
+    const mo = m.date.slice(0, 7);
+    if (mo !== lastMonth) { html += `<div class="mtl-month">${fmtMY(m.date)}</div>`; lastMonth = mo; }
+    const p = proj(m.projectId), st = msStatus(m), linked = S.actions.filter(a => a.milestoneId === m.id);
+    const lp = linked.length ? avgProgress(linked) : null;
+    html += `<div class="mtl-item"><div class="mtl-date"><b>${parse(m.date).getDate()}</b><span>${MONTHS_S[parse(m.date).getMonth()]} · S${isoWeek(m.date)}</span></div><div class="mtl-node"><span class="dia ${st === 'upcoming' ? '' : st}"></span></div>
+      <div class="mtl-card"><div><h4>${refTag(m.ref)}<button type="button" class="linklike" data-act="edit-milestone" data-id="${m.id}">${esc(m.title)}</button></h4>
+        <div class="meta" style="margin-top:6px">${projectId ? '' : `<a href="#/projet/${p?.id}/jalons" class="row" style="gap:6px"><span class="dot" style="--c:${colorOf(p)};width:8px;height:8px"></span>${esc(p?.name)}</a>`}<span class="chip ${st === 'done' ? 'st-done' : st === 'late' ? 'st-blocked' : 'st-todo'}">${st === 'done' ? '✓' : st === 'late' ? '!' : '◆'} ${msLabel(st)}</span><span class="chip t-info">${MSTYPE[m.type]}</span>${m.key ? '<span class="keytag">◆ JALON CLÉ</span>' : ''}${periodTag(m.date)}<span class="muted">${st === 'upcoming' ? relDue(m.date) : fmtS(m.date, true)}</span></div></div>
+        <label class="check small"><input type="checkbox" class="cb" data-change="toggle-ms" data-id="${m.id}" ${m.done ? 'checked' : ''}> Atteint</label>
+        ${m.description ? `<p class="desc">${esc(m.description)}</p>` : ''}
+        ${linked.length ? `<div class="lk">${pbar(lp, colorOf(p), null, 'sm')}<span>${linked.filter(a => a.status === 'done').length}/${linked.length} actions liées terminées · ${lp} %</span></div>` : ''}
+      </div></div>`;
+  }
+  return `<div class="toolbar"><div class="seg">${[['upcoming', 'À atteindre'], ['late', 'En retard'], ['done', 'Atteints'], ['all', 'Tous']].map(([k, l]) => `<button type="button" class="${f === k ? 'on' : ''}" data-act="msf" data-v="${k}">${l} <span class="muted">${cnt(k)}</span></button>`).join('')}</div>
+    ${projectId ? '' : `<select class="select sm" style="max-width:240px" data-change="msp" aria-label="Projet">${projOpts(UI.msp || 'all', 'Tous les projets')}</select>`}
+    <span class="spacer"></span><button class="btn btn-primary" data-act="new-milestone" data-project="${projectId || ''}">${ic('plus', 16)} Nouveau jalon</button></div>
+    ${list.length ? `<div class="mtl">${html}</div>` : `<div class="card">${emptyBox('flag', all.length ? 'Aucun jalon dans ce filtre' : 'Aucun jalon', 'Les jalons marquent les étapes clés : validation, livrable, décision, Go / No Go…', `<button class="btn btn-primary" data-act="new-milestone" data-project="${projectId || ''}">${ic('plus', 16)} Ajouter un jalon</button>`)}</div>`}`;
+}
+VIEWS.jalons = () => ({ title: 'Jalons', sub: `${plural(S.milestones.length, 'jalon')} · ${S.milestones.filter(m => m.done).length} atteint${S.milestones.filter(m => m.done).length > 1 ? 's' : ''}`, html: milestonesBlock(null) });
+
+/* ---------- Journal de bord ---------- */
+function journalEntry(j) {
+  const p = j.projectId ? proj(j.projectId) : null;
+  const head = `<div class="jentry-h"><span class="d">${cap(fmtL(j.date))}</span>${j.type === 'review' ? '<span class="keytag">REVUE HEBDO</span>' : j.type === 'point' ? '<span class="keytag">POINT HEBDO</span>' : ''}${p ? `<a class="chip" href="#/projet/${p.id}/journal"><span class="dot" style="--c:${colorOf(p)};width:8px;height:8px"></span>${esc(p.name)}</a>` : '<span class="chip">Général</span>'}${j.mood ? `<span class="chip">Moral : ${MOODS[j.mood] || ''}</span>` : ''}<span class="spacer"></span>
+    <button type="button" class="btn btn-ghost btn-icon btn-sm" data-act="${j.type === 'review' ? 'weekly-review' : 'edit-note'}" data-id="${j.id}" aria-label="Modifier">${ic('edit', 15)}</button><button type="button" class="btn btn-ghost btn-icon btn-sm btn-danger" data-act="delete-note" data-id="${j.id}" aria-label="Supprimer">${ic('trash', 15)}</button></div>`;
+  const body = j.type === 'review'
+    ? `<div class="rv"><div><h5>✓ Ce qui a avancé</h5><p>${esc(j.done) || '—'}</p></div><div><h5>⚠ Difficultés</h5><p>${esc(j.blockers) || '—'}</p></div><div><h5>→ Priorités</h5><p>${esc(j.next) || '—'}</p></div></div>`
+    : `<div class="txt ${j.type === 'point' ? 'mono' : ''}">${esc(j.text)}</div>`;
+  return `<article class="jentry">${head}${body}</article>`;
+}
+function suiviEntry(j) {
+  const a = j.action, p = proj(a.projectId);
+  return `<article class="jentry je-suivi" data-act="edit-action" data-id="${a.id}"><div class="jentry-h"><span class="d">${cap(fmtL(j.date))}</span><span class="keytag kt-suivi">SUIVI</span>${a.ref ? `<span class="ref">${esc(a.ref)}</span>` : ''}<b class="je-t">${esc(a.title)}</b>${j.log.progress != null ? `<span class="chip st-${a.status === 'done' ? 'done' : 'doing'}" style="height:21px">${j.log.progress} %</span>` : ''}<span class="spacer"></span>${p && !j.inProject ? `<span class="muted small nowrap"><span class="dot" style="--c:${colorOf(p)};width:8px;height:8px;display:inline-block"></span> ${esc(p.ref || p.name)}</span>` : ''}</div><div class="txt">${esc(j.log.text)}</div></article>`;
+}
+function journalBlock(projectId) {
+  let list = S.journal.slice();
+  let logs = S.actions.flatMap(a => (a.log || []).map(l => ({ kind: 'suivi', action: a, log: l, date: l.date, createdAt: l.at || '', projectId: a.projectId, inProject: !!projectId })));
+  if (projectId) { list = list.filter(j => j.projectId === projectId); logs = logs.filter(j => j.projectId === projectId); }
+  else {
+    if (UI.jf === 'review') list = list.filter(j => j.type === 'review');
+    else if (UI.jf === 'note') list = list.filter(j => j.type !== 'review');
+    else if (UI.jf === 'suivi') list = [];
+    if (UI.jf === 'review' || UI.jf === 'note') logs = [];
+    if (UI.jp && UI.jp !== 'all') { list = list.filter(j => j.projectId === UI.jp); logs = logs.filter(j => j.projectId === UI.jp); }
+  }
+  list = list.concat(logs);
+  list.sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || '').localeCompare(a.createdAt || ''));
+  let html = '', last = '';
+  for (const j of list) { const mo = j.date.slice(0, 7); if (mo !== last) { html += `<div class="list-sep" style="padding-left:2px">${fmtMY(j.date)}</div>`; last = mo; } html += j.kind === 'suivi' ? suiviEntry(j) : journalEntry(j); }
+  return `${projectId ? '' : `<div class="toolbar"><div class="seg">${[['all', 'Tout'], ['suivi', 'Suivi des actions'], ['review', 'Revues hebdo'], ['note', 'Notes']].map(([k, l]) => `<button type="button" class="${(UI.jf || 'all') === k ? 'on' : ''}" data-act="jf" data-v="${k}">${l}</button>`).join('')}</div><select class="select sm" style="max-width:240px" data-change="jp" aria-label="Projet">${projOpts(UI.jp || 'all', 'Tous les projets')}</select><span class="spacer"></span><button class="btn" data-act="point-hebdo">${ic('send', 16)} Point hebdo</button><button class="btn btn-dark" data-act="weekly-review">${ic('sparkle', 16)} Revue hebdo</button></div>`}
+    <form class="card" data-submit="add-note" data-project="${projectId || ''}" style="margin-bottom:16px">
+      <div class="fgrid"><textarea class="textarea" name="text" rows="3" placeholder="Note du jour : décision, retour du manager ou du tuteur, idée, difficulté…" aria-label="Nouvelle note" required></textarea>
+      <div class="row"><input class="input sm" type="date" name="date" value="${today()}" aria-label="Date">${projectId ? '' : `<select class="select sm" name="projectId" style="max-width:260px" aria-label="Projet"><option value="">Général</option>${projOpts('')}</select>`}<span class="spacer"></span><button class="btn btn-primary btn-sm" type="submit">${ic('plus', 15)} Ajouter la note</button></div></div>
+    </form>
+    <div class="jlist">${html || `<div class="card">${emptyBox('book', 'Journal vide', 'Garde une trace de tes décisions et de ta progression : c\'est précieux pour ton rapport d\'alternance.')}</div>`}</div>`;
+}
+VIEWS.journal = () => ({ title: 'Journal de bord', sub: `${plural(S.journal.length, 'entrée')} · dernière revue ${ago(S.settings.lastReview)}`, html: journalBlock(null) });
+
+/* ---------- Paramètres ---------- */
+function calendarSettings() {
+  const t = today(), P = S.profile, list = periods();
+  const cd = P.goalDate > t ? companyDays(t, P.goalDate) : 0, sw = schoolWeeksLeft(t);
+  const hol = []; for (let d = t; d <= (P.goalDate || addDays(t, 365)) && hol.length < 12; d = addDays(d, 1)) { const h = holidayName(d); if (h && !isWeekend(d)) hol.push(`${fmtS(d, true)} · ${h}`); }
+  return `<div class="grid g-3" style="margin-bottom:14px"><div class="kpi"><div class="v">${cd}</div><div class="l">jours en entreprise d'ici ${fmtS(P.goalDate, true)}</div></div><div class="kpi"><div class="v">${sw}</div><div class="l">semaines à l'ISTP restantes</div></div><div class="kpi"><div class="v">${hol.length}</div><div class="l">jours fériés en semaine à venir</div></div></div>
+    <div class="tbl-wrap" style="box-shadow:none"><table class="tbl"><thead><tr><th>Type</th><th>Période</th><th>Du</th><th>Au</th><th>Durée</th><th class="c-act"></th></tr></thead><tbody>${list.map(p => `<tr class="clk ${p.end < t ? 'is-cancelled' : ''}" data-act="edit-period" data-id="${p.id}"><td><span class="cal-tag ${p.type}">${ic(PTYPE[p.type].icon, 12)} ${PTYPE[p.type].label}</span></td><td><b>${esc(p.label)}</b>${p.start <= t && p.end >= t ? ' <span class="chip t-info">en cours</span>' : ''}</td><td class="c-date">${fmtS(p.start, true)}</td><td class="c-date">${fmtS(p.end, true)}</td><td class="muted small">${plural(Math.ceil((diffDays(p.start, p.end) + 1) / 7), 'semaine')}</td><td class="c-act"><button type="button" class="btn btn-ghost btn-icon btn-sm" data-act="edit-period" data-id="${p.id}" aria-label="Modifier">${ic('edit', 15)}</button></td></tr>`).join('') || '<tr><td colspan="6" class="muted">Aucune période.</td></tr>'}</tbody></table></div>
     <div class="row mt"><button class="btn btn-sm btn-primary" data-act="new-period">${ic('plus', 15)} Ajouter une période (école, congés…)</button>${!S.settings.calChecked ? `<button class="btn btn-sm" data-act="cal-ok">${ic('check', 15)} C'est bon, le calendrier est à jour</button>` : ''}</div>
     ${hol.length ? `<p class="muted small mt">Jours fériés à venir (calculés automatiquement) : ${hol.join(' · ')}</p>` : ''}`;
 }
