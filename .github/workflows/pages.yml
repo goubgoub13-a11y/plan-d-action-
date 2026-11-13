@@ -32,6 +32,8 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: immobilier-locatif/package-lock.json
+      - name: Vérifier le plan d’action autonome
+        run: node --test ../tests/*.test.cjs
       - run: npm ci
       - run: npm test
       - run: npm run build
