@@ -1,4 +1,4 @@
-const {test}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');const source=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const {test}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');const source=fs.readFileSync(process.env.PLAN_ACTION_HTML || path.join(__dirname,'../index.html'),'utf8');
 function runtime(html=source){
  const store=new Map(),downloads=[];const node={dataset:{},style:{setProperty(){}},classList:{add(){},remove(){}},addEventListener(){},querySelector(){return node},querySelectorAll(){return []}};
  class Reader{readAsText(file){this.result=fs.readFileSync(file.path,'utf8');Promise.resolve().then(()=>this.onload());}}

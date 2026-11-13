@@ -4,7 +4,7 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const html = fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+const html = fs.readFileSync(process.env.PLAN_ACTION_HTML || require('node:path').join(__dirname,'../index.html'),'utf8');
 function app() {
   const node = {dataset:{},style:{},classList:{add(){},remove(){}},addEventListener(){},querySelector(){return node},querySelectorAll(){return []}};
   const store = new Map();
@@ -24,7 +24,7 @@ function fixture(a) {
 }
 test('Existing backup keeps IDs, comments, risks, decisions and dated action logs',()=>{
  const a=app();const s=fixture(a);a.state=s;a.saveNow();a.state=null;a.loadState();
- assert.equal(a.KEY,'plan-action-natran-istp:v1');
+ assert.equal(a.KEY,process.env.PLAN_ACTION_HTML ? 'plan-action-natran-istp:refonte-2026-11:v1' : 'plan-action-natran-istp:v1');
  assert.deepEqual(JSON.parse(JSON.stringify(a.state.projects)),JSON.parse(JSON.stringify(s.projects)));
  assert.deepEqual(JSON.parse(JSON.stringify(a.state.actions)),JSON.parse(JSON.stringify(s.actions)));
  assert.equal(a.projectProgress(a.state.projects[0]),40);

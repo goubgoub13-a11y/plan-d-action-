@@ -5,9 +5,9 @@ name: Publier l'application
 on:
   push:
     branches: [claude/zealous-einstein-6u50ue]
-    paths: ['index.html', 'immobilier-locatif/**', '.github/workflows/pages.yml']
+    paths: ['index.html', 'refonte/**', 'tests/**', 'immobilier-locatif/**', '.github/workflows/pages.yml']
   pull_request:
-    paths: ['index.html', 'immobilier-locatif/**', '.github/workflows/pages.yml']
+    paths: ['index.html', 'refonte/**', 'tests/**', 'immobilier-locatif/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -34,6 +34,8 @@ jobs:
           cache-dependency-path: immobilier-locatif/package-lock.json
       - name: Vérifier le plan d’action autonome
         run: node --test ../tests/*.test.cjs
+      - name: Vérifier la copie de comparaison
+        run: PLAN_ACTION_HTML=../refonte/index.html node --test ../tests/plan-action.test.cjs ../tests/roadmap.test.cjs ../tests/istp.test.cjs
       - run: npm ci
       - run: npm test
       - run: npm run build
@@ -41,6 +43,8 @@ jobs:
         run: |
           mkdir -p dist/plan-action
           cp ../index.html dist/plan-action/index.html
+          mkdir -p dist/plan-action/refonte
+          cp ../refonte/index.html dist/plan-action/refonte/index.html
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
