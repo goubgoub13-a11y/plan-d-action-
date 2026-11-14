@@ -15,7 +15,7 @@ function runtime(html=copy,store=new Map()){
  class Reader{readAsText(file){this.result=file.text;Promise.resolve().then(()=>this.onload());}}
  const c={console,Date,Intl,URL,Blob,TextEncoder,structuredClone,FileReader:Reader,crypto:crypto.webcrypto,setTimeout(){},clearTimeout(){},setInterval(){},document:{...stub,querySelector:node,documentElement:stub,body:stub},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{},location:{hash:'#/dashboard'},history:{replaceState(){}},matchMedia:()=>({matches:false,addEventListener(){}})};
  c.window={...stub};c.window.self=c.window;c.window.top=c.window;c.captured=downloads;
- const script=html.match(/<script>([\s\S]*?)<\/script>/)[1].replace(/\ninit\(\);\n/,`\nrender=()=>{};applyLogos=()=>{};toast=()=>{};confirmDialog=async()=>true;download=async(name,data)=>{captured.push({name,data});return true};this.api={migrate,emptyState,saveNow,loadState,importJSONFile,exportJSON,KEY,get state(){return S},set state(x){S=x},get ui(){return UI},setRoute(x){R=x},views:VIEWS,actions:ACT,changes:CHG,inputs:INP,submits:SUB,filterActions,${html===copy?'rvBootstrapCopy,rvNavigation,rvProjectTable,':''}};`);
+ const script=html.match(/<script>([\s\S]*?)<\/script>/)[1].replace(/\ninit\(\);\n/,`\nrender=()=>{};applyLogos=()=>{};toast=()=>{};confirmDialog=async()=>true;download=async(name,data)=>{captured.push({name,data});return true};this.api={migrate,emptyState,saveNow,loadState,importJSONFile,exportJSON,KEY,get state(){return S},set state(x){S=x},get ui(){return UI},setRoute(x){R=x},views:VIEWS,actions:ACT,changes:CHG,inputs:INP,submits:SUB,filterActions,${html===copy?'rvBootstrapCopy,rvNavigation,rvProjectTable,rvMeetingCreate,rvMeetingSelect,rvMeetingNote,rvMeetingItems,rvMeetingPoint,rvSaveAction,':''}};`);
  vm.runInNewContext(script,c);c.api.loadState();return {a:c.api,store,downloads,c,nodes};
 }
 function fixture(){const {a}=runtime(original);const s=a.migrate(a.emptyState());s.profile.name='Ingénieur de test';s.settings.onbDone=true;s.settings.custom={keep:true};s.custom={unknown:[1,2]};s.projects=Array.from({length:7},(_,i)=>({id:'p'+i,ref:'P'+i,name:'Projet '+i,context:'natran',status:i===6?'done':'active',color:i+1,description:'Description '+i,comment:'Décision projet',roadmap:{quality:'Qualité à garder',unknown:73}}));s.actions=[{id:'a1',projectId:'p0',title:'Action existante',status:'doing',progress:35,phase:'Diagnostic',owner:'Ingénieur de test',due:'2026-11-01',risk:'Risque',decision:'Décision',log:[{id:'l1',date:'2026-10-16',text:'Compte rendu historique',progress:25}],checklist:[{id:'c1',text:'Contrôle',done:false}],skills:['sk_A3C1'],dependsOn:[],custom:42}];s.milestones=[{id:'m1',projectId:'p0',date:'2026-11-17',title:'Jalon existant',done:false}];s.journal=[{id:'j1',date:'2026-11-01',text:'Note de journal',projectId:'p0'}];s.istp.records.sk_A3C1.tutorComment='Commentaire conservé';return a.migrate(s);}
@@ -48,4 +48,30 @@ test('Les cartes, filtres, liens de retard et raccourcis de synthèse ouvrent le
 });
 test('La copie isolée ne reprend pas la liaison fichier et reste vide sans données originales',()=>{
  const {a}=runtime();assert.equal(a.state.projects.length,0);assert.ok(a.views.dashboard().html.includes('Importer ma sauvegarde'));assert.ok(copy.includes("indexedDB.open('plan-action-natran-istp-refonte-2026-11', 1)"));assert.ok(!copy.includes("indexedDB.open('plan-action-natran-istp', 1)"));assert.ok(copy.includes("suggestedName: 'plan-action-refonte-sauvegarde.json'"));assert.ok(copy.includes('href="../index.html#/dashboard"'));assert.ok(!copy.includes('qa-import-refonte'));
+});
+test('Une réunion référence les données réelles sans les dupliquer ni valider les compétences',()=>{
+ const {a}=runtime();a.state=fixture();const original=JSON.stringify({actions:a.state.actions,skills:a.state.skills,istp:a.state.istp});
+ const m=a.rvMeetingCreate({title:'Point tuteur',date:'2026-11-17',since:'2026-10-01',participants:'Tuteur'});
+ a.rvMeetingSelect(m,'a:a1',true);a.rvMeetingSelect(m,'a:a1',true);a.rvMeetingSelect(m,'s:sk_A3C1',true);
+ assert.equal(m.items.length,2);a.rvMeetingNote(m,'s:sk_A3C1','Décision à confirmer, sans validation officielle');
+ assert.equal(JSON.stringify({actions:a.state.actions,skills:a.state.skills,istp:a.state.istp}),original);
+ const point=a.rvMeetingItems(m)[0];assert.match(a.rvMeetingPoint(m,point,0),/Compte rendu historique/);
+ a.state.actions[0].title='Intitulé mis à jour dans le projet';assert.match(a.rvMeetingPoint(m,a.rvMeetingItems(m)[0],0),/Intitulé mis à jour dans le projet/);
+ m.since='2026-11-01';assert.doesNotMatch(a.rvMeetingPoint(m,point,0),/Compte rendu historique/);
+});
+test('Réunions, sélection et notes survivent au rechargement et au cycle JSON complet',async()=>{
+ const {a,store,downloads}=runtime();a.state=fixture();const m=a.rvMeetingCreate({title:'EEE',date:'2026-11-17',since:'2026-10-01'});a.rvMeetingSelect(m,'a:a1',true);a.rvMeetingNote(m,'a:a1','Suite convenue');a.saveNow();
+ const next=runtime(copy,store);assert.deepEqual(plain(next.a.state.meetings),plain(a.state.meetings));
+ a.exportJSON();await new Promise(setImmediate);const back=runtime();back.a.importJSONFile({name:'reunion.json',text:downloads.at(-1).data});await new Promise(setImmediate);assert.deepEqual(plain(back.a.state.meetings),plain(a.state.meetings));
+ back.a.importJSONFile({name:'reunion.json',text:downloads.at(-1).data});await new Promise(setImmediate);assert.equal(back.a.state.meetings.length,1);
+});
+test('Réunion : reprise de la sélection EEE, retrait, élément absent et impression de tous les points',()=>{
+ const {a}=runtime();a.state=fixture();const ev=a.state.istp.evaluations[0];ev.skillIds=['sk_A3C1'];const m=a.rvMeetingCreate({title:'EEE',date:'2026-11-17',since:'2026-10-01',evaluationId:ev.id});assert.deepEqual(plain(m.items),['s:sk_A3C1']);a.rvMeetingSelect(m,'a:a1',true);a.setRoute({page:'reunion',id:m.id,tab:'presenter'});const html=a.views.reunion().html;assert.match(html,/rv-meeting-print/);assert.match(html,/Compte rendu historique/);assert.equal((html.match(/id="rm-note-0"/g)||[]).length,1);
+ a.rvMeetingSelect(m,'a:a1',false);assert.equal(m.items.length,1);m.items.push('a:absent');assert.match(a.rvMeetingPoint(m,a.rvMeetingItems(m)[1],1),/Élément supprimé ou introuvable/);
+});
+test('La fiche latérale préserve les détails, utilise les récurrences métier et refuse une date incohérente',()=>{
+ const {a}=runtime();a.state=fixture();const original=plain(a.state.actions[0]);a.state.actions[0].recur='weekly';a.state.actions[0].start='2026-10-01';const before=JSON.stringify(a.state);
+ assert.equal(a.rvSaveAction('a1',{due:'2026-09-01',next:'',status:'done',log:'',logDate:'2026-11-13'}),false);assert.equal(JSON.stringify(a.state),before);
+ a.rvSaveAction('a1',{due:'2026-11-17',next:'Tester',status:'done',log:'Note de contrôle',logDate:'2026-11-13'});
+ const updated=a.state.actions.find(x=>x.id==='a1');assert.equal(updated.status,'done');assert.equal(updated.log.length,2);assert.equal(updated.log[0].text,'Compte rendu historique');assert.equal(updated.risk,original.risk);assert.equal(updated.decision,original.decision);assert.deepEqual(plain(updated.skills),original.skills);assert.ok(updated.recurNext);assert.ok(a.state.actions.find(x=>x.id===updated.recurNext));assert.notEqual(a.state.istp.records.sk_A3C1.status,'validated');
 });

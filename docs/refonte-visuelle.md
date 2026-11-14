@@ -47,3 +47,16 @@ Le format JSON et les migrations métier ne changent pas. La copie utilise ses p
 - Inspection visuelle en thème clair et sombre et à 390 px de largeur ; correction du bouton de préparation hebdomadaire sur petit écran.
 
 Limites : les données personnelles présentes dans le navigateur de l'utilisateur n'étaient pas accessibles ; la validation utilise des sauvegardes de contrôle. Aucun test sur machine Windows ou Mac physique n'a été effectué. Les documents externes restent soumis à leurs liens et droits d'accès existants. Les modifications effectuées dans la copie et dans l'original ne se synchronisent pas : le transfert volontaire utilise le JSON.
+
+## Deuxième amélioration : fiches latérales et réunions
+
+- La même copie reçoit une fiche action de lecture en trois onglets : Synthèse, Suivi et Preuves & compétences. Statut, échéance, prochaine étape et nouvelle note peuvent être enregistrés ensemble. L'édition complète conserve checklist, dépendances, charge, récurrence, risques, compétences et tous les autres champs.
+- Les liens « Ouvrir l'action et ses notes » ouvrent directement le suivi. La page, ses filtres et sa position restent en arrière-plan. Une fermeture avec saisie non enregistrée demande confirmation ; les onglets se parcourent aussi aux flèches du clavier.
+- Rubrique Réunions et raccourci Mode réunion sur l'accueil : réunions datées, participants, période d'avancées, sélection libre d'actions et compétences, ou reprise de la sélection d'une EEE existante. Recherche, ordre des points, retrait, modification et suppression avec annulation.
+- Présentation avec navigation réduite, un point à la fois, preuves accessibles dans la fiche latérale, passage précédent/suivant et notes de décision enregistrées automatiquement. L'impression prépare tous les points, pas uniquement celui affiché ; le PDF passe par la fonction d'impression du navigateur.
+- Nouvelle collection JSON optionnelle `meetings` : identifiants stables, références aux actions/compétences, notes propres au rendez-vous. Aucun clonage d'action ou de compétence et aucune validation officielle implicite. Les réunions relisent les données actuelles des fiches : elles ne sont pas un archivage figé ; imprimer le dossier pour garder une version datée.
+- Finition visuelle : typographie et alignements renforcés, sections moins encadrées, surfaces sobres, couleurs des projets conservées, thèmes clair/sombre et adaptation aux petits écrans.
+
+Sources de la deuxième amélioration : `refonte/interface.js` et `refonte/interface.css`, embarquées dans `refonte/index.html` avec `python scripts/build-interface.py`. Le HTML reste autonome. Ne pas reconstruire cette version depuis l'ancien générateur temporaire de la première copie.
+
+Vérification V2 : 32 tests sur l'original et les invariants de la copie, puis 20 tests métier sur la copie. Les nouveaux tests couvrent sélection sans doublons, reprise EEE, données sources non modifiées, références absentes, période de suivi, récurrence métier, dates incohérentes, persistance et export/réimport des réunions. Contrôles Chromium : nouvelle note depuis la fiche, recherche et sélection action + A3C1, présentation, accès direct au compte rendu, édition complète, protection d'un brouillon et notes retrouvées après rechargement. Le dialogue d'impression a été déclenché ; aucune imprimante physique n'a été testée.

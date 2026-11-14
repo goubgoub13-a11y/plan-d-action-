@@ -1219,6 +1219,26 @@ body{font-size:13px;line-height:1.5;letter-spacing:0}h1,h2,h3,h4{letter-spacing:
 @media print{.rv-copy,.rv-panel-foot,.rv-skip,.rv-start-tools{display:none!important}.rv-stats{display:flex;gap:24px;margin-bottom:20px}.rv-stat{display:grid;gap:4px}.rv-stat strong{font-size:22px}.rv-stat small{font-size:10px}.rv-section-head{display:flex;justify-content:space-between;margin:16px 0}.rv-section-head .row{display:none}.rv-portfolio table{min-width:0;width:100%}.rv-project-name{display:flex;gap:8px}.rv-project-name strong,.rv-project-name small{display:block}.rv-project-ref{font-size:10px}.rv-project-bar{width:3px;background:var(--c);flex:none}.rv-project-name>.ic{display:none}.rv-work-grid{display:block}.rv-context-grid{display:flex;gap:24px;margin-top:20px}.rv-context{display:block}.rv-context span,.rv-context small{display:block}.rv-backup{margin-top:20px}.rv-list-foot{font-size:11px}.rv-action-count small{display:block}.rv-portfolio td{font-size:11px}.rv-progress b{white-space:nowrap}}
 
 </style>
+
+
+
+
+<style id="interface-v2">
+/* Finition commune : surfaces calmes, contraste de lecture, repères de projet. */
+@media screen {
+:root {--radius:8px;--radius-sm:5px;--sidebar-w:220px}
+body{font-size:14px;line-height:1.55}.sidebar{gap:18px;padding-top:22px}.nav a{font-size:12.5px;min-height:37px}.rv-nav-group+.rv-nav-group{margin-top:20px}.nav-label{font-size:10px;letter-spacing:.11em}.side-setting{font-size:12px}.topbar{background:var(--surface);border-bottom:1px solid var(--border)}
+.workspace-heading h2,.project-heading h2{font-weight:650;letter-spacing:-.035em}.workspace-heading p{max-width:760px;font-size:14px}.workspace-heading{margin-bottom:30px}.eyebrow{color:var(--muted);font-size:10px}.card,.panel,.rv-work,.next-panel{box-shadow:none;border-radius:8px}.rv-section{margin-bottom:30px}.rv-stats{border-radius:8px}.rv-stat strong{font-size:32px;font-weight:550}.rv-stat-label{font-size:12px}.rv-stat small{font-size:11px}
+.rv-work{border:0;border-top:2px solid var(--border);border-radius:0;background:transparent;padding:20px 0 0}.rv-panel-foot{background:transparent;margin:0;padding:14px 0}.rv-context{border:0;border-top:1px solid var(--border);background:transparent;border-radius:0;padding:18px 0}.rv-project-name strong{font-size:14px}.rv-project-name small{font-size:12px}.tbl th{font-weight:600;letter-spacing:.015em}.tbl td{padding-top:15px;padding-bottom:15px}.tbl thead th{position:sticky;top:0;z-index:2;background:var(--surface-2)}.tbl-wrap{border-radius:8px}.essential-table .focus-title b{font-size:14px}.focus-title b{line-height:1.5}.tbl tr:hover>td{background:color-mix(in srgb,var(--surface-3) 45%,var(--surface))}.input,.select,.textarea{font-size:14px}.btn{font-size:12px;min-height:36px}.btn:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid var(--text-2);outline-offset:3px}
+.modal.drawer{border-radius:0;width:min(720px,100vw);box-shadow:-12px 0 48px #0002}.modal-bd:has(.rv-reader){justify-content:flex-end;background:#0003;backdrop-filter:none}.modal.rv-reader{border-left:1px solid var(--border);width:min(650px,100vw);height:100dvh;max-height:100dvh;margin:0;border-radius:0;display:flex;flex-direction:column}.rv-reader .modal-b{background:var(--surface);padding:24px;overflow-y:auto}.rv-reader .modal-h{padding:22px 24px}.rv-reader .modal-h h3{font-size:20px;line-height:1.35}.rv-reader .modal-f{padding:16px 24px;gap:8px}.rv-reader h4{font-size:12px;text-transform:uppercase;letter-spacing:.065em;color:var(--muted);margin:24px 0 8px}.rv-action-context{border-left:3px solid var(--c);padding-left:12px;display:grid;gap:3px;color:var(--text-2);font-size:13px}.rv-action-context span{font-size:12px}.rv-reader-tabs{display:flex;gap:20px;border-bottom:1px solid var(--border);margin:24px 0 20px;position:sticky;top:-24px;background:var(--surface);z-index:2}.rv-reader-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:12px 0;color:var(--muted);font:600 12px var(--font);cursor:pointer}.rv-reader-tabs button[aria-selected=true]{border-bottom-color:var(--y);color:var(--text)}.rv-reader-metrics{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.rv-reader .f2{margin-top:24px}.rv-reader .field{margin-top:16px}.rv-prose{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin:8px 0 16px}.rv-check-read{list-style:none;padding:0}.rv-check-read li{padding:8px 0;border-bottom:1px solid var(--border)}.rv-history article{padding:20px 0;border-top:1px solid var(--border)}.rv-history time{font-size:12px;font-weight:650;color:var(--text-2)}.rv-history{margin-top:26px}.rv-proof{display:grid;gap:8px;padding:14px 0;border-bottom:1px solid var(--border)}
+.rv-meeting-header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:32px}.rv-meeting-header h2{font-size:28px;letter-spacing:-.035em;margin:12px 0 6px}.rv-meeting-header p{color:var(--muted);font-size:13px}.rv-meeting-header>.row{flex-wrap:wrap;justify-content:flex-end}.rv-meeting-setup{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:36px}.rv-meeting-setup h3{font-size:17px;margin-bottom:16px}.rv-candidates{margin-top:14px;max-height:60vh;overflow-y:auto;border-top:1px solid var(--border)}.rv-candidate{display:flex;gap:14px;align-items:flex-start;padding:14px 8px;border-bottom:1px solid var(--border);cursor:pointer}.rv-candidate:hover{background:var(--surface-2)}.rv-candidate[hidden]{display:none}.rv-candidate>span{display:grid;gap:3px}.rv-candidate b{font-size:13px;font-weight:550}.rv-candidate small{font-size:11px;color:var(--muted)}.rv-candidate input{margin-top:5px;flex:none}.rv-agenda-item{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--border)}.rv-agenda-item>b{flex:1;font-size:13px;font-weight:550}.rv-agenda-item>span{color:var(--muted);font-variant-numeric:tabular-nums}.rv-meeting-controls{display:flex;gap:20px;align-items:center;justify-content:space-between;padding:16px 0;border-block:1px solid var(--border);margin-bottom:30px}.rv-meeting-controls label{display:flex;align-items:center;gap:10px;min-width:0}.rv-meeting-controls select{max-width:400px;width:100%;text-overflow:ellipsis}.rv-meeting-point{padding:28px 32px;background:var(--surface);border:1px solid var(--border);border-radius:8px}.rv-meeting-point h2{font-size:28px;line-height:1.3;max-width:1000px;margin:10px 0}.rv-meeting-point h3{font-size:13px;text-transform:uppercase;letter-spacing:.055em;color:var(--muted);margin:28px 0 10px}.rv-meeting-origin{font-size:13px;color:var(--muted);margin-bottom:24px}.rv-meeting-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;font-size:16px}.rv-meeting-proofs{display:flex;gap:10px;flex-wrap:wrap}.rv-meeting-proofs .rv-proof{width:100%;align-items:start}.rv-meeting-proofs .btn{white-space:normal;height:auto;min-height:36px;text-align:left}.rv-meeting-notes{border-top:1px solid var(--border);margin-top:30px;padding-top:20px}.rv-meeting-notes>label{display:block;font-weight:600;font-size:13px;margin-bottom:10px}.rv-meeting-notes small{display:block;margin-top:8px}
+body:has(.is-presenting) .sidebar,body:has(.is-presenting) .topbar,body:has(.is-presenting) #rv-copybar{display:none}body:has(.is-presenting) #app{display:block}body:has(.is-presenting) .main{margin-left:0}body:has(.is-presenting) #view{max-width:1300px;margin:0 auto;padding:30px 36px 60px}
+@media(max-width:900px){.rv-meeting-header{flex-direction:column}.rv-meeting-setup{gap:24px}.rv-meeting-grid{gap:24px}.rv-meeting-point{padding:24px}.rv-meeting-controls{gap:10px}.rv-meeting-controls select{max-width:250px}}
+@media(max-width:640px){.rv-reader .modal-b{padding:18px}.rv-reader .modal-f{padding:12px;flex-wrap:wrap}.rv-reader .modal-h{padding:18px}.rv-reader-tabs{gap:14px;top:-18px}.rv-reader-tabs button{font-size:11px}.rv-meeting-setup,.rv-meeting-grid{grid-template-columns:1fr}.rv-meeting-grid{gap:0}.rv-meeting-header h2,.rv-meeting-point h2{font-size:23px}.rv-meeting-controls{flex-wrap:wrap}.rv-meeting-controls label{order:-1;flex-basis:100%}.rv-meeting-controls select{max-width:100%}.rv-meeting-point{padding:20px}.rv-meeting-setup .rv-candidates{max-height:45vh}body:has(.is-presenting) #view{padding:20px 14px 40px}.rv-meeting-header>.row{justify-content:flex-start}}
+}
+@media print{.rv-meeting-header .no-print,.rv-meeting .no-print{display:none!important}.rv-meeting-header{margin-bottom:20px}.rv-meeting-header h2{font-size:22px}.rv-meeting-point{break-before:page;break-inside:auto;font-size:11pt}.rv-meeting-point:first-child{break-before:auto}.rv-meeting-point h2{font-size:19pt;margin:12px 0}.rv-meeting-point h3{font-size:12pt;margin:18px 0 8px}.rv-meeting-origin{color:#555}.rv-meeting-grid{display:block}.rv-prose{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}.rv-meeting-notes{border-top:1px solid #aaa;margin-top:20px;padding-top:15px}.rv-meeting-proofs .btn{display:inline!important;font-size:10pt;border:0}.rv-proof{margin:10px 0}.rv-meeting-proofs a[href^="http"]:after{content:' (' attr(href) ')';font-size:9pt;overflow-wrap:anywhere}.rv-meeting-proofs button:after{content:' — disponible dans l’application';font-size:9pt}.rv-meeting-notes label{font-weight:bold}}
+
+</style>
 </head>
 <body>
 <button class="rv-skip" data-act="rv-focus">Aller au contenu</button>
@@ -2476,7 +2496,7 @@ function parseRoute() {
   R = { page: parts[0] || 'dashboard', id: parts[1], tab: parts[2] };
 }
 const go = h => { if (location.hash === h) render(); else location.hash = h; };
-window.addEventListener('hashchange', () => { parseRoute(); routeChanged = true; closeModal(); closePop(); document.body.classList.remove('side-open'); render(); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => { if(closeModal() === false){ history.replaceState(null,'',rvRouteHash); return; } rvRouteHash=location.hash; parseRoute(); routeChanged = true; closePop(); document.body.classList.remove('side-open'); render(); window.scrollTo(0, 0); });
 
 const NAV = [
   ['dashboard', 'Tableau de bord', 'dashboard'],
@@ -2502,6 +2522,7 @@ function renderSidebar() {
 
 const VIEWS = {};
 function render() {
+  const rvScroll = routeChanged ? null : window.scrollY;
   closePop();
   renderSidebar();
   const view = VIEWS[R.page] || VIEWS.dashboard;
@@ -2520,6 +2541,7 @@ function render() {
   mountCharts(v);
   mountGantt(v);
   if (out.after) out.after(v);
+  if(rvScroll != null) window.scrollTo(0,rvScroll);
   routeChanged = false;
   paintSave(); paintTheme();
 }
@@ -2589,15 +2611,18 @@ document.addEventListener('scroll', () => { if (!drag) { hideTip(); tipTarget = 
 
 /* ---------- Fenêtres (centrées ou tiroir latéral) ---------- */
 let modalCleanup = null;
+let modalGuard = null;
+let rvRouteHash = location.hash;
 function openModal({ title, body, footer, size = '', onSubmit, onMount, focus = true }) {
-  closeModal(); closePop();
+  if(closeModal() === false) return; closePop();
   const root = $('#modal-root');
-  root.innerHTML = `<div class="modal-bd ${size === 'drawer' ? 'is-drawer' : ''}"><form class="modal ${size}" autocomplete="off" role="dialog" aria-modal="true" aria-labelledby="modal-title"><header class="modal-h"><h3 id="modal-title">${title}</h3><button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Fermer">${ic('x')}</button></header><div class="modal-b">${body}</div><footer class="modal-f">${footer ?? footerHTML()}</footer></form></div>`;
+  root.innerHTML = `<div class="modal-bd ${size.split(' ').includes('drawer') ? 'is-drawer' : ''}"><form class="modal ${size}" autocomplete="off" role="dialog" aria-modal="true" aria-labelledby="modal-title"><header class="modal-h"><h3 id="modal-title">${title}</h3><button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Fermer">${ic('x')}</button></header><div class="modal-b">${body}</div><footer class="modal-f">${footer ?? footerHTML()}</footer></form></div>`;
   const form = $('form', root), bd = $('.modal-bd', root);
   let dirty = false;
   form.addEventListener('input', () => { dirty = true; });
+
   form.addEventListener('invalid', e => { let el = e.target.parentElement; while (el && el !== form) { if (el.tagName === 'DETAILS') el.open = true; el = el.parentElement; } }, true);
-  form.addEventListener('submit', e => { e.preventDefault(); if (onSubmit && onSubmit(form, e) === false) return; closeModal(); });
+  form.addEventListener('submit', e => { e.preventDefault(); if (onSubmit && onSubmit(form, e) === false) return; modalGuard = null; closeModal(); });
   $('[data-close]', root).addEventListener('click', closeModal);
   $$('[data-cancel]', root).forEach(b => b.addEventListener('click', closeModal));
   bd.addEventListener('mousedown', e => { if (e.target === bd && !dirty) closeModal(); });
@@ -2606,6 +2631,9 @@ function openModal({ title, body, footer, size = '', onSubmit, onMount, focus = 
   modalCleanup = () => { try { prev && prev.focus && prev.focus({ preventScroll: true }); } catch (_) {} };
   document.body.style.overflow = 'hidden';
   if (onMount) onMount(form);
+  const signature = () => JSON.stringify($$('input,textarea,select',form).map(x=>[x.name||x.id,x.value,x.checked]));
+  const baseline = signature();
+  modalGuard = () => signature() === baseline || window.confirm('Des modifications ne sont pas enregistrées. Fermer sans les conserver ?');
   const first = focus ? (form.querySelector('[autofocus]') || form.querySelector('.modal-b input:not([type=checkbox]):not([type=radio]):not([type=hidden]), .modal-b textarea, .modal-f .btn-primary')) : $('[data-close]', root);
   setTimeout(() => first && first.focus({ preventScroll: true }), 40);
   return form;
@@ -2613,6 +2641,8 @@ function openModal({ title, body, footer, size = '', onSubmit, onMount, focus = 
 function closeModal() {
   const root = $('#modal-root');
   if (!root.firstChild) return;
+  if(modalGuard && !modalGuard()) return false;
+  modalGuard = null;
   root.innerHTML = ''; document.body.style.overflow = '';
   const c = modalCleanup; modalCleanup = null; if (c) c();
 }
@@ -2620,12 +2650,13 @@ const modalOpen = () => !!$('#modal-root').firstChild;
 function confirmDialog({ title, message, ok = 'Confirmer', danger = false }) {
   return new Promise(res => {
     let answered = false;
-    openModal({
+    const opened = openModal({
       title, size: 'narrow',
       body: `<p style="color:var(--text-2);line-height:1.6">${message}</p>`,
       footer: `<span class="spacer"></span><button type="button" class="btn" data-cancel>Annuler</button><button type="submit" class="btn ${danger ? 'btn-crit' : 'btn-primary'}">${ok}</button>`,
       onSubmit: () => { answered = true; res(true); }
     });
+    if(!opened){res(false);return;}
     const prev = modalCleanup;
     modalCleanup = () => { if (prev) prev(); if (!answered) res(false); };
   });
@@ -4109,7 +4140,7 @@ function istpURL(value){try{const u=new URL(String(value||'').trim());return ['h
 function istpAccessible(e){return !!(istpURL(e.url)||(e.actionId&&act(e.actionId))||['roadmap','gantt','actions'].includes(e.internalRoute));}
 function istpProjectIds(k){const r=istpRecord(k),ids=new Set((r.projectIds||[]).filter(id=>proj(id)));(r.projectRefs||[]).forEach(ref=>{const p=istpMatchProject(S,ref);if(p)ids.add(p.id);});istpEvidence(k).forEach(e=>{if(e.projectId&&proj(e.projectId))ids.add(e.projectId);});istpActions(k).forEach(a=>ids.add(a.projectId));return [...ids];}
 function istpOrigin(e){const p=proj(e.projectId);return p?`<a class="ie-origin" href="#/projet/${esc(p.id)}" style="--c:${colorOf(p)}"><span class="dot"></span>${esc(p.name)}</a>`:`<span class="muted">${esc(e.originRef?e.originRef+' — projet à rattacher':'Transversal')}</span>`;}
-function istpProofLink(e){if(e.actionId&&act(e.actionId))return `<button class="btn btn-sm" data-act="edit-action" data-id="${esc(e.actionId)}">Ouvrir l’action et ses notes</button>`;if(['roadmap','gantt','actions'].includes(e.internalRoute))return `<a class="btn btn-sm" href="#/${e.internalRoute}">Ouvrir dans l’application</a>`;const u=istpURL(e.url);return u?`<a class="btn btn-sm" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Ouvrir le document ${ic('ext',12)}</a>`:`<span class="ie-missing">${e.originActionRef?'Action à rattacher · '+esc(e.originActionRef):'Document à rattacher · Lien à renseigner'}</span>`;}
+function istpProofLink(e){if(e.actionId&&act(e.actionId))return `<button class="btn btn-sm" data-act="edit-action" data-reader-tab="history" data-id="${esc(e.actionId)}">Ouvrir l’action et ses notes</button>`;if(['roadmap','gantt','actions'].includes(e.internalRoute))return `<a class="btn btn-sm" href="#/${e.internalRoute}">Ouvrir dans l’application</a>`;const u=istpURL(e.url);return u?`<a class="btn btn-sm" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Ouvrir le document ${ic('ext',12)}</a>`:`<span class="ie-missing">${e.originActionRef?'Action à rattacher · '+esc(e.originActionRef):'Document à rattacher · Lien à renseigner'}</span>`;}
 function istpProofsTable(list){return `<div class="tbl-wrap ie-table"><table class="tbl"><thead><tr><th>Preuve / réalisation</th><th>Origine</th><th>Compétences</th><th>État</th><th>Accès</th><th><span class="sr">Modifier</span></th></tr></thead><tbody>${list.map(e=>`<tr><td><button class="linklike" data-act="istp-proof-edit" data-id="${esc(e.id)}"><b>${esc(e.title)}</b></button><small>${esc(ISTP_TYPES[e.type]||'Autre')}${e.date?' · '+fmtFR(e.date):''}${e.version?' · '+esc(e.version):''}</small></td><td>${istpOrigin(e)}</td><td>${(e.skillIds||[]).map(id=>skill(id)).filter(Boolean).map(k=>`<button class="ie-code" data-act="istp-skill" data-id="${esc(k.id)}">${esc(k.code||k.name)}</button>`).join(' ')}</td><td><span class="chip">${esc(ISTP_PROOF_STATES[e.status]||'Prévue')}</span>${!istpAccessible(e)?'<small>Lien manquant</small>':''}</td><td>${istpProofLink(e)}</td><td><button class="btn btn-sm btn-ghost" data-act="istp-proof-edit" data-id="${esc(e.id)}">Modifier</button></td></tr>`).join('')||'<tr><td colspan="6">Aucune preuve dans ce périmètre.</td></tr>'}</tbody></table></div>`;}
 function istpEvaluation(){return S.istp.evaluations.find(e=>e.id===UI.istpEvaluation)||S.istp.evaluations.slice().sort((a,b)=>((a.date||'9999')<today())-((b.date||'9999')<today())||(a.date||'9999').localeCompare(b.date||'9999'))[0]||null;}
 function istpFilters(){return Object.assign({q:'',bloc:'all',status:'all',project:'all',selected:false},UI.istpFilters||{});}
@@ -4413,7 +4444,7 @@ function editAction(id, preset = {}) {
 }
 function deleteAction(id) {
   const a = act(id); if (!a) return;
-  closeModal();
+  if(closeModal() === false) return;
   commit(s => { s.actions = s.actions.filter(x => x.id !== id); s.actions.forEach(x => { x.dependsOn = x.dependsOn.filter(d => d !== id); }); });
   toast(`Action « ${a.title} » supprimée.`, '', { label: 'Annuler', fn: undo });
 }
@@ -4422,7 +4453,7 @@ function duplicateAction(id) {
   const c = JSON.parse(JSON.stringify(a));
   c.id = uid('a'); c.ref = nextRef(a.projectId); c.title = a.title + ' (copie)'; c.status = 'todo'; c.progress = 0; c.doneAt = null; c.createdAt = new Date().toISOString();
   c.checklist = c.checklist.map(x => Object.assign(x, { id: uid('c'), done: false })); c.log = [];
-  closeModal(); commit(s => s.actions.push(c)); editAction(c.id);
+  if(closeModal() === false) return; commit(s => s.actions.push(c)); editAction(c.id);
 }
 
 function editMilestone(id, preset = {}) {
@@ -4455,7 +4486,7 @@ function editMilestone(id, preset = {}) {
 }
 function deleteMilestone(id) {
   const m = mil(id); if (!m) return;
-  closeModal();
+  if(closeModal() === false) return;
   commit(s => { s.milestones = s.milestones.filter(x => x.id !== id); s.actions.forEach(a => { if (a.milestoneId === id) a.milestoneId = null; }); });
   toast(`Jalon « ${m.title} » supprimé.`, '', { label: 'Annuler', fn: undo });
 }
@@ -4478,7 +4509,7 @@ function editNote(id, preset = {}) {
   });
 }
 function deleteNote(id) {
-  closeModal();
+  if(closeModal() === false) return;
   commit(s => { s.journal = s.journal.filter(x => x.id !== id); });
   toast('Entrée supprimée.', '', { label: 'Annuler', fn: undo });
 }
@@ -4607,7 +4638,7 @@ const ACT = {
   'del-skill': el => { const k = skill(el.dataset.id); if (!k) return; commit(s => { s.skills = s.skills.filter(x => x.id !== k.id); s.actions.forEach(a => { a.skills = (a.skills || []).filter(x => x !== k.id); }); }); toast(`« ${k.name} » supprimée.`, '', { label: 'Annuler', fn: undo }); },
   'new-period': () => editPeriod(null),
   'edit-period': el => editPeriod(el.dataset.id),
-  'del-period': el => { closeModal(); commit(s => { s.calendar.periods = s.calendar.periods.filter(x => x.id !== el.dataset.id); }); toast('Période supprimée.', '', { label: 'Annuler', fn: undo }); },
+  'del-period': el => { if(closeModal() === false) return; commit(s => { s.calendar.periods = s.calendar.periods.filter(x => x.id !== el.dataset.id); }); toast('Période supprimée.', '', { label: 'Annuler', fn: undo }); },
   'ph-toggle': el => { const k = el.dataset.k; UI.phClosed[k] = !UI.phClosed[k]; saveUI(); refreshActions(); },
   'pf-ctx': el => { UI.pf.ctx = el.dataset.v; saveUI(); render(); },
   'msf': el => { UI.msf = el.dataset.v; saveUI(); render(); },
@@ -4878,12 +4909,12 @@ function rvCopyNotice() {
 }
 function rvNavigation() {
   const groups = [
-    ['Piloter', [['dashboard','Vue d’ensemble','dashboard'],['projets','Projets','folder'],['actions','Plan d’action','list'],['journal','Journal de bord','book']]],
+    ['Piloter', [['dashboard','Vue d’ensemble','dashboard'],['projets','Projets','folder'],['actions','Plan d’action','list'],['journal','Journal de bord','book'],['reunions','Réunions','users']]],
     ['Planifier', [['roadmap','Feuille de route','flag'],['gantt','Gantt','gantt'],['planning','Planning','calendar'],['jalons','Jalons','target']]],
     ['Parcours ISTP', [['istp','ISTP — Évaluation','award'],['parcours','Mon alternance','school']]]
   ];
   return groups.map(([label,items])=>`<div class="rv-nav-group"><div class="nav-label">${label}</div>${items.map(([k,label,icon])=>{
-    const on=R.page===k || (k==='projets' && R.page==='projet') || (k==='istp' && R.page==='competences');
+    const on=R.page===k || (k==='reunions' && R.page==='reunion') || (k==='projets' && R.page==='projet') || (k==='istp' && R.page==='competences');
     return `<a href="#/${k}" class="${on?'active':''}" ${on?'aria-current="page"':''}>${ic(icon,17)}<span>${label}</span></a>`;
   }).join('')}</div>`).join('');
 }
@@ -4901,7 +4932,7 @@ function rvDashboard() {
   const mine=open.filter(isMine), priorities=priorityActions(mine), rest=mine.filter(a=>!priorities.includes(a)).sort(byDue), shown=[...priorities,...rest].slice(0,5), relances=toFollowUp(S.actions), other=UI.prioTab==='others';
   const all=sortedProjects(), ps=all.filter(p=>!isClosed(p.status)), projects=UI.rvAllProjects?all:ps;
   const milestones=S.milestones.filter(m=>!m.done).sort(byDate).slice(0,4), np=nextPeriodText(t);
-  const heading=`<header class="workspace-heading rv-heading"><div><div class="eyebrow">${cap(fmtL(t))} <span> / </span> Semaine ${isoWeek(t)}</div><h2>Vue d’ensemble</h2><p>Les projets, les priorités et les prochaines échéances${S.profile.name?' de '+esc(S.profile.name):''}.</p></div><button class="btn" data-act="point-hebdo">${ic('send',16)} Préparer mon point hebdo</button></header>`;
+  const heading=`<header class="workspace-heading rv-heading"><div><div class="eyebrow">${cap(fmtL(t))} <span> / </span> Semaine ${isoWeek(t)}</div><h2>Vue d’ensemble</h2><p>Les projets, les priorités et les prochaines échéances${S.profile.name?' de '+esc(S.profile.name):''}.</p></div><button class="btn" data-act="point-hebdo">${ic('send',16)} Préparer mon point hebdo</button><a class="btn btn-primary" href="#/reunions">Mode réunion</a></header>`;
   if(!S.projects.length) return {title:'Vue d’ensemble',html:`${heading}<section class="rv-welcome"><div><span class="eyebrow">VOTRE ESPACE DE TRAVAIL</span><h3>Retrouver votre plan d’action</h3><p>Importez votre sauvegarde JSON pour retrouver les projets, phases, actions, notes et évaluations dans cette présentation. La version actuelle reste accessible en haut de la page.</p><button class="btn btn-primary" data-act="import-json">${ic('upload',16)} Importer ma sauvegarde</button></div><div class="rv-welcome-guide"><h4>Un même plan, trois points de vue</h4><p><b>Piloter</b><span>Projets, actions, suivis et décisions</span></p><p><b>Planifier</b><span>Feuille de route, Gantt, planning et jalons</span></p><p><b>Parcours ISTP</b><span>Compétences, preuves et calendrier de formation</span></p></div></section><div class="rv-start-tools"><button class="btn" data-act="new-project">${ic('plus',15)} Créer un projet</button><button class="btn" data-act="import-xlsx">Importer un Excel</button><button class="btn" data-act="tpl-istp">Modèle de projet ISTP</button><a class="text-link" href="#/parcours">Consulter mon alternance →</a></div>`};
   const stat=(n,label,sub,href,attention=false)=>`<a class="rv-stat" href="${href}" data-act="rv-stat" data-href="${href}"><span class="rv-stat-label">${label}${ic('chevR',14)}</span><strong class="${attention?'rv-danger':''}">${n}</strong><small>${sub}</small></a>`;
   return {title:'Vue d’ensemble',html:`${heading}${sinceVisitBanner()}
@@ -4922,6 +4953,67 @@ Object.assign(ACT, {
   'rv-projects': el => { UI.rvAllProjects = el.dataset.v === 'all'; saveUI(); render(); },
   'rv-project-view': el => { UI.rvProjectView = el.dataset.v; saveUI(); render(); }
 });
+
+
+
+
+/* INTERFACE_V2_START */
+/* Lecture des actions et préparation des réunions. Aucune validation ISTP implicite. */
+function rvText(value, fallback='Non renseigné') { return `<p class="rv-prose">${esc(value || fallback)}</p>`; }
+function rvActionReader(id,initialTab='summary') {
+  const a=act(id); if(!a)return;
+  const p=proj(a.projectId), proofs=(S.istp?.evidence||[]).filter(e=>e.actionId===id);
+  openModal({title:esc(a.title),size:'drawer rv-reader',focus:false,
+    body:`<div class="rv-action-context" style="--c:${colorOf(p)}"><b>${esc(p?.ref||'')} · ${esc(p?.name||'Projet non renseigné')}</b><span>${esc(a.ref||'')}${a.phase?' / '+esc(a.phase):''}</span></div>
+    <div class="rv-reader-tabs" role="tablist" aria-label="Fiche action">${[['summary','Synthèse'],['history','Suivi · '+(a.log||[]).length],['proof','Preuves & compétences']].map(([v,t],i)=>`<button type="button" role="tab" id="rv-tab-${v}" aria-controls="rv-panel-${v}" aria-selected="${!i}" data-act="rv-reader-tab" data-v="${v}">${t}</button>`).join('')}</div>
+    <section id="rv-panel-summary" role="tabpanel" aria-labelledby="rv-tab-summary" data-reader-panel="summary">
+    <div class="rv-reader-metrics">${stChip(a.status)}<b>${actionProgress(a)} %</b><span>${esc(a.owner||'Responsable à préciser')}</span></div>
+    <h4>Résultat attendu</h4>${rvText(a.result)}<h4>Contexte</h4>${rvText(a.description)}
+    <div class="f2">${fld('rv-status','Statut',`<select id="rv-status" name="status" class="select">${opts(STATUS,a.status)}</select>`)}${fld('rv-due','Date cible',`<input id="rv-due" name="due" class="input" type="date" value="${esc(a.due||'')}">`)}</div>
+    ${fld('rv-next','Prochaine étape',`<input id="rv-next" class="input" name="next" value="${esc(a.next||'')}">`)}
+    <h4>Risques / blocages</h4>${rvText(a.risk,'Aucun risque renseigné')}<h4>Décision / arbitrage</h4>${rvText(a.decision,'Aucune décision renseignée')}
+    ${(a.checklist||[]).length?`<h4>Checklist</h4><ul class="rv-check-read">${a.checklist.map(c=>`<li>${c.done?'✓':'○'} ${esc(c.text)}</li>`).join('')}</ul>`:''}
+    </section>
+    <section id="rv-panel-history" role="tabpanel" aria-labelledby="rv-tab-history" data-reader-panel="history" hidden>
+    <h4>Ajouter une note de suivi</h4>${fld('rv-log-date','Date du suivi',`<input id="rv-log-date" name="logDate" type="date" class="input" value="${today()}">`)}${fld('rv-log','Ce que j’ai réalisé',`<textarea id="rv-log" name="log" class="textarea" rows="3" placeholder="Compte rendu, résultat, échange…"></textarea>`)}<p class="muted small">La note sera ajoutée avec « Enregistrer ». L’historique existant est conservé.</p>
+    <div class="rv-history">${logsOf(a).map(l=>`<article><time>${fmtFR(l.date)}</time>${rvText(l.text)}${l.progress!=null?`<small>Avancement déclaré : ${l.progress} %</small>`:''}</article>`).join('')||'<p class="muted">Aucune note enregistrée.</p>'}</div></section>
+    <section id="rv-panel-proof" role="tabpanel" aria-labelledby="rv-tab-proof" data-reader-panel="proof" hidden><h4>Compétences associées</h4>${(a.skills||[]).map(id=>skill(id)).filter(Boolean).map(k=>`<p><b>${esc(k.code||'')}</b> ${esc(k.name)}</p>`).join('')||'<p class="muted">Aucune compétence associée.</p>'}<p class="muted small">L’avancement de cette action ne valide aucune compétence.</p><h4>Documents et preuves</h4>${istpURL(a.link)?`<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(istpURL(a.link))}">Ouvrir le livrable ${ic('ext',14)}</a>`:''}${proofs.map(e=>`<article class="rv-proof"><b>${esc(e.title)}</b>${rvText(e.description)}${istpURL(e.url)?`<a target="_blank" rel="noopener noreferrer" href="${esc(istpURL(e.url))}">Ouvrir le document</a>`:'<small>Preuve portée par cette action ; document externe à rattacher si nécessaire.</small>'}</article>`).join('')}${!proofs.length&&!a.link?'<p class="muted">Document à rattacher depuis l’édition complète.</p>':''}</section>`,
+    footer:`<button type="button" class="btn" data-act="rv-edit-full" data-id="${esc(id)}">Édition complète</button><span class="spacer"></span><button type="button" class="btn" data-cancel>Fermer</button><button type="submit" class="btn btn-primary">Enregistrer</button>`,
+    onMount:form=>{const tabs=$$('[role=tab]',form);const select=(v)=>{$$('[data-reader-panel]',form).forEach(x=>x.hidden=x.dataset.readerPanel!==v);tabs.forEach(x=>x.setAttribute('aria-selected',String(x.dataset.v===v)));};select(initialTab);$('.rv-reader-tabs',form).addEventListener('keydown',e=>{const i=tabs.indexOf(e.target);if(i<0||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;select(tabs[n].dataset.v);tabs[n].focus();});},
+    onSubmit:form=>rvSaveAction(id,formData(form))
+  });
+}
+function rvSaveAction(id,d){const a=act(id);if(!a)return false;if(d.due&&a.start&&d.due<a.start){toast('La date cible doit être après le début.','error');return false;}commit(()=>{const x=act(id);x.due=d.due||null;x.next=d.next.trim();applyStatus(x,d.status);if(d.log.trim())x.log.push({id:uid('l'),date:d.logDate||today(),text:d.log.trim(),progress:actionProgress(x),at:new Date().toISOString()});});toast('Action et suivi enregistrés.','success');}
+ACT['edit-action']=el=>rvActionReader(el.dataset.id,el.dataset.readerTab||'summary');
+ACT['rv-edit-full']=el=>editAction(el.dataset.id);
+ACT['rv-reader-tab']=el=>{const form=el.closest('form');$$('[data-reader-panel]',form).forEach(x=>x.hidden=x.dataset.readerPanel!==el.dataset.v);$$('[role=tab]',form).forEach(x=>x.setAttribute('aria-selected',String(x===el)));};
+function rvMeetings(){return Array.isArray(S.meetings)?S.meetings:[];}
+function rvMeeting(){return rvMeetings().find(m=>m.id===R.id)||null;}
+function rvMeetingItems(m){return (m.items||[]).map(key=>{const type=key.startsWith('a:')?'action':'skill',id=key.slice(2),item=type==='action'?act(id):skill(id);return {key,type,id,item};});}
+function rvMeetingCreate(data){const m={id:uid('meeting'),title:data.title,date:data.date,since:data.since,participants:data.participants||'',evaluationId:data.evaluationId||null,items:[],notes:{},createdAt:new Date().toISOString()};const ev=S.istp?.evaluations.find(e=>e.id===m.evaluationId);if(ev)m.items=(ev.skillIds||[]).filter(id=>skill(id)).map(id=>'s:'+id);commit(s=>{if(!Array.isArray(s.meetings))s.meetings=[];s.meetings.push(m);},{render:false});return m;}
+function rvMeetingEdit(id){const m=rvMeetings().find(x=>x.id===id);openModal({title:m?'Paramètres de la réunion':'Préparer une réunion',size:'narrow',footer:footerHTML({del:m&&{act:'rv-meeting-delete',id:m.id}}),body:`<div class="fgrid">${fld('rm-title','Titre',`<input id="rm-title" name="title" required class="input" value="${esc(m?.title||'Point avec mon tuteur')}">`)}<div class="f2">${fld('rm-date','Date du rendez-vous',`<input id="rm-date" type="date" name="date" required class="input" value="${m?.date||today()}">`)}${fld('rm-since','Avancées depuis le',`<input id="rm-since" type="date" name="since" required class="input" value="${m?.since||addDays(today(),-7)}">`)}</div>${fld('rm-who','Participants',`<input id="rm-who" name="participants" class="input" value="${esc(m?.participants||'')}">`)}${!m?fld('rm-eval','Reprendre la sélection d’une EEE (facultatif)',`<select id="rm-eval" name="evaluationId" class="select"><option value="">Sélection libre</option>${(S.istp?.evaluations||[]).map(e=>`<option value="${esc(e.id)}">${esc(e.title)} · ${fmtFR(e.date)}</option>`).join('')}</select>`):''}<p class="muted small">Les actions et compétences restent dans leurs projets et leur grille d’origine.</p></div>`,onSubmit:form=>{const d=formData(form);if(!d.title.trim()||d.since>d.date){toast('Vérifie le titre et la période de la réunion.','error');return false;}if(m){commit(()=>Object.assign(m,{title:d.title.trim(),date:d.date,since:d.since,participants:d.participants.trim()}));}else{const created=rvMeetingCreate({...d,title:d.title.trim()});go('#/reunion/'+created.id);}}});}
+function rvMeetingSelect(m,key,selected){if(!/^[as]:/.test(key))return;commit(()=>{m.items=selected?[...new Set([...(m.items||[]),key])]:(m.items||[]).filter(x=>x!==key);},{render:false});}
+function rvMeetingNote(m,key,text){commit(()=>{if(!m.notes)m.notes={};m.notes[key]=text;},{render:false,undo:false});}
+function rvMeetingPoint(m,point,index,print=false){const {item:x,type,key}=point;let title,origin,realized,remaining,request,proofs;
+ if(!x)return `<article class="rv-meeting-point"><h2>Élément supprimé ou introuvable</h2><p>La référence ${esc(key)} est conservée dans cette réunion. Retire-la de la sélection si nécessaire.</p>${rvText(m.notes?.[key],'Aucune note de réunion')}</article>`;
+ if(type==='action'){const p=proj(x.projectId);title=x.title;origin=`${p?.name||'Projet non renseigné'}${x.phase?' / '+x.phase:''}`;const logs=logsOf(x).filter(l=>l.date>=m.since&&l.date<=m.date);realized=logs.length?logs.map(l=>`${fmtFR(l.date)} — ${l.text}`).join('\n\n'):'Aucune note de suivi sur la période sélectionnée.';remaining=x.next||x.result||'Prochaine étape à préciser.';request=x.risk||'Point à préciser avec le tuteur.';proofs=`<button class="btn" data-act="edit-action" data-reader-tab="history" data-id="${esc(x.id)}">Ouvrir l’action et son historique</button>${istpURL(x.link)?` <a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(istpURL(x.link))}">Ouvrir le livrable</a>`:''}`;
+ }else{const r=istpRecord(x);title=(x.code?x.code+' — ':'')+x.name;origin=istpProjectIds(x).map(id=>proj(id)?.name).filter(Boolean).join(' · ')||'Parcours ISTP';realized=r.realized;remaining=r.remaining;request=r.request;proofs=istpEvidence(x).map(e=>`<div class="rv-proof"><b>${esc(e.title)}</b>${istpProofLink(e)}</div>`).join('')+istpActions(x).map(a=>`<button class="btn" data-act="edit-action" data-id="${esc(a.id)}">${esc(a.ref||'Action')} · ${esc(a.title)}</button>`).join('');}
+ return `<article class="rv-meeting-point" data-point="${index}"><div class="eyebrow">${type==='action'?'Action':'Compétence'} · ${index+1} / ${(m.items||[]).length}</div><h2>${esc(title)}</h2><p class="rv-meeting-origin">${esc(origin)}</p><div class="rv-meeting-grid"><section><h3>${type==='action'?'Avancées sur la période':'Ce que j’ai réalisé'}</h3>${rvText(realized)}<h3>Preuves et documents</h3><div class="rv-meeting-proofs">${proofs||'<p class="muted">Aucune preuve associée.</p>'}</div></section><section><h3>Ce qui reste à faire</h3>${rvText(remaining)}<h3>À discuter / faire valider</h3>${rvText(request)}${type==='action'&&x.decision?`<h3>Décision déjà enregistrée dans l’action</h3>${rvText(x.decision)}`:''}</section></div><section class="rv-meeting-notes">${print?'<b>':`<label for="rm-note-${index}">`}Décision / suite du rendez-vous${print?'</b>':'</label>'}${print?'':`<textarea id="rm-note-${index}" class="textarea no-print" rows="3" data-input="rv-meeting-note" data-key="${esc(key)}" placeholder="Décision, responsable, suite à donner…">${esc(m.notes?.[key]||'')}</textarea>`}<p class="${print?'':'print-only'} rv-prose">${esc(m.notes?.[key]||'Aucune note de réunion')}</p><small class="muted no-print">Enregistré automatiquement dans cette réunion. Ne valide pas officiellement la compétence.</small></section></article>`;
+}
+VIEWS.reunions=()=>({title:'Réunions',html:`<header class="workspace-heading"><div><div class="eyebrow">PRÉPARER · PRÉSENTER · CONSERVER</div><h2>Mes réunions</h2><p>Un ordre du jour relié aux actions, aux preuves et aux compétences existantes.</p></div><button class="btn btn-primary" data-act="rv-meeting-new">Préparer une réunion</button></header><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Réunion</th><th>Date</th><th>Participants</th><th>Points sélectionnés</th></tr></thead><tbody>${rvMeetings().slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(m=>`<tr><td><a class="text-link" href="#/reunion/${esc(m.id)}">${esc(m.title)}</a></td><td>${fmtFR(m.date)}</td><td>${esc(m.participants||'À préciser')}</td><td>${(m.items||[]).length}</td></tr>`).join('')||'<tr><td colspan="4">Prépare ta première réunion pour choisir les points à présenter.</td></tr>'}</tbody></table></div>`});
+VIEWS.reunion=()=>{const m=rvMeeting();if(!m)return {title:'Réunion',html:'<p>Réunion introuvable.</p><a href="#/reunions">Toutes les réunions</a>'};const points=rvMeetingItems(m),present=R.tab==='presenter',index=Math.min(Math.max(0,UI.rvMeetingIndex||0),Math.max(0,points.length-1));
+ const candidates=[...S.actions.map(a=>({key:'a:'+a.id,title:a.title,sub:(proj(a.projectId)?.name||'')+' · '+(a.phase||'Sans phase'),kind:'Action'})),...S.skills.map(k=>({key:'s:'+k.id,title:(k.code||'')+' · '+k.name,sub:istpProjectIds(k).map(id=>proj(id)?.name).join(' · '),kind:'Compétence'}))];
+ return {title:present?'Réunion · Présentation':'Préparer ma réunion',html:`<div class="rv-meeting ${present?'is-presenting':''}"><header class="rv-meeting-header"><div><a href="#/reunions" class="text-link no-print">← Mes réunions</a><h2>${esc(m.title)}</h2><p>${fmtFR(m.date)}${m.participants?' · '+esc(m.participants):''} · Avancées depuis le ${fmtFR(m.since)}</p></div><div class="row no-print">${present?`<a class="btn" href="#/reunion/${esc(m.id)}">Modifier la sélection</a>`:`<button class="btn" data-act="rv-meeting-edit" data-id="${esc(m.id)}">Paramètres</button><a class="btn btn-primary" data-act="rv-meeting-start" data-id="${esc(m.id)}" href="#/reunion/${esc(m.id)}/presenter">Présenter ${points.length} point${points.length>1?'s':''}</a>`}<button class="btn" data-act="rv-meeting-print">Imprimer / PDF</button></div></header>
+ ${present?`<div class="rv-meeting-controls no-print"><button class="btn" data-act="rv-meeting-prev" ${index===0?'disabled':''}>← Précédent</button><label>Point <select class="select" data-change="rv-meeting-index" aria-label="Point présenté">${points.map((p,i)=>`<option value="${i}" ${i===index?'selected':''}>${i+1} · ${esc(p.item?.title||p.item?.code||p.item?.name||'Élément absent')}</option>`).join('')}</select></label><button class="btn btn-primary" data-act="rv-meeting-next" ${index>=points.length-1?'disabled':''}>Point suivant →</button></div><div class="rv-slide-screen no-print">${points.length?rvMeetingPoint(m,points[index],index):'<p>Aucun point sélectionné. Reviens à la sélection pour préparer la réunion.</p>'}</div>`:`<div class="rv-meeting-setup no-print"><section><h3>Choisir les points à présenter</h3><input class="input" type="search" data-input="rv-meeting-search" aria-label="Rechercher un point" placeholder="Action, compétence, projet…"><div class="rv-candidates">${candidates.map(c=>`<label class="rv-candidate" data-search="${esc(norm(c.title+' '+c.sub+' '+c.kind))}"><input type="checkbox" class="cb" data-change="rv-meeting-select" data-key="${esc(c.key)}" ${(m.items||[]).includes(c.key)?'checked':''}><span><small>${c.kind}</small><b>${esc(c.title)}</b><small>${esc(c.sub)}</small></span></label>`).join('')}</div></section><section><h3>Ordre du jour <span id="rv-selected-count">${points.length}</span></h3><p class="muted small">Les données sont lues à jour depuis les fiches. Les notes de réunion sont conservées séparément.</p><div id="rv-agenda">${rvAgenda(m)}</div></section></div>`}
+ <div class="rv-meeting-print print-only">${points.map((p,i)=>rvMeetingPoint(m,p,i,true)).join('')}</div></div>`};};
+function rvAgenda(m){return rvMeetingItems(m).map((p,i)=>`<div class="rv-agenda-item"><span>${i+1}</span><b>${esc(p.item?.title||((p.item?.code||'')+' '+(p.item?.name||'Élément absent')))}</b><button class="btn btn-sm" data-act="rv-meeting-up" data-key="${esc(p.key)}" aria-label="Monter ce point" ${i===0?'disabled':''}>↑</button><button class="btn btn-sm" data-act="rv-meeting-remove" data-key="${esc(p.key)}" aria-label="Retirer ce point">×</button></div>`).join('')||'<p class="muted">Coche les points à gauche. Tu peux mélanger actions et compétences.</p>';}
+Object.assign(ACT,{'rv-meeting-start':el=>{UI.rvMeetingIndex=0;saveUI();go('#/reunion/'+el.dataset.id+'/presenter');},'rv-meeting-delete':async el=>{const id=el.dataset.id;if(!await confirmDialog({title:'Supprimer cette réunion ?',message:'Seuls la sélection et les notes de cette réunion seront retirées. Les actions et compétences restent intactes.',ok:'Supprimer',danger:true}))return;commit(s=>{s.meetings=rvMeetings().filter(m=>m.id!==id);},{render:false});go('#/reunions');toast('Réunion supprimée.','',{label:'Annuler',fn:undo});},'rv-meeting-new':()=>rvMeetingEdit(),'rv-meeting-edit':el=>rvMeetingEdit(el.dataset.id),'rv-meeting-prev':()=>{UI.rvMeetingIndex=Math.max(0,(UI.rvMeetingIndex||0)-1);saveUI();render();},'rv-meeting-next':()=>{UI.rvMeetingIndex=(UI.rvMeetingIndex||0)+1;saveUI();render();},'rv-meeting-remove':el=>{rvMeetingSelect(rvMeeting(),el.dataset.key,false);render();},'rv-meeting-up':el=>{const m=rvMeeting(),i=m.items.indexOf(el.dataset.key);if(i>0)commit(()=>{[m.items[i-1],m.items[i]]=[m.items[i],m.items[i-1]];});},'rv-meeting-print':()=>{saveNow();window.print();}});
+CHG['rv-meeting-select']=el=>{const m=rvMeeting();rvMeetingSelect(m,el.dataset.key,el.checked);$('#rv-agenda').innerHTML=rvAgenda(m);$('#rv-selected-count').textContent=m.items.length;const link=$('.rv-meeting-header .btn-primary');if(link)link.textContent='Présenter '+m.items.length+' point'+(m.items.length>1?'s':'');};
+CHG['rv-meeting-index']=el=>{UI.rvMeetingIndex=+el.value;saveUI();render();};
+INP['rv-meeting-search']=el=>{$$('.rv-candidate').forEach(row=>row.hidden=!row.dataset.search.includes(norm(el.value)));};
+INP['rv-meeting-note']=el=>{const m=rvMeeting();if(m){rvMeetingNote(m,el.dataset.key,el.value);$$('.rv-meeting-print [data-point]').forEach(point=>{const p=rvMeetingItems(m)[+point.dataset.point];if(p?.key===el.dataset.key){const text=$('.rv-meeting-notes .rv-prose',point);if(text)text.textContent=el.value;}});}};
+
+/* INTERFACE_V2_END */
 
 init();
 })();
