@@ -8,10 +8,10 @@ function rvActionReader(id,initialTab='summary') {
     <div class="rv-reader-tabs" role="tablist" aria-label="Fiche action">${[['summary','Synthèse'],['history','Suivi · '+(a.log||[]).length],['proof','Preuves & compétences']].map(([v,t],i)=>`<button type="button" role="tab" id="rv-tab-${v}" aria-controls="rv-panel-${v}" aria-selected="${!i}" data-act="rv-reader-tab" data-v="${v}">${t}</button>`).join('')}</div>
     <section id="rv-panel-summary" role="tabpanel" aria-labelledby="rv-tab-summary" data-reader-panel="summary">
     <div class="rv-reader-metrics">${stChip(a.status)}<b>${actionProgress(a)} %</b><span>${esc(a.owner||'Responsable à préciser')}</span></div>
-    <h4>Résultat attendu</h4>${rvText(a.result)}<h4>Contexte</h4>${rvText(a.description)}
+    ${a.result?'<h4>Résultat attendu</h4>'+rvText(a.result):''}${a.description?'<details class="v3-secondary"><summary>Contexte</summary>'+rvText(a.description)+'</details>':''}
     <div class="f2">${fld('rv-status','Statut',`<select id="rv-status" name="status" class="select">${opts(STATUS,a.status)}</select>`)}${fld('rv-due','Date cible',`<input id="rv-due" name="due" class="input" type="date" value="${esc(a.due||'')}">`)}</div>
     ${fld('rv-next','Prochaine étape',`<input id="rv-next" class="input" name="next" value="${esc(a.next||'')}">`)}
-    <h4>Risques / blocages</h4>${rvText(a.risk,'Aucun risque renseigné')}<h4>Décision / arbitrage</h4>${rvText(a.decision,'Aucune décision renseignée')}
+    ${a.risk?'<h4>Risques / blocages</h4>'+rvText(a.risk):''}${a.decision?'<h4>Décision / arbitrage</h4>'+rvText(a.decision):''}
     ${(a.checklist||[]).length?`<h4>Checklist</h4><ul class="rv-check-read">${a.checklist.map(c=>`<li>${c.done?'✓':'○'} ${esc(c.text)}</li>`).join('')}</ul>`:''}
     </section>
     <section id="rv-panel-history" role="tabpanel" aria-labelledby="rv-tab-history" data-reader-panel="history" hidden>

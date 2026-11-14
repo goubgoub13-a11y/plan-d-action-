@@ -11,3 +11,12 @@ body:has(.is-presenting) .sidebar,body:has(.is-presenting) .topbar,body:has(.is-
 @media(max-width:640px){.rv-reader .modal-b{padding:18px}.rv-reader .modal-f{padding:12px;flex-wrap:wrap}.rv-reader .modal-h{padding:18px}.rv-reader-tabs{gap:14px;top:-18px}.rv-reader-tabs button{font-size:11px}.rv-meeting-setup,.rv-meeting-grid{grid-template-columns:1fr}.rv-meeting-grid{gap:0}.rv-meeting-header h2,.rv-meeting-point h2{font-size:23px}.rv-meeting-controls{flex-wrap:wrap}.rv-meeting-controls label{order:-1;flex-basis:100%}.rv-meeting-controls select{max-width:100%}.rv-meeting-point{padding:20px}.rv-meeting-setup .rv-candidates{max-height:45vh}body:has(.is-presenting) #view{padding:20px 14px 40px}.rv-meeting-header>.row{justify-content:flex-start}}
 }
 @media print{.rv-meeting-header .no-print,.rv-meeting .no-print{display:none!important}.rv-meeting-header{margin-bottom:20px}.rv-meeting-header h2{font-size:22px}.rv-meeting-point{break-before:page;break-inside:auto;font-size:11pt}.rv-meeting-point:first-child{break-before:auto}.rv-meeting-point h2{font-size:19pt;margin:12px 0}.rv-meeting-point h3{font-size:12pt;margin:18px 0 8px}.rv-meeting-origin{color:#555}.rv-meeting-grid{display:block}.rv-prose{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}.rv-meeting-notes{border-top:1px solid #aaa;margin-top:20px;padding-top:15px}.rv-meeting-proofs .btn{display:inline!important;font-size:10pt;border:0}.rv-proof{margin:10px 0}.rv-meeting-proofs a[href^="http"]:after{content:' (' attr(href) ')';font-size:9pt;overflow-wrap:anywhere}.rv-meeting-proofs button:after{content:' — disponible dans l’application';font-size:9pt}.rv-meeting-notes label{font-weight:bold}}
+
+/* Les dates restent alignées ; la zone temporelle est réservée aux barres. */
+.g-dates.v3-late{color:var(--critical-text);text-decoration:underline dotted;text-underline-offset:3px}
+.v3-secondary{border-block-start:1px solid var(--line);margin-block:16px;padding-block:6px}
+.v3-secondary>summary{cursor:pointer;font-weight:600;padding:10px 0;color:var(--text)}
+.v3-secondary[open]>summary{margin-bottom:6px}
+.rv-stats .rv-stat{min-height:0;padding-block:12px}.rv-stat strong{line-height:1.12}
+.ie-table .ie-skill-title b{font-variant-numeric:tabular-nums}
+.g-dates .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
